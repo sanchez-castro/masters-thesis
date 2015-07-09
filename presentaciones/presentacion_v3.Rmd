@@ -1,0 +1,154 @@
+---
+title: "Modelo de recomendación de hoteles"
+author: "Revenue Management. Preparado por Felipe Gerard"
+date: "25 de junio de 2015"
+output: ioslides_presentation
+logo: graficas/logo2.png
+---
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=T}
+library(Matrix)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(knitr)
+#setwd("C:/Users/bmxddt005062/Documents/recomendacion_de_hoteles")
+# # Servicios
+# load('datos/hoteles_servicios_mex.Rdata')
+# # Categorias
+# load('datos/hoteles_servicios_categorias_mex.Rdata')
+# # Precios, comentarios, geolocalizacion
+# load('datos/hoteles_precios_comentarios_geo_mex.Rdata')
+```
+
+## Antecedentes
+
+- **Objetivo:** Recomendar hoteles similares a uno dado
+- **Solución actual:** búsqueda por destino y estrellas
+- **Problemas:**
+    * No se toma en cuenta la filosofía del hotel
+    * No se aprovecha toda la información disponible
+    * El criterio es más o menos estático
+- **Ideas:**
+    * Tomar en cuenta el perfil de los hoteles
+    * Incorporar información geográfica
+    * Hacer que el criterio sea dinámico
+
+
+## Plan de ataque
+
+1. Obtener información relevante
+    - Servicios
+    - Geolocalización
+    - Precios recientes
+2. Caracterizar los hoteles
+    - Categorías de servicios equivalentes
+3. Generar un criterio integral de similitud
+    - Cercanía
+    - Precio
+    - Al menos los mismos servicios
+    - Perfil similar
+
+## Información
+
+- Nos la saltaremos...
+
+
+## Caracterización de hoteles
+
+- Usar servicios es miope
+- No toma en cuenta los sustitutos
+- Agrupar servicios manualmente con modelo de apoyo:
+
+![Aglomerado jerárquico](graficas/dendrograma_parcial.png)
+
+
+## Precio y cercanía
+
+- **Precio:**
+    * Favorecer precios bajos
+    * Porcentaje máximo arriba del hotel original
+- **Cercanía:**
+    * Criterio dinámico
+    * Depende de densidad de hoteles
+    * Evita enmascaramiento por hoteles distintos
+    * Gráfica
+
+
+## Cercanía
+
+```{r, echo=FALSE, fig.width=8, fig.height=5}
+set.seed(1234)
+x2 <- data.frame(x=c(0,rnorm(29),1.5,-1), y=c(0,rnorm(29),1.2,-1.3), s=c(5,2*runif(29),5,6), col=c('original',rep('opciones malas',29), 'opciones buenas', 'opciones buenas'))
+qplot(x,y,data=x2,size=s,color=col) +
+  scale_size_continuous(guide=FALSE) +
+  guides(color=guide_legend(title=NULL)) +
+  labs(x='Longitud', y='Latitud')
+#ggsave('documentacion/graficas/cercania.png')
+```
+
+
+## Similaridad
+
+```{r, echo=FALSE, fig.width=8, fig.height=5}
+
+aux <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(0.1,6,10,8),
+                Hotel = rep('Original', 4))
+
+ggplot(aux) +
+  geom_bar(aes(x,y,fill=Hotel), stat='identity', position='dodge', width=0.5) +
+  scale_fill_manual(values = 'black') +
+  labs(title='Características del hotel original', x='', y='Número de servicios por categoría')
+
+```
+
+
+## Similaridad
+
+```{r, echo=FALSE, fig.width=8, fig.height=5}
+
+x <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(0.1,6,10,8),
+                Hotel = rep('Original', 4))
+y <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(1,5,9,9),
+                Hotel = rep('Alternativa 1', 4))
+z <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(0.1,3,4,4),
+                Hotel = rep('Alternativa 2', 4))
+v <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(10,10,10,10),
+                Hotel = rep('Alternativa 3', 4))
+w <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(10,9,2,4),
+                Hotel = rep('Alternativa 4', 4))
+
+aux <- rbind(
+  cbind(x,div='Perfil similar', hinge='Servicios suficientes'),
+  cbind(y,div='Perfil similar', hinge='Servicios suficientes'),
+  cbind(x,div='Perfil similar', hinge='Servicios insuficientes'),
+  cbind(z,div='Perfil similar', hinge='Servicios insuficientes'),
+  cbind(x,div='Perfil diferente', hinge='Servicios suficientes'),
+  cbind(v,div='Perfil diferente', hinge='Servicios suficientes'),
+  cbind(x,div='Perfil diferente', hinge='Servicios insuficientes'),
+  cbind(w,div='Perfil diferente', hinge='Servicios insuficientes'))
+
+ggplot(aux) +
+  geom_bar(aes(x,y,fill=Hotel), stat='identity', position='dodge', width=0.5) +
+  scale_fill_manual(values = c('black', rgb(0.1,0.8,0.3),
+                               rgb(0.1,0.3,0.8), rgb(0.1,0.3,0.8), rgb(1,0.2,0.1))) +
+  facet_grid(div ~ hinge) +
+  labs(title='Características combinadas: perfil + servicios', x='', y='Número de servicios por categoría')
+
+```
+
+## Comentarios finales
+
+- La base de servicios __no está homologada__ para los demás países
+- El modelo actual sólo está hecho con los datos de México
+- Falta por definir algunos detalles del modelo
+
+## Demo
+

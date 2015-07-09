@@ -1,0 +1,77 @@
+---
+title: "Recomendación de hoteles. Estructura de las tablas"
+author: "Revenue Management. Felipe Gerard"
+date: "22 de junio de 2015"
+output: html_document
+---
+
+
+Resumen
+-----------------------------
+
+En el presente documento se describirá brevemente el origen de la información que se utilizó en el proyecto de recomendación de hoteles. La base de datos principal es *Matrix_Reloaded* (donde no se indique, las tablas están en esta base), aunque se obtuvieron algunos detalles de *Matrix_Reloaded_Process* también. A continuación se enumeran las principales tablas utilizadas junto con una justificación de por qué se utilizan:
+
+* *Hoteles:* De esta tabla se obtiene los nombres de los hoteles, sus detalles geográficos y otros datos relavantes.
+* *Hoteles_Servicios:* Es la tabla más importante, pues de ella se obtiene las características que tiene cada hotel.
+* *Reservacion* y *res_Hotel:* Se utilizaron para estimar el precio promedio por noche de cada hotel, en un período de tiempo.
+* *[Matrix_Reloaded_Process].[dbo].Comentarios_Calificacion_Hotel:* De esta tabla se extrae las calificaciones de Trip Advisor de los hoteles.
+* *Ciudades*, *Estados*, *Paises:* Complementan la información contenida en *Hotel*.
+
+Cabe mencionar que para el primer análisis y para la primera versión del sistema, **únicamente se utilizaron hoteles en México**, pues las claves de los servicios de los hoteles extranjeros no están homologadas en la base. Hay muchas claves distintas que significan lo mismo y no hay suficiente estandarización para arreglarlo rápido.
+
+
+Servicios
+-------------------------------
+
+Como se menciona arriba, los servicios se obtienen de la tabla *Hoteles_Servicios*. Esta tabla es prácticamente una matriz rala de los servicios, en el sentido de que tiene tuplas (hotel, servicio), que es lo mismo que una matriz con un renglón por hotel, una columna por servicio y puros ceros a excepción de las combinaciones (hotel, servicio) existentes, en donde se pone un uno. Para tener información adicional (puesto que la tabla tiene prácticamente puras claves), se unió también a *Servicios*, *Servicios_Textos*, *Sitios* y *Hoteles_Servicios_Textos*.
+
+Los filtros que se aplicó fueron que el idioma fuera español (*Hoteles_Servicios_Textos*), que el sitio de venta fuera Best Day (*Sitios*) y que el país fuera México.
+
+
+Estimación de precios
+-------------------------------
+
+Parte del algoritmo de recomendación consiste en considerar únicamente hoteles en un rango de precio adecuado. Para estimar los precios de los hoteles se tomó una ventana de dos semanas hacia atrás a partir de la fecha en que se comenzó la construcción formal de la base (20150603-20150617). La idea es simular el comportamiento normal: en la práctica se puede estimar precios recientes de hoteles para tomar en consideración a la hora de recomendar. Es común que los hoteles de baja demanda no tengan ninguna reserva en las últimas dos semanas. Sin embargo, para incluir en el análisis una cantidad máxima de hoteles, en los casos en lo que no había reservas recientes se estimó los precios con un promedio de dos años (hay algunos hoteles que no aparecen en un mismo año), desde 20130618 hasta 20150617.
+
+
+Geolocalización y comentarios
+-------------------------------
+
+El *query* para obtener la geolocalización es muy simples y consiste en unir la base de *Hoteles* con la de *Ciudades*, *Estados* y *Paises* para tener la información completa además de las claves. Para los comentarios únicamente se debe sumarizar la tabla de comentarios por hotel (*Matrix_Reloaded_Process.dbo.Comentarios_Calificacion_Hotel*).
+
+
+Categorías
+-------------------------------
+
+Después de los análisis iniciales se llegó a la conclusión de que comparar servicio a servicio era demasiado volátil y no daba la información adecuada. Uno de los problemas es que no comparaba servicios similares. Para solucionar esto se agrupó los servicios en categorías mediante un análisis de aglomerados asistido manualmente. No se descarta la posibilidad de hacerlo automáticamente en el futuro, aunque probablemente los grupos perderian interpretabilidad. El proceso está descrito con más detalle en la documentación del proyecto. A continuación presentamos los servicios incluidos en cada categoría:
+
+|Categoria        |Servicios                                                                                   |
+|:----------------|:-------------------------------------------------------------------------------------------|
+|BEACH            |BCLUB, BEACH, PALAPAS                                                                       |
+|BEAUTY           |BEAUTY, BOUTIQUE                                                                            |
+|BUSINESS         |BUSSINES, CALLS, CONVENTI, MEETING                                                          |
+|CONVENIENCE      |ATM, CASACAMB, CONCIER, DRYCLEAN, GIFT, ICEMACH, JEWELRY, LAUNDRY, PARKING, RSERV, TRANSPOR |
+|ENTERTAINMENT    |BAR, CASIN, DISCO, SHOW, THEATRE                                                            |
+|FITNESS          |GYM, NONSMOK, PILATES, YOGA                                                                 |
+|HANDICAPPED      |HANDIC                                                                                      |
+|HOTELFEATURES    |BREAKFAS, COFFE, ELEVADOR, GRILL, INTERNET, POOL, RESTAUR, SPECFEAT, WIREINTE               |
+|INDOORACTIVITIES |BILLIARD, PINGPONG, TABLEGAM                                                                |
+|KIDS             |BABYSITT, KIDS, PLAYGROU, PLAYROOM                                                          |
+|OUTDOORSPORTS    |BASKETB, BICYCLE, FUTBALL, GOLF, HORSERID, SQUASH, TENNIS, VOLEI, VOLLLEYB                  |
+|PETFRIENDLY      |PETFRIEN                                                                                    |
+|RELAX            |JACUZZI, MASSAGE, SAUNA, SPA, STEAMR, TEMAZC, WEDDING                                       |
+|ROOMFEATURES     |BALCONY, HABCON, MINI, SAFEDEP                                                              |
+|WATERSPORTS      |FISHING, KAYAK, SAILING, SCUBA, SCUBDIV, SNORKEL, WAVERUN, WINDSU                           |
+
+
+Juntando todo
+-------------------------------
+
+Dado que todas las tablas resultantes de las secciones anteriores tienen como clave al hotel, basta con unirlas para tener toda la información en una sola tabla.
+
+
+
+
+
+
+

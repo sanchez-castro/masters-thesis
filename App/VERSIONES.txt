@@ -1,0 +1,5 @@
+
+v9)
+
+	* Agregamos hoteles en Argentina y Brasil
+	* Ahora el directorio de trabajo no es la carpeta de la App, sino la principal. Así no habrá que cambiarlas con las versiones.
