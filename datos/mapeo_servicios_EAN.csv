@@ -1,0 +1,476 @@
+Clav_ServicioEAN,AttributeID,LanguageCode,AttributeDesc,Clav_Servicio
+1,1,en_US,Air conditioning,AIREACO
+2,3,en_US,Bar/lounge,BAR
+3,6,en_US,Babysitting or childcare,BABYSITT
+4,8,en_US,Elevator/lift,ELEVADOR
+5,9,en_US,Fitness facilities,GYM
+6,10,en_US,Airport transportation (complimentary),TRANSPOR
+7,14,en_US,Swimming pool - indoor,POOL
+8,19,en_US,Restaurant,RESTAUR
+9,20,en_US,Room service (limited hours),RSERV
+10,24,en_US,Swimming pool - outdoor,POOL
+11,26,en_US,Television,TV
+12,28,en_US,Valet parking,PARKING
+13,31,en_US,Caters to singles,IGNORE
+14,32,en_US,Caters to couples,IGNORE
+15,33,en_US,Caters to seniors,IGNORE
+16,36,en_US,Caters to families,IGNORE
+17,37,en_US,Caters to groups,IGNORE
+18,38,en_US,Supervised childcare/activities,BABYSITT
+19,40,en_US,Hair salon,BEAUTY
+20,41,en_US,ATM/banking,ATM
+21,43,en_US,Concierge services,CONCIER
+22,44,en_US,Gift shops or newsstand,GIFT
+23,45,en_US,Shopping on site,GIFT
+24,51,en_US,Pets allowed,PETFRIEN
+25,52,en_US,Total number of rooms - ,IGNORE
+26,54,en_US,Number of floors - ,IGNORE
+27,55,en_US,Number of buildings/towers - ,IGNORE
+28,56,en_US,Airport transportation (surcharge),TRANSPOR
+29,57,en_US,Caters to women only,IGNORE
+30,58,en_US,Caters to men only,IGNORE
+31,81,en_US,Multiple large conference rooms,MEETING
+32,82,en_US,Event catering,CONVENTI
+33,83,en_US,Audiovisual equipment,CONVENTI
+34,84,en_US,Cell phone/mobile rental,CALLS
+35,91,en_US,Secretarial services,BUSSINES
+36,92,en_US,Translation services,BUSSINES
+37,121,en_US,Wheelchair accessible,HANDIC
+38,122,en_US,VCR,DVD
+39,127,en_US,Wake-up calls,WAKEUP
+40,128,en_US,Complimentary newspaper,SPECFEAT
+41,129,en_US,Cooking facilities,SPECFEAT
+42,130,en_US,Refrigerator,MINIFRID
+43,131,en_US,Minibar,MINIFRID
+44,132,en_US,Coffee/tea maker,COFFE
+45,133,en_US,Daily housekeeping,ZIGNORE
+46,134,en_US,Extra towels/bedding,COMFORTFEATURES
+47,135,en_US,Hypo-allergenic bedding available,COMFORTFEATURES
+48,136,en_US,Phone,TELEP
+49,137,en_US,Multi-line phone,TELEP
+50,139,en_US,Free local calls,CALLS
+51,140,en_US,Fax machine,TELEP
+52,141,en_US,Private bathroom,ZIGNORE
+53,142,en_US,Bathrobes,BATHROOMFEATURES
+54,143,en_US,Complimentary toiletries,BATHROOMFEATURES
+55,144,en_US,Hair dryer,BATHROOMFEATURES
+56,145,en_US,Iron/ironing board,ZIGNORE
+57,146,en_US,In-room safe,SAFEDEP
+58,147,en_US,Fireplace,HEAT
+59,148,en_US,Jetted bathtub,RELAX
+60,171,en_US,American Express,ZIGNORE
+61,177,en_US,Carte Blanche,ZIGNORE
+62,179,en_US,Diners Club,ZIGNORE
+63,180,en_US,Discover,ZIGNORE
+64,183,en_US,JCB International,ZIGNORE
+65,184,en_US,MasterCard,ZIGNORE
+66,189,en_US,Visa,ZIGNORE
+67,190,en_US,Cash not accepted,ZIGNORE
+68,200,en_US,Business services,BUSSINES
+69,201,en_US,Computer rental,BUSSINES
+70,306,en_US,Suitable for children,KIDS
+71,312,en_US,Kitchenette,COOKING
+72,316,en_US,Air-conditioned public areas,SPECFEAT
+73,317,en_US,Fireplace in lobby,SPECFEAT
+74,318,en_US,Balcony,BALCONY
+75,320,en_US,Patio,BALCONY
+76,321,en_US,Barbecue grill(s),GRILL
+77,322,en_US,Yard,BALCONY
+78,323,en_US,Parking (surcharge),PARKING
+79,324,en_US,Coffee/tea in lobby,COFFE
+80,325,en_US,Microwave in lobby,SPECFEAT
+81,331,en_US,Ceiling fan,AIREACO
+82,335,en_US,CD player,MEDIA
+83,340,en_US,Washer/dryer,BATHROOMFEATURES
+84,341,en_US,Tour assistance,TOURHELP
+85,354,en_US,Ski storage,SKI
+86,361,en_US,Breakfast available (surcharge),BREAKFAS
+87,369,en_US,Laundry facilities,LAUNDRY
+88,371,en_US,Spa tub,JACUZZI
+89,372,en_US,Television in lobby,ZIGNORE
+90,375,en_US,Arcade/game room,TABLEGAME
+91,378,en_US,Garden,ZIGNORE
+92,385,en_US,Library,MEDIA
+93,388,en_US,Lanai,ZIGNORE
+94,389,en_US,Video library,MEDIA
+95,393,en_US,Clubhouse,CLUB
+96,394,en_US,Piano,LIVEMUSIC
+97,397,en_US,Pool table,BILLIARD
+98,399,en_US,Espresso maker,COFFE
+99,400,en_US,Poolside bar,POOLBAR
+100,2000,en_US,Swim-up bar,POOLBAR
+101,2001,en_US,Free breakfast,BREAKFAST_INCLUDED
+102,2002,en_US,Currency exchange,CASACAMB
+103,2004,en_US,Coffee shop or café,COFFE
+104,2005,en_US,Exhibit space,ZIGNORE
+105,2007,en_US,Grocery store,GIFT
+106,2008,en_US,Health club,SPA
+107,2010,en_US,Nightclub,DISCO
+108,2011,en_US,Free parking,PARKING
+109,2012,en_US,Parking nearby,PARKING
+110,2013,en_US,Self parking,PARKING
+111,2014,en_US,Swimming pool - children's,POOL
+112,2015,en_US,Room service (24 hours),RSERV
+113,2016,en_US,Safe-deposit box at front desk,SAFEDEP
+114,2017,en_US,Spa services on site,SPA
+115,2018,en_US,Shoe shine,ZIGNORE
+116,2019,en_US,Check-in time starts at,ZIGNORE
+117,2020,en_US,Check-out time is,ZIGNORE
+118,2022,en_US,Resort fee charged at hotel/condo,ZIGNORE
+119,2024,en_US,Clock radio,WAKEUP
+120,2025,en_US,Designer toiletries,BATHROOMFEATURES
+121,2026,en_US,Desk,ZIGNORE
+122,2027,en_US,DVD/VCR,DVD
+123,2028,en_US,Video-game console,DVD
+124,2030,en_US,Climate control,AIREACO
+125,2031,en_US,Complimentary weekday newspaper,NEWSPAPER
+126,2032,en_US,Patio,BALCONY
+127,2034,en_US,Premium bedding,COMFORTFEATURES
+128,2035,en_US,Second bathroom,ZIGNORE
+129,2036,en_US,Shared bathroom,ZIGNORE
+130,2037,en_US,Separate sitting area,ZIGNORE
+131,2038,en_US,Sofa bed,ZIGNORE
+132,2039,en_US,Pay movies,TV
+133,2040,en_US,Voice mail,TELEP
+134,2041,en_US,Window opens,ZIGNORE
+135,2043,en_US,Multilingual staff,BUSSINES
+136,2044,en_US,Rollaway/extra beds available,COMFORTFEATURES
+137,2045,en_US,Cribs/infant beds available,PLAYROOM
+138,2047,en_US,Complimentary newspapers in lobby,NEWSPAPER
+139,2048,en_US,Use of nearby fitness center (complimentary),GYM
+140,2049,en_US,Picnic area,PICNIC
+141,2050,en_US,Pets not allowed,ZIGNORE
+142,2052,en_US,Trouser press,ZIGNORE
+143,2053,en_US,Room service,RSERV
+144,2054,en_US,Soundproofed rooms,ZIGNORE
+145,2055,en_US,Iron/ironing board (on request),LAUNDRY
+146,2056,en_US,Turndown service,ZIGNORE
+147,2057,en_US,Complimentary bottled water,ZIGNORE
+148,2058,en_US,Microwave,COOKING
+149,2059,en_US,"Cookware, dishware, and utensils",COOKING
+150,2061,en_US,Bathroom phone,TELEP
+151,2062,en_US,Bathroom TV,TV
+152,2063,en_US,24-hour front desk,ZIGNORE
+153,2064,en_US,Front desk (limited hours),ZIGNORE
+154,2065,en_US,Business center,CONVENTI
+155,2066,en_US,Porter/bellhop,ZIGNORE
+156,2067,en_US,Express check-out,ZIGNORE
+157,2068,en_US,Doorman/doorwoman,ZIGNORE
+158,2069,en_US,Security guard,ZIGNORE
+159,2070,en_US,Dry cleaning/laundry service,LAUNDRY
+160,2071,en_US,Banquet facilities,CONVENTI
+161,2072,en_US,Limo or Town Car service available,TRANSPOR
+162,2073,en_US,Medical assistance available,MEDIC
+163,2075,en_US,Direct-dial phone,CALLS
+164,2076,en_US,Welcome amenities,ZIGNORE
+165,2080,en_US,On private beach,BEACH
+166,2081,en_US,Premium TV channels,TV
+167,2082,en_US,Ski-in/ski-out access,SKI
+168,2086,en_US,DVD player,DVD
+169,2112,en_US,Casino,CASIN
+170,2119,en_US,Ballroom(s),DISCO
+171,2120,en_US,Beauty services,BEAUTY
+172,2121,en_US,Concierge desk,CONCIER
+173,2122,en_US,Elevator/lift attendant,ELEVADOR
+174,2123,en_US,Full-service health spa,SPA
+175,2124,en_US,Floor butler,CONCIER
+176,2128,en_US,Marina on site,MARINA
+177,2129,en_US,Massage - spa treatment room(s),MASSAGE
+178,2130,en_US,Microwave (on request),COOKING
+179,2131,en_US,Multiple small meeting rooms,MEETING
+180,2132,en_US,Parking garage,PARKING
+181,2133,en_US,Secure parking,PARKING
+182,2134,en_US,Steam room,STEAMR
+183,2135,en_US,Sauna,SAUNA
+184,2136,en_US,Ski shuttle,SKI
+185,2137,en_US,Smoke-free property,NONSMOK
+186,2138,en_US,Swimming pool - outdoor seasonal,POOL
+187,2139,en_US,Technology helpdesk,ZIGNORE
+188,2141,en_US,Billiards,BILLIARD
+189,2148,en_US,Access via exterior corridors,ZIGNORE
+190,2149,en_US,Bidet,BATHROOMFEATURES
+191,2150,en_US,Blackout drapes/curtains,COMFORTFEATURES
+192,2151,en_US,In-room childcare (surcharge),BABYSITT
+193,2152,en_US,Electronic check-out,CHECKINOUTFEAT
+194,2153,en_US,Electronic/magnetic keys,ZIGNORE
+195,2154,en_US,Extra towels/bedding in room,COMFORTFEATURES
+196,2155,en_US,Handheld showerhead,BATHROOMFEATURES
+197,2158,en_US,Kitchen,COOKING
+198,2159,en_US,Makeup/shaving mirror,ZIGNORE
+199,2160,en_US,In-room massage available,MASSAGE
+200,2161,en_US,Sewing kit,ZIGNORE
+201,2162,en_US,Slippers,COMFORTFEATURES
+202,2163,en_US,Umbrellas,ZIGNORE
+203,2166,en_US,Shower only,ZIGNORE
+204,2167,en_US,Wedding services,WEDDING
+205,2168,en_US,Bathtub only,ZIGNORE
+206,2170,en_US,Separate bathtub and shower,BATHROOMFEATURES
+207,2177,en_US,Express check-in,CHECKINOUTFEAT
+208,2178,en_US,Use of nearby fitness center (discount),GYM
+209,2179,en_US,Bathroom scale,BATHROOMFEATURES
+210,2180,en_US,Hair dryer (on request),BATHROOMFEATURES
+211,2181,en_US,Refrigerator (on request),MINIFRID
+212,2182,en_US,Remote lighting/drapery/curtain control,COMFORTFEATURES
+213,2183,en_US,Shower/tub combination,BATHROOMFEATURES
+214,2184,en_US,Turndown service (on request),ZIGNORE
+215,2186,en_US,Children's club,PLAYGROU
+216,2189,en_US,Local Expert Concierge,CONCIER
+217,2348,en_US,Technology support staff,ZIGNORE
+218,2349,en_US,Designated smoking areas,NONSMOK
+219,2351,en_US,Music library,SPECFEAT
+220,2352,en_US,Beach/pool umbrellas,POOLUMBRELLA
+221,2353,en_US,Airport transportation,TRANSPOR
+222,2361,en_US,Creche (nursery),PLAYROOM
+223,2365,en_US,Half board rates available,ZIGNORE
+224,2366,en_US,Full board rates available,ZIGNORE
+225,2368,en_US,Ergonomic chair,ZIGNORE
+226,2370,en_US,Separate dining area,ZIGNORE
+227,2371,en_US,Shared bathroom with sink in room,ZIGNORE
+228,2372,en_US,Double sink,ZIGNORE
+229,2373,en_US,Cordless phone,TELEP
+230,2374,en_US,Speakerphone,TELEP
+231,2377,en_US,Blender,COOKING
+232,2378,en_US,Dishwasher,COOKING
+233,2379,en_US,Full-sized refrigerator/freezer,MINIFRID
+234,2380,en_US,"Kitchen linens (dishtowels, sponges, etc.)",COOKING
+235,2381,en_US,Stovetop,COOKING
+236,2384,en_US,On-site medical assistance available,MEDIC
+237,2385,en_US,Billiards or pool table,BILLIARD
+238,2386,en_US,Grocery/convenience store,GIFT
+239,2387,en_US,Tours/ticket assistance,TOURHELP
+240,2388,en_US,Media library,MEDIA
+241,2389,en_US,In-room safe (laptop compatible),SAFEDEP
+242,2390,en_US,Free Wi-Fi,INTERNET
+243,2391,en_US,Wireless Internet access - surcharge,INTERNET
+244,2392,en_US,Free wired high-speed Internet,WIREINTE
+245,2393,en_US,Wired (high-speed) Internet access - surcharge,WIREINTE
+246,2394,en_US,Dial-up Internet access - complimentary,WIREINTE
+247,2395,en_US,Dial-up Internet access - surcharge,WIREINTE
+248,2396,en_US,Satellite TV service,TV
+249,2397,en_US,Digital TV service,TV
+250,2398,en_US,Cable TV service,TV
+251,2399,en_US,Flat-panel TV,TV
+252,2400,en_US,Standard TV service,TV
+253,2402,en_US,HDTV,TV
+254,2403,en_US,Free Wi-Fi,INTERNET
+255,2404,en_US,Wireless Internet access (surcharge),INTERNET
+256,2405,en_US,Free wired high-speed Internet,WIREINTE
+257,2406,en_US,Wired high-speed Internet access (surcharge),WIREINTE
+258,2407,en_US,Dial-up Internet access (complimentary),WIREINTE
+259,2408,en_US,Dial-up Internet access (surcharge),WIREINTE
+260,2409,en_US,TV Internet access (complimentary),TV
+261,2410,en_US,TV Internet access (surcharge),TV
+262,2416,en_US,Train station pickup (complimentary),TRANSPOR
+263,2515,en_US,Year Built,ZIGNORE
+264,2528,en_US,Area shuttle (complimentary),TRANSPOR
+265,2529,en_US,Area shuttle (surcharge),TRANSPOR
+266,2537,en_US,Number of restaurants - ,RESTAUR
+267,2538,en_US,24-hour business center,BUSSINES
+268,2539,en_US,Meeting facilities size (feet) - ,MEETING
+269,2544,en_US,No rollaway/extra beds available,ZIGNORE
+270,2545,en_US,No cribs (infant beds) available,ZIGNORE
+271,2548,en_US,Early departure fee charged,ZIGNORE
+272,2549,en_US,No elevators,ZIGNORE
+273,2551,en_US,Minimum check-in age is,ZIGNORE
+274,2553,en_US,Free guest parking during stay,PARKING
+275,2554,en_US,Parking height restrictions apply,PARKING
+276,2557,en_US,Cash Deposit Required,ZIGNORE
+277,2559,en_US,Down comforter,COMFORTFEATURES
+278,2560,en_US,Down blanket,COMFORTFEATURES
+279,2561,en_US,Egyptian-cotton sheets,COMFORTFEATURES
+280,2562,en_US,ESPN,MEDIA
+281,2563,en_US,First-run movies,MEDIA
+282,2564,en_US,Free movie channels,MEDIA
+283,2565,en_US,Frette Italian sheets,COMFORTFEATURES
+284,2566,en_US,HBO,MEDIA
+285,2567,en_US,Individually furnished,ZIGNORE
+286,2568,en_US,Individually decorated,ZIGNORE
+287,2569,en_US,Memory foam mattress,COMFORTFEATURES
+288,2571,en_US,Pillowtop mattress,COMFORTFEATURES
+289,2572,en_US,Pillow menu,COMFORTFEATURES
+290,2573,en_US,Sleep Number by Select Comfort mattress,COMFORTFEATURES
+291,2574,en_US,Signature bedding,COMFORTFEATURES
+292,2575,en_US,LCD TV,TV
+293,2576,en_US,Plasma TV,TV
+294,2577,en_US,Tempur-Pedic mattress,COMFORTFEATURES
+295,2581,en_US,Water view,ZIGNORE
+296,2582,en_US,City view,ZIGNORE
+297,2583,en_US,Sea view,ZIGNORE
+298,2584,en_US,Lake view,ZIGNORE
+299,2585,en_US,River view,ZIGNORE
+300,2586,en_US,Mountain view,ZIGNORE
+301,2587,en_US,Desert view,ZIGNORE
+302,2588,en_US,Ocean view,ZIGNORE
+303,2589,en_US,Courtyard view,ZIGNORE
+304,2590,en_US,Garden view,ZIGNORE
+305,2591,en_US,Pool view,ZIGNORE
+306,2592,en_US,Meeting facilities size (meters) - ,ZIGNORE
+307,2593,en_US,Number of meeting/conference rooms - ,ZIGNORE
+308,2594,en_US,Complimentary reception,ZIGNORE
+309,2617,en_US,Golf course on site,GOLF
+310,2618,en_US,Tennis on site,TENNIS
+311,2644,en_US,Pet maximum weight in kg is,PETFRIEN
+312,2646,en_US,Pet maximum weight in lb is,PETFRIEN
+313,2783,en_US,"RV, bus, truck parking",PARKING
+314,2789,en_US,Room size (square feet),ZIGNORE
+315,2790,en_US,Room size (square meters),ZIGNORE
+316,2806,en_US,MP3 docking station,MEDIA
+317,2807,en_US,iPod docking station,MEDIA
+318,2809,en_US,Pet policy - dogs only,PETFRIEN
+319,2810,en_US,Pet policy - dogs and cats only,PETFRIEN
+320,2811,en_US,Maximum number of pets per room,PETFRIEN
+321,2817,en_US,Lazy river,WATERPARK
+322,2818,en_US,Waterslide,WATERPARK
+323,2819,en_US,Water park,WATERPARK
+324,2820,en_US,Number of indoor pools - ,ZIGNORE
+325,2821,en_US,Number of outdoor pools - ,ZIGNORE
+326,2822,en_US,Number of spa tubs - ,JACUZZI
+327,2854,en_US,Partially open bathroom,ZIGNORE
+328,2859,en_US,Private pool,POOL
+329,2860,en_US,Private plunge pool,POOL
+330,2940,en_US,Minimum guest age is,ZIGNORE
+331,2942,en_US,Casino shuttle (complimentary),CASIN
+332,2943,en_US,Casino shuttle (surcharge),CASIN
+333,2944,en_US,Cruise terminal shuttle (complimentary),TRANSPOR
+334,2945,en_US,Cruise terminal shuttle (surcharge),TRANSPOR
+335,2946,en_US,Ferry terminal shuttle (complimentary),TRANSPOR
+336,2947,en_US,Ferry terminal shuttle (surcharge),TRANSPOR
+337,2948,en_US,Shopping center shuttle (complimentary),TRANSPOR
+338,2949,en_US,Shopping center shuttle (surcharge),TRANSPOR
+339,2950,en_US,Theme park shuttle (complimentary),TRANSPOR
+340,2951,en_US,Theme park shuttle (surcharge),TRANSPOR
+341,3266,en_US,Noise-free rooms not guaranteed,ZIGNORE
+342,3268,en_US,Smoke-free property (fines apply),NONSMOK
+343,3269,en_US,Designated smoking areas (fines apply),NONSMOK
+344,3357,en_US,Caters to adults only,ZIGNORE
+345,3359,en_US,Golf course view,ZIGNORE
+346,3360,en_US,Partial ocean view,ZIGNORE
+347,3361,en_US,Beach view,ZIGNORE
+348,3372,en_US,Conference center,MEETING
+349,3373,en_US,Indoor tennis court,TENNIS
+350,3374,en_US,Indoor tennis courts - ,TENNIS
+351,3375,en_US,Outdoor tennis court,TENNIS
+352,3376,en_US,Outdoor tennis courts,TENNIS
+353,3500,en_US,Snack bar/deli,RESTAUR
+354,3501,en_US,Deep soaking bathtub,BATHROOMFEATURES
+355,3502,en_US,Rainfall showerhead,BATHROOMFEATURES
+356,3547,en_US,Breakfast service,BREAKFAS
+357,3616,en_US,Weekly housekeeping provided,ZIGNORE
+358,3637,en_US,One meeting/conference room,MEETING
+359,3726,en_US,Private bathroom (not in room),ZIGNORE
+360,3728,en_US,Parking nearby (surcharge),PARKING
+361,3761,en_US,Free parking (limited spaces),PARKING
+362,3762,en_US,Parking limited (surcharge),PARKING
+363,3763,en_US,Check-in time ends at,ZIGNORE
+364,3777,en_US,Beach bar,BCLUB
+365,3779,en_US,Furnished balcony,ZIGNORE
+366,3856,en_US,In-room computer,ZIGNORE
+367,3857,en_US,Separate living room,ZIGNORE
+368,3858,en_US,Bathtub or shower,BATHROOMFEATURES
+369,3859,en_US,Private spa tub,JACUZZI
+370,3860,en_US,Internet point,INTERNET
+371,3861,en_US,Free self parking,PARKING
+372,3862,en_US,Self parking (surcharge),PARKING
+373,3863,en_US,Free valet parking,PARKING
+374,3864,en_US,Valet parking (surcharge),PARKING
+375,3865,en_US,Computer station,ZIGNORE
+376,3911,en_US,Sofa bed size,ZIGNORE
+377,3912,en_US,Rooftop terrace,BALCONY
+378,3913,en_US,Number of bars/lounges,ZIGNORE
+379,3914,en_US,Number of poolside bars - ,ZIGNORE
+380,3915,en_US,Number of beach bars - ,ZIGNORE
+381,3916,en_US,Number of swim-up bars - ,ZIGNORE
+382,3922,en_US,Bathrobes (on request),BATHROOMFEATURES
+383,3923,en_US,Free long-distance calls,CALLS
+384,3924,en_US,Free international calls,CALLS
+385,3929,en_US,Number of coffee shops/cafes - ,COFFE
+386,3984,en_US,Housekeeping - weekdays only,ZIGNORE
+387,3985,en_US,Housekeeping - weekends only,ZIGNORE
+388,3986,en_US,Housekeeping - 6 days per week,ZIGNORE
+389,3987,en_US,Housekeeping - 5 days per week,ZIGNORE
+390,3988,en_US,Housekeeping - 4 days per week,ZIGNORE
+391,3989,en_US,Housekeeping - 3 days per week,ZIGNORE
+392,3990,en_US,Housekeeping - 2 days per week,ZIGNORE
+393,4003,en_US,Luggage storage,SPECFEAT
+394,4004,en_US,Airport transportation - pickup (complimentary),TRANSPOR
+395,4005,en_US,Airport transportation - drop-off (complimentary),TRANSPOR
+396,4006,en_US,Airport transportation - pickup (surcharge),TRANSPOR
+397,4007,en_US,Airport transportation - drop-off (surcharge),TRANSPOR
+398,4008,en_US,Housekeeping - once per stay,ZIGNORE
+399,4010,en_US,Train station pickup (surcharge),TRANSPOR
+400,4025,en_US,Winery attached,BAR
+401,4111,en_US,Complimentary grocery shopping service,GIFT
+402,4118,en_US,Balcony or patio,BALCONY
+403,4174,en_US,Water park access (complimentary),WATERPARK
+404,4175,en_US,Water park access (surcharge),WATERPARK
+405,4293,en_US,Shared accommodations,ZIGNORE
+406,4296,en_US,Furnished balcony or patio,BALCONY
+407,4297,en_US,Furnished lanai,BALCONY
+408,4298,en_US,Furnished patio,BALCONY
+409,4420,en_US,Connecting / adjoining rooms available,HABCON
+410,4421,en_US,Ski shuttle (complimentary),SKI
+411,4422,en_US,Ski shuttle (surcharge),SKI
+412,4423,en_US,Ski passes available,SKI
+413,4428,en_US,Beach shuttle (complimentary),BEACH
+414,4429,en_US,Beach shuttle (surcharge),BEACH
+415,4431,en_US,Private beach - direct access,BEACH
+416,4432,en_US,Beach umbrellas,BEACHUMBRELLA
+417,4433,en_US,Beach cabanas (complimentary),PALAPAS
+418,4434,en_US,Beach cabanas (surcharge),PALAPAS
+419,4435,en_US,Pool cabanas (surcharge),POOL
+420,4436,en_US,Pool cabanas (complimentary),POOL
+421,4437,en_US,Beach sun loungers,BEACH
+422,4438,en_US,Pool sun loungers,BEACH
+423,4440,en_US,Free covered parking,PARKING
+424,4441,en_US,Covered parking (surcharge),PARKING
+425,4442,en_US,Free garage parking,PARKING
+426,4443,en_US,Free outdoor parking,PARKING
+427,4444,en_US,Outdoor parking (surcharge),PARKING
+428,4445,en_US,Free secure covered parking ,PARKING
+429,4446,en_US,Secure covered parking (surcharge),PARKING
+430,4447,en_US,Free secure outdoor parking,PARKING
+431,4448,en_US,Secure outdoor parking (surcharge),PARKING
+432,4449,en_US,Free secure parking,PARKING
+433,4450,en_US,Free long-term parking,PARKING
+434,4451,en_US,Long-term parking (surcharge),PARKING
+435,4452,en_US,"Free RV, bus, truck parking",PARKING
+436,4453,en_US,"RV, bus, truck parking (surcharge)",PARKING
+437,4454,en_US,Free parking nearby,PARKING
+438,4455,en_US,Offsite parking discounted rates available,PARKING
+439,4456,en_US,Offsite parking reservations required,PARKING
+440,4457,en_US,Free on-street parking,PARKING
+441,4458,en_US,Street parking (metered),PARKING
+442,4459,en_US,Garage parking (surcharge),PARKING
+443,4460,en_US,Secure parking (surcharge),PARKING
+444,4467,en_US,Beach towels,BEACH
+445,4468,en_US,24-hour fitness facilities,GYM
+446,4506,en_US,Debit cards not accepted,ZIGNORE
+447,4514,en_US,Terrace,BALCONY
+448,4695,en_US,Babysitting or childcare (free),BABYSITT
+449,4696,en_US,Babysitting or childcare (surcharge),BABYSITT
+450,4697,en_US,Children's club (free),PLAYGROU
+451,4698,en_US,Children's club (surcharge),PLAYGROU
+452,4699,en_US,Supervised childcare/activities (free),BABYSITT
+453,4700,en_US,Supervised childcare/activities (surcharge),BABYSITT
+454,4944,en_US,In-room playpen,PLAYROOM
+455,4947,en_US,Hydromassage showerhead,BATHROOMFEATURES
+456,4950,en_US,Cribs/infant beds (surcharge),KIDS
+457,4951,en_US,Cribs/infant beds (complimentary),KIDS
+458,4954,en_US,Separate bedroom,HABCON
+459,5013,en_US,Spring water bathtub,BATHROOMFEATURES
+460,5015,en_US,Private beach nearby,BEACH
+461,5052,en_US,"Please note, some room types at this property are not available when booking a stay with children.",ZIGNORE
+462,5054,en_US,24-hour health club,SPA
+463,5058,en_US,Only service dogs are allowed,ZIGNORE
+464,5059,en_US,Service animals exempt from fees/restrictions,PETFRIEN
+465,5088,en_US,Debit cards only,ZIGNORE
+466,5093,en_US,Shared/communal kitchen,COOKING
+467,5105,en_US,iPad,MEDIA
+468,5106,en_US,Tablet computer,MEDIA
+469,5109,en_US,Hotel Registry Number -,ZIGNORE
+470,5115,en_US,24-hour check-in,ZIGNORE
+471,5178,en_US,Day bed,ZIGNORE
+472,6139,en_US,Compact refrigerator,MINIFRID
+473,6142,en_US,"Minibar (stocked, free items)",MINIFRID
+474,6143,en_US,"Minibar (stocked, some free items)",MINIFRID
+475,6147,en_US,LED TV,TV
