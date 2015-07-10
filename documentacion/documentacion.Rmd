@@ -48,7 +48,7 @@ Porcentaje de entradas distintas de cero de la matriz servicios-hoteles: `r nrow
 
 Histograma de precios por noche de los hoteles, separados por disponibilidad de la información:
 
-```{r, echo=FALSE, fig.width=10}
+```{r, echo=FALSE, message=FALSE, fig.width=10}
 qplot(Precio_Dlls, data=filter(hoteles, !is.na(Precio_Dlls)), geom='bar') +
   facet_wrap(~ Date_Range) +
   labs(title = 'Histograma de precios', x = 'Precio en dólares', y = 'Hoteles')
@@ -68,7 +68,7 @@ Se caracterizó cada hotel principalmente con los servicios que ofrece. Inicialm
 Se probaron diversas métricas para comparar los hoteles, que están enlistados a continuación junto con sus ventajas y desventajas:
 
 * **Jaccard:** La similitud de Jaccard entre dos conjuntos $A,B$ está definida por $sim_J(A,B) = \frac{A \cap B}{A \cup B} \in [0,1]$ y equivale a la probabilidad de que al tomar un elemento $x$ al azar de la colección de los objetos contenidos en A ó en B, $x$ esté tanto en $A$ como en $B$. Es fácil ver que $dist_J(A,B) = 1 - sim_J(A,B)$ tiene las propiedades de una distancia. En el contexto de la recomendación de hoteles, se puede pensar en que cada hotel es un conjunto con los servicios que tiene.
-    + Fórmula: $sim(h_i, h_j) = \frac{H_i^TH_j}{|\{k | H_{ki} = H_{kj} = 0\}|}$.
+    + Fórmula: $sim_J(h_i, h_j) = \frac{H_i^TH_j}{|\{k | H_{ki} = H_{kj} = 0\}|}$.
     + Pros: La distancia de Jaccard tiene varias ventajas. Por ejemplo, es muy fácil de interpretar y de calcular.
     + Contras: Una caracteristica que tiene es que penaliza bastante fuertemente los conjuntos con muchos elementos no en común. Esto es, incluso si $A \subset B$ ó si casi todo $A$ está contenido en $B$, si $B$ es mucho mayor que $A$, entonces la similitud será baja. El problema de esto en el contexto de hoteles es que a un cliente no le importará mucho que un hotel tenga más de lo que había pedido, siempre y cuando el perfil, el precio y el lugar sean apropiados.
 * **Coseno:** La distancia coseno normalizada entre dos vectores $x,y$ está definida por el mínimo ángulo entre ellos, dividido entre $180^o$, es decir $d_{cos}(x,y) = \frac{1}{180^o} arccos\left(\frac{x^Ty}{\|x\|\|y\|}\right)$. En este caso se puede tomar los vectores binarios $H_j$ y compararlos con esta métrica.
@@ -134,9 +134,26 @@ Para este caso se introdujo la _divergencia_, otra distancia que proporciona inf
 
 * La similitud de Jaccard ya no tiene sentido.
 * La distancia coseno se aplica sobre $C_j$ en lugar de $H_j$, pero es la misma fórmula.
-* La distancia absoluta se debe calcular con la fórmula general (que es equivalente a la anterior cuando los vectores son binarios, siempre y cuando no se normalice). La normalización ya no tiene sentido. La fórmula queda como: $d_{abs}(h_i, h_j) = \|C_{ki} - C_{kj}\|_1 = \sum_k |C_{ki} - C_{kj}|$.
-* De forma similar a la distancia absoluta, la pseudodistancia _hinge_ tiene un cambio en la fórmula que es equivalente cuando los vectores son binarios: $hinge(h_i, h_j) = \sum_k max\{C_{ki} - C_{kj}, 0\}$, es decir penalizamos únicamente los casos en los que $h_i$ tiene más servicios en una categoría que $h_j$.
-* **Divergencia:** Se descubrió que si se normaliza los vectores $H_i$ dividiéndolos entre la suma de sus elementos, entonces se tiene una especie de perfil del hotel, que va más allá del número de servicios que tiene. La distancia absoluta sobre los vectores normalizados se denota _divergencia_ y está dada por $div(x, y) = \frac{1}{2} \sum_k |\frac{x_k}{\sum_j x_j} - \frac{y_k}{\sum_j y_j}|$. Más adelante se explican sus ventajas y las razones detrás de la elección particular de sus partes.
+* La distancia absoluta se debe calcular con la fórmula general (que es equivalente a la anterior cuando los vectores son binarios, siempre y cuando no se normalice). La normalización ya no tiene sentido. La fórmula queda como sigue:
+
+$$
+d_{abs}(h_i, h_j) = \|C_{ki} - C_{kj}\|_1 = \sum_k |C_{ki} - C_{kj}|
+$$
+
+* De forma similar a la distancia absoluta, la pseudodistancia _hinge_ tiene un cambio en la fórmula que es equivalente cuando los vectores son binarios:
+
+$$
+d_h(h_i, h_j) = \sum_k max\{C_{ki} - C_{kj}, 0\},
+$$
+
+es decir penaliza únicamente los casos en los que $h_i$ tiene más servicios en una categoría que $h_j$.
+* **Divergencia:** Se descubrió que si se normaliza los vectores $H_i$ dividiéndolos entre la suma de sus elementos, entonces se tiene una especie de perfil del hotel, que va más allá del número de servicios que tiene. La distancia absoluta sobre los vectores normalizados se denota _divergencia_ y está dada por
+
+$$
+div(x, y) = \frac{1}{2} \sum_k |\frac{x_k}{\sum_j x_j} - \frac{y_k}{\sum_j y_j}|
+$$
+
+Más adelante se explican sus ventajas y las razones detrás de la elección particular de sus partes.
 
 A excepción del caso de Jaccard, todas las métricas se adaptan a las categorías y ahora sí dan una noción de similitud que toma en cuenta lo servicios que son sustitutos entre sí. La divergencia introduce el concepto de perfiles de hotel ignorando la cantidad de servicios disponibles.
 
@@ -155,13 +172,13 @@ Ahora continuación se describe cómo se incorporó cada uno de estos elementos 
 
 ### Precio
 
-Es razonable pensar que dados dos hoteles idénticos, un cliente siempre elegirá el más barato. Es por esto que no se impuso ninguna cota inferior al precio de los hoteles recomendados, _siempre y cuando cumplan los demás criterios_. Sin embargo, puede ser desalentador que las sugerencias contengan hoteles demasiado caros. Por ello el primer parámetro del modelo que hay que ajustar es el porcentaje por encima del precio del hotel en cuestión que se permitirá. Es decir, si llamamos al parámetro $\gamma \in (0, 1)$ y si $p(h_i)$ es el precio por noche reciente (por ejemplo en las últimas dos semanas) del hotel en cuestión, entonces filtramos de entrada a todos los hoteles cuyo precio por noche sea mayor a $(1 + \gamma)*p(h_i)$. Los demás hoteles continúan a las siguientes etapas del filtro.
+Es razonable pensar que dados dos hoteles idénticos, un cliente siempre elegirá el más barato. Es por esto que no se impuso ninguna cota inferior al precio de los hoteles recomendados, _siempre y cuando cumplan los demás criterios_. Sin embargo, puede ser desalentador que las sugerencias contengan hoteles demasiado caros. Por ello, el primer parámetro del modelo que hay que ajustar es el porcentaje por encima del precio del hotel en cuestión que se permitirá. Es decir, si se define un parámetro $\gamma > 0$ y si $p(h_i)$ es el precio por noche promedio en, digamos, el último año o en los últimos dos años del hotel en cuestión, entonces filtramos de entrada a todos los hoteles cuyo precio por noche en dicho periodo sea mayor a $(1 + \gamma)*p(h_i)$. Los demás hoteles continúan a las siguientes etapas del filtro. La razón para usar un precio promedio en un periodo largo es reflejar el nivel "real" de precio de los hoteles en el largo plazo. Más adelante se tratará con el efecto que pueden tener los descuentos de corto plazo.
 
 ### Distancia: filtro estático
 
 Usualmente, cuando se quiere conocer las distancias entre cualesquiera dos individuos de una población, basta almacenar la mitad de la matriz de distancias entre ellos. Es decir, para $n$ individuos, basta guardar $(n^2 - n)/2$ números. Sin embargo, en este caso las pseudo distancias que se utilizaron no son simétricas, por lo que es necesario almacenar toda la matriz (excepto la diagonal), que resulta en $n^2 - n$ elementos. Cuando $n$ es grande, es infactible generar todos ellos, pues se vuelve muy grande la matriz de distancias y además el cálculo tomaría demasiado tiempo. Incluso para $n$ moderada ($n = 100,000$, digamos), el proceso podría tomar muchas horas o hasta días.
 
-El problema con calcular todas las distancias y luego aplicar los filtros es que la gran mayoría de los cálculos se desperdiciarían. Para evitar eso, además del filtro de precio descrito anteriormente se implementó un filtro simple y estático de distancia. La idea es tomar un valor fijo, digamos $w_{outer} \overset{def}{=} 30 km$, y únicamente comparar los hoteles dentro de dicho radio. Al círculo definido por este valor lo denominamos la __cerca exterior__. Los hoteles que cumplen tanto el criterio de precio como el estático de distancia se denominan __hoteles candidatos__.
+El problema con calcular todas las distancias y luego aplicar los filtros es que la gran mayoría de los cálculos se desperdiciarían. Para evitar eso, además del filtro de precio descrito anteriormente se implementó un filtro simple y estático de distancia. La idea es tomar un valor fijo, digamos $r_{outer} \overset{def}{=} 30 km$, y únicamente comparar los hoteles dentro de dicho radio. Al círculo definido por este valor lo denominamos la __cerca exterior__. Los hoteles que cumplen tanto el criterio de precio de largo plazo como el estático de distancia se denominan __candidatos iniciales__.
 
 ### Perfil y servicios
 
@@ -258,10 +275,17 @@ ggplot(aux) +
 
 ```
 
-Es indudable que tanto la divergencia como la distancia _hinge_ proporcionan información. El problema es que la divergencia ignora la calidad del hotel, mientras que la distancia _hinge_ no captura muy bien la filosofía de los hoteles. La solución es combinarlas para tomar todo en cuenta. Para poder hacerlo primero se tuvo que reducir ambas a la misma escala, dividiendo _hinge_ entre el número total de servicios del hotel original para que estuviera entre 0 y 1 igual que la divergencia. Dado que lo que se busca son hoteles similares, es más fácil pensar en similaridades que en distancia, por lo que se usó $h = 1 - hinge$ y $d = 1 - div$, las similaridades correspondientes a _hinge_ ya la divergencia respectivamente, y se combinaron mediante un parámetro $\alpha \in (0, 1)$. De este modo, dado que se buscó el hotel $h_i$, se puede calcular el _score_ de cualquier hotel $h_j$ con la fórmula
+Es indudable que tanto la divergencia como la distancia _hinge_ proporcionan información. El problema es que la divergencia ignora la calidad del hotel, mientras que la distancia _hinge_ no captura muy bien la filosofía de los hoteles. La solución es combinarlas para tomar todo en cuenta. Para poder hacerlo primero se tuvo que reducir ambas a la misma escala, dividiendo _hinge_ entre el número total de servicios del hotel original para que estuviera entre 0 y 1 igual que la divergencia. Dado que lo que se busca son hoteles similares, es más fácil pensar en similaridades que en distancia, por lo que se usaron las similitudes correspondientes al hinge y a la divergencia:
 
 $$
-score(h_i, h_j) = \alpha (1 - div(h_i, h_j)) + (1- \alpha) (1 - hinge(h_i, h_j)/N_{serv})
+sim_{h}(x,y) = 1 - \frac{d_h(x,y)}{N_{serv,x}} \\
+sim_{div}(x,y) = 1 - div(x,y)
+$$
+
+Estas dos medidas de similitud se combinaron en un _score_ mediante un parámetro $\alpha \in (0, 1)$, que por ahora supondremos dado. De este modo, dado que se buscó el hotel $h_i$, se puede calcular el _score_ de cualquier hotel $h_j$ con la siguiente fórmula:
+
+$$
+score(h_i, h_j) = \alpha sim_{div}(h_i, h_j) + (1- \alpha) sim_{h}(h_i, h_j))
 $$
 
 La gráfica siguiente ilustra el efecto de $\alpha$ sobre las recomendaciones en el espacio de las similitudes asociadas a la divergencia (perfil) y a la pseudo distancia _hinge_ (servicios):
@@ -270,11 +294,14 @@ La gráfica siguiente ilustra el efecto de $\alpha$ sobre las recomendaciones en
 
 **Elección de $\alpha$**
 
-El objetivo del _score_ es que los hoteles sean una mejor recomendación conforme mayor sea su _score_. Para reflejar eso hay que elegir $\alpha$ de manera adecuada. Originalmente se había elegido tentativamente $\alpha = 0.5$ con la idea de que no hay razón a priori de favorecer una de las medidas. Sin embargo, un factor que afecta su importancia es la escala. Aunque ambos van de 0 a 1, en general la similitud de perfil tiende a variar menos que la de servicios. Para tomar eso en cuenta se incorporó un Análisis de Componentes Principales para decidir qué tanto convenía mover $\alpha$. Lo que se busca es encontrar la dirección $(\alpha, 1 - \alpha)$ que maximice la discriminación de hoteles. Aplicando ACP a los candidatos que pasan los primeros dos filtros, sobre las variables similitud de perfil (1 - divergencia) y de servicios (1 - _hinge_ normalizada) se obtiene las ponderaciones $a_p$ y $a_s$, las entradas del eigenvector correspondiente a la primera componente principal. Normalizando para que sumen 1, se tiene que
+El objetivo del _score_ es que los hoteles sean una mejor recomendación conforme mayor sea su _score_. Para reflejar eso hay que elegir $\alpha$ de manera adecuada. Originalmente se había elegido tentativamente $\alpha = 0.5$ con la idea de que no hay razón a priori de favorecer una de las medidas. Sin embargo, un factor que afecta su importancia es la escala. Aunque ambos van de 0 a 1, en general la similitud de perfil tiende a variar menos que la de servicios. Para tomar eso en cuenta se incorporó un Análisis de Componentes Principales para decidir qué tanto convenía mover $\alpha$. Lo que se busca es encontrar la dirección $(\alpha, 1 - \alpha)$ que maximice la discriminación de hoteles. Aplicando ACP a los candidatos iniciales, sobre las variables similitud de perfil (1 - divergencia) y de servicios (1 - _hinge_ normalizada) se obtiene las ponderaciones $a_p$ y $a_s$, las entradas del eigenvector correspondiente a la primera componente principal. Normalizando para que sumen 1, se tiene que
 
 $$
-  \alpha = \frac{a_p}{a_p + a_s}
+  \alpha = \frac{a_p}{a_p + a_s} \\
+  1 - \alpha = \frac{a_s}{a_p + a_s}
 $$
+
+La idea de utilizar este criterio es que se quiere una dirección que maximice la discriminación del _score_, y precisamente eso es lo que logra usar ACP. El cálculo de $\alpha$ es bastante estable, por lo que basta hacerlo una vez. Después de los análisis, resultó que la $\alpha$ óptima en este sentido es aproximadamente $1/3$, lo que indica que se le da un peso mayor a los servicios que al perfil.
 
 ### Distancia: criterio dinámico
 
@@ -291,7 +318,12 @@ qplot(x,y,data=x2,size=s,color=col) +
   scale_size_continuous(range = c(3,10), guide=FALSE)
 ```
 
-En este ejemplo, es posible que se ignorarían las opciones buenas debido a que hay hoteles no muy parecidos al original cercanos a él. Con el fin de remediar esta situación, en lugar de buscar dentro de un radio que contenga $n$ hoteles, se tomó un radio dentro del cuál los _scores_ de los hoteles sumen una cantidad fija $w_{inner} \overset{def}{=} n$. Se denomina __cerca interior__ al círculo generado por dicho radio y centrado en el hotel original. Si hay muchos hoteles poco similares, la cerca interior se expandirá hasta un límite previamente acordado (que inicialmente se puso en 100 km pero luego se bajó a 30 km). La ventaja de esto es que el radio de búsqueda será muy laxo en zonas con pocos hoteles o donde el hotel original sea único en su clase, pero será sumamente estricto en zonas muy pobladas de hoteles similares. De esta forma en lugares como el centro de la Ciudad de México se ofrecerán únicamente hoteles realmente cercanos al que se había buscado.
+En este ejemplo, es posible que se ignorarían las opciones buenas debido a que hay hoteles no muy parecidos al original cercanos a él. Con el fin de remediar esta situación, en lugar de buscar dentro de un radio que contenga $n$ hoteles, se tomó un radio dentro del cuál los _scores_ de los hoteles sumen una cantidad fija $w_{inner} \overset{def}{=} n$. Se denomina __cerca interior__ al círculo generado por dicho radio y centrado en el hotel original. Los hoteles dentro de la cerca interior (independientemente de su precio) son los __candidatos__. Si hay muchos hoteles poco similares, la cerca interior se expandirá hasta un límite previamente acordado (que inicialmente se puso en 100 km pero luego se bajó a 30 km). La ventaja de esto es que el radio de búsqueda será muy laxo en zonas con pocos hoteles o donde el hotel original sea único en su clase, pero será sumamente estricto en zonas muy pobladas de hoteles similares. De esta forma en lugares como el centro de la Ciudad de México se ofrecerán únicamente hoteles realmente cercanos al que se había buscado.
+
+### Precio revisitado
+
+Ya que se tiene el radio de la cerca interior se puede recomendar hoteles en precio dentro de ella, ordenados por _score_. Fue una buena idea utilizar los precios de largo plazo para calcular los pasos anteriores. Sin embargo, a la hora de filtrar las recomendaciones de la cerca interior, es deseable que
+se tome en cuenta las promociones de los hoteles. Es decir, si un hotel pone ciertos descuentos o si baja sus precios en una temporada donde otros hoteles no lo hacen, se le debería permitir aparecer en las recomendaciones de hoteles similares pero más baratos. Para lograr esto, se filtró los hoteles de la cerca interior con el mismo criterio de precio que al principio, pero con los precios de la fecha en la que se quiere hacer la reservación. De este modo, se permite recomendar hoteles similares que normalmente son más caros pero que tienen descuento en esa fecha. Los hoteles que están dentro de la cerca interior y que cumplen con el criterio de precio en la fecha de la reservación son las __recomendaciones finales__.
 
 ### Paracaídas
 
@@ -308,25 +340,37 @@ El régimen de alimentos (Europeo, All-Inclusive, etc) es una parte importante d
 
 ### Juntando todo
 
-Dado un hotel $q$, el procedimiento completo para recomendar queda entonces como sigue:
+A continuación se describe el algoritmo a seguir para recomendar hoteles
 
-0. Se definen los parámetros:
-    * Radio de la cerca exterior ($w_{outer}$).
+1. Definir los parámetros:
+    * Radio de la cerca exterior ($r_{outer}$).
     * Porcentaje de tolerancia de precio ($\gamma$).
     * Peso de perfil vs servicios ($\alpha$).
     * Peso a acumular dentro de la cerca interior ($w_{inner}$).
-    * Número de hoteles a recomendar $k$.
-1. Filtrar hoteles fuera de la cerca exterior o fuera del rango de precio. Si no hay suficientes, relajar el precio. Si aún así son muy pocos, tomar los $k$ más cercanos. Los hoteles que quedan después de este filtro son los candidatos.
-2. Calcular el _score_ de cada uno de los candidatos.
-3. Calcular el radio de la cerca interior.
-4. Recomendar los $k$ candidatos dentro de la cerca interior con mayor _score_.
+    * Número de hoteles a recomendar ($k$).
+    * Mínimo número de hoteles a recomendar para casos extremos ($k_{min}$).
+2. Calcular los candidatos para un hotel dado:
+    1. Retener los candidatos iniciales:
+        * Filtrar hoteles fuera de la cerca exterior o fuera del rango de precio.
+        * Si no hay suficientes, relajar el precio.
+        * Si aún así son muy pocos, tomar los $k_{min}$ más cercanos.
+        * Los hoteles que quedan después de este filtro son los candidatos iniciales.
+    2. Calcular el _score_ de cada uno de los candidatos iniciales.
+    3. Calcular el radio de la cerca interior.
+    4. Almacenar los candidatos, es decir, **todos** los hoteles que estén dentro de la cerca interior.
+3. Generar recomendaciones para el hotel en un rango de fechas dado:
+    1. Si se utilizó el criterio de $k_{min}$ en el paso 2.1, entonces:
+        * Regresar esos hoteles, sin importar su precio.
+    2. En otro caso:
+        * Filtrar los candidatos demasiado caros en la fecha en la que se quiere reservar.
+        * Regresar los $k$ candidatos dentro de la cerca interior con mayor _score_.
 
 
+### Notas adicionales
 
+Dado que el objetivo de este sistema es recomendar hoteles parecidos _y_ cercanos, no hay pérdida de precisión al ignorar los hoteles fuera de la cerca exterior a la hora de calcular la cerca interior, ni al momento de elegir las recomendaciones.
 
-
-Finalmente, al final del proceso, únicamente se mantienen las recomendaciones y los demás valores se desechan, incluyendo los no recomendados dentro de la cerca interior. Como el objetivo de este sistema de recomendación es dar hoteles parecidos _y_ cercanos, no hay pérdida de precisión al ignorar los hoteles fuera de la cerca exterior.
-
+Con el fin de mejorar el desempeño, se almacena únicamente las primeras recomendaciones, con algunas de más para el caso de que las mejores se llenen o no esten disponibles. Si se quiere quedar con digamos $r$ recomendaciones, se toman los primeros $R$ hoteles, donde $R$ es el mínimo número de hoteles dentro de la cerca interior que se tiene que tomar de modo que $r$ cumplan el filtro de precio de largo plazo. La idea es garantizar que independientemente de las fluctuaciones de precio, se tengan al menos $r$ hoteles a recomendar.
 
 
 
