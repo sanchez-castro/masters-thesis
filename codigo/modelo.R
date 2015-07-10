@@ -52,7 +52,7 @@ nbatch <- 1         # (1+, 1) Número de bloques para partir el cálculo. Dismin
 # Modelo completo de recomendaciones --------------------------------------
 
 
-intervalo <- 1:200 #1:nrow(hoteles)
+intervalo <- 1:nrow(hoteles)
 
 recomendados_lista <- lapply(intervalo, function(i){
   if(i %% 50 == 1) print(i)

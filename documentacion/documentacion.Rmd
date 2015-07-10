@@ -13,7 +13,7 @@ library(ggplot2)
 library(knitr)
 setwd("C:/Users/bmxddt005062/Documents/recomendacion_de_hoteles")
 # Datos
-load('datos/datos_completos_mex_v1.Rdata')
+load('datos/datos_completos.Rdata')
 ```
 
 
@@ -98,6 +98,7 @@ Para caracterizar cada servicio $s_i$ se utilizó el vector binario de longitud 
 ```{r, echo=FALSE, fig.width=12}
 
 x <- servicios_hoteles_sparse %>% as.matrix
+x <- x[apply(x, 1, sum) != 0, ] # Omitimos los servicios que no tiene ningún hotel.
 
 # Jerárquico Ward con distancia coseno (ángulo)
 d <- matrix(0, nrow(x), nrow(x), dimnames = list(rownames(x), rownames(x)))
@@ -116,7 +117,7 @@ plot(cl)
 El dendrograma anterior sirvió de apoyo para generar las categorías de servicios. En primera instancia se generaron `r nrow(claves_categorias)` categorías; los servicios están agrupados dentro de ellas como sigue:
 
 ```{r, echo=FALSE, message=FALSE}
-servicios_categorias %>%
+claves_servicios %>%
   group_by(Categoria) %>%
   summarise(Servicios = paste(Clav_Servicio, collapse=', ')) %>%
   kable
@@ -163,7 +164,7 @@ El problema con calcular todas las distancias y luego aplicar los filtros es que
 
 ### Perfil y servicios
 
-A lo largo de las pruebas se optó por utilizar la pérdida _hinge_ por su interpretabilidad directa y por su caracteristica asimétrica. Sin embargo, como está explicado arriba, esto resulta en hoteles más caros, pues tienden a tener más servicios en general. El problema de esto radica en que no es suficiente filtrar con el precio. Para ilustrarlo, supongamos que un hotel $h_i$ está en la ciudad y tiene instalaciones para negocios. Por otro lado supongamos que hay un hotel $h_j$ en la playa que también tiene instalaciones para negocios. La distancia _hinge_ de $h_i$ a $h_j$ será más bien chica (aunque probablemente al revés no lo sea), pues no hay prácticamente nada que tenga $h_i$ que no tenga $h_j$. Si $h_j$ pasa el filtro de precio, entonces podria acabar en las recomendaciones, incluso a pesar de haber mejores opciones. La siguiente gráfica ilustra cuándo el _hinge_ es alto y cuándo es bajo:
+A lo largo de las pruebas se optó por utilizar la pérdida _hinge_ por su interpretabilidad directa y por su caracteristica asimétrica. Sin embargo, como está explicado arriba, esto resulta en hoteles más caros, pues tienden a tener más servicios en general. El problema de esto radica en que no es suficiente filtrar con el precio. Para ilustrarlo, supongamos que un hotel $h_i$ está en la ciudad y tiene instalaciones para negocios. Por otro lado supongamos que hay un hotel $h_j$ en la playa que también tiene instalaciones para negocios. La distancia _hinge_ de $h_i$ a $h_j$ será más bien chica (aunque probablemente al revés no lo sea), pues no hay prácticamente nada que tenga $h_i$ que no tenga $h_j$. Si $h_j$ pasa el filtro de precio, entonces podria acabar en las recomendaciones, incluso a pesar de haber mejores opciones. La siguiente gráfica ilustra cuándo la pérdida _hinge_ es alta y cuándo es baja:
 
 ```{r, echo=FALSE, fig.width=12}
 
@@ -178,10 +179,10 @@ z <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
                 Hotel = rep('Alternativa 2', 4))
 aux <- rbind(
 #   cbind(x,panel='Original'),
-  cbind(x,panel='Bajo'),
-  cbind(y,panel='Bajo'),
-  cbind(x,panel='Alto'),
-  cbind(z,panel='Alto'))
+  cbind(x,panel='Baja'),
+  cbind(y,panel='Baja'),
+  cbind(x,panel='Alta'),
+  cbind(z,panel='Alta'))
 
 ggplot(aux) +
   geom_bar(aes(x,y,fill=Hotel), stat='identity', position='dodge', width=0.5) +
@@ -226,16 +227,16 @@ x <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
                 Hotel = rep('Original', 4))
 y <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
                 y = c(1,5,9,9),
-                Hotel = rep('Alternativa 1', 4))
+                Hotel = rep('Buena recomendación', 4))
 z <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
                 y = c(0.1,3,4,4),
-                Hotel = rep('Alternativa 2', 4))
+                Hotel = rep('Similar pero más austero', 4))
 v <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
                 y = c(10,10,10,10),
-                Hotel = rep('Alternativa 3', 4))
+                Hotel = rep('Tiene servicios pero otro perfil', 4))
 w <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
                 y = c(10,9,2,4),
-                Hotel = rep('Alternativa 4', 4))
+                Hotel = rep('Mala recomendación', 4))
 
 aux <- rbind(
   cbind(x,div='div = Baja', hinge='hinge = Baja'),
@@ -250,7 +251,7 @@ aux <- rbind(
 ggplot(aux) +
   geom_bar(aes(x,y,fill=Hotel), stat='identity', position='dodge', width=0.5) +
   scale_fill_manual(values = c('black', rgb(0.1,0.8,0.3),
-                               rgb(0.1,0.3,0.8), rgb(0.1,0.3,0.8), rgb(1,0.2,0.1))) +
+                               rgb(0.9,0.1,0.5), rgb(0.1,0.3,0.8), rgb(1,0.2,0.1))) +
   facet_grid(div ~ hinge) +
   labs(title='Características combinadas: divergencia y hinge', x='', y='Número de servicios')
 
@@ -279,9 +280,14 @@ $$
 La mayoría de los clientes tienen en mente un destino antes de comprar, no un hotel. Encontrar esos hoteles es precisamente el objetivo del sistema que se está proponiendo. Por ello no se quiere que las recomendaciones estén demasiado lejos del hotel. La dificultad radica en que se quiere los mejores hoteles cercanos al hotel original, pero no hay una noción de `'cercano`', ni de cuánto debe pesar la distancia y cuánto una buena coincidencia. Originalmente se había pensado en tomar los primeros $n$ hoteles más cercanos al original, filtrar por precio y luego tomar los de mejor _score_. Eso funciona bien en la mayoría de los casos. Sin embargo, si un hotel es único en su clase en la zona, se debe dar mayor libertad de búsqueda. Considérese el siguiente gráfico:
 
 ```{r, echo=FALSE}
+library(ggthemes)
 set.seed(1234)
 x2 <- data.frame(x=c(0,rnorm(29),1.5,-1), y=c(0,rnorm(29),1.2,-1.3), s=c(5,2*runif(29),5,6), col=c('original',rep('opciones malas',29), 'opciones buenas', 'opciones buenas'))
-qplot(x,y,data=x2,size=s,color=col) + scale_size_continuous(guide=FALSE)
+qplot(x,y,data=x2,size=s,color=col) +
+  scale_color_manual(name='',values = c('opciones malas'=rgb(0.9,0.5,0.5),
+                                'opciones buenas'=rgb(0.1,0.6,0.8),
+                                'original'=rgb(0.0,0.0,0.0))) +
+  scale_size_continuous(range = c(3,10), guide=FALSE)
 ```
 
 En este ejemplo, es posible que se ignorarían las opciones buenas debido a que hay hoteles no muy parecidos al original cercanos a él. Con el fin de remediar esta situación, en lugar de buscar dentro de un radio que contenga $n$ hoteles, se tomó un radio dentro del cuál los _scores_ de los hoteles sumen una cantidad fija $w_{inner} \overset{def}{=} n$. Se denomina __cerca interior__ al círculo generado por dicho radio y centrado en el hotel original. Si hay muchos hoteles poco similares, la cerca interior se expandirá hasta un límite previamente acordado (que inicialmente se puso en 100 km pero luego se bajó a 30 km). La ventaja de esto es que el radio de búsqueda será muy laxo en zonas con pocos hoteles o donde el hotel original sea único en su clase, pero será sumamente estricto en zonas muy pobladas de hoteles similares. De esta forma en lugares como el centro de la Ciudad de México se ofrecerán únicamente hoteles realmente cercanos al que se había buscado.

@@ -1,0 +1,16 @@
+{
+    "contents" : "\nRprof('logs/log1.out', line.profiling=TRUE)\nsource('codigo/modelo.R')\nRprof(NULL)\nx <- summaryRprof('logs/log1.out', lines = 'show')\nslf <- x$by.self\nx\nslf\n\nslf$self.time %>% sum\n\n\n\n\nrecomendados %>% mutate(sel = (p2 <=(1+price_range)*p1)) %>% View\n\n",
+    "created" : 1436543555266.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1643784778",
+    "id" : "27F9BA5",
+    "lastKnownWriteTime" : 1436548571,
+    "path" : "~/recomendacion_de_hoteles/codigo/pruebas.R",
+    "project_path" : "codigo/pruebas.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
