@@ -1,0 +1,27 @@
+CHANGE LOG
+-------------------------------
+
+### v1
+
+	* Código autónomo en una carpeta. Incluye bases para el mapeo.
+	
+### v2
+	
+	* Empezamos a quitar análisis innecesarios
+		+) Clusters
+		+) Alpha
+	* En cálculo de max_km hay que hacer dos filters. Primero dejamos los candidatos y luego acumulamos score. O también se puede un solo filter con cumsum(candidatos*score)
+	* Filtramos las recomendaciones top k (donde sólo cuentan en k los que tienen precio promedio apropiado, pero todos (hasta los caros) se quedan ordenados por score) después del rbind_all porque es más rápido que hacerlo para cada parte individualmente.
+	* Por ahora dejamos el mismo hotel dentro de las recomendaciones.
+	* Quitamos la posibilidad de hacerlo en batches.
+	* Quitamos que corrobore que tiene latitud y longitud para mayor velocidad.
+
+
+
+
+### TO DO
+
+	* Dejar una versión corrible de:
+		+) Clustering
+		+) Cálculo de Alpha
+	* Filtrar por país primero? Podría acelerar mucho el algoritmo
