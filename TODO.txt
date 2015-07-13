@@ -2,8 +2,6 @@ TO DO
 -------------------------------
 
 * Dejar una versión corrible de:
-	+) Clustering
-	+) Cálculo de Alpha:
-		-) Documentar que quitamos servicios = 1.
+	+)
 * Filtrar por país primero? Podría acelerar mucho el algoritmo
 * Rstudio > Tools > Project Options > Packrat. Activarlo para que el proyecto tenga sus propios paquetes y quien sea lo pueda correr.
