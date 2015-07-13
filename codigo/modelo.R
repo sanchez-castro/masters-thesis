@@ -40,7 +40,7 @@ a2 <- hoteles %>%
 # Parámetros globales -----------------------------------------------------
 
 # En paréntesis rango y valor recomendado
-alpha <- 0.3377169 # Parámetro de balance (Servicios: 0 -- 1: Perfil). Calculado una única vez
+alpha <- 0.3811553 # Parámetro de balance (Servicios: 0 -- 1: Perfil). Calculado una única vez
 needed_weight <- 30 # (1+, 30) Peso a acumular para generar la cerca interior
 price_range <- 0.3  # (0-1, 0.3) Rango de precio de hoteles a tomar en cuenta para cerca interior
 num_recom <- 20     # (1+, 20) Número de recomendaciones en precio a dar por hotel

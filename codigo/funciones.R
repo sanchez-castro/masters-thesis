@@ -73,7 +73,7 @@ filtra_cand <- function(clav,
   long1 <- hot %>% filter(ID_Hotel == clav) %>% .$longitude
   lat1 <- hot %>% filter(ID_Hotel == clav) %>% .$latitude
   p1 <- hot %>% filter(ID_Hotel == clav) %>% .$Precio_Dlls
-  p1 <- ifelse(is.na(p1), Inf, p1) # Si no hay precio, ignoramos el criterio haciendo que cueste infinito
+  p1 <- ifelse(is.na(p1) | p1 <= 0, Inf, p1) # Si no hay precio, ignoramos el criterio haciendo que cueste infinito
   aux1 <- hot %>%
     mutate(km = geodesic_distance(long1, lat1, longitude, latitude, units = 'deg'),
            ### Sin el ifelse es mucho mas rapido. Requiere informacion limpia

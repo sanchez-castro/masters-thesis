@@ -257,14 +257,16 @@ La gráfica siguiente ilustra el efecto de $\alpha$ sobre las recomendaciones en
 
 **Elección de $\alpha$**
 
-El objetivo del _score_ es que los hoteles sean una mejor recomendación conforme mayor sea su _score_. Para reflejar eso hay que elegir $\alpha$ de manera adecuada. Originalmente se había elegido tentativamente $\alpha = 0.5$ con la idea de que no hay razón a priori de favorecer una de las medidas. Sin embargo, un factor que afecta su importancia es la escala. Aunque ambos van de 0 a 1, en general la similitud de perfil tiende a variar menos que la de servicios. Para tomar eso en cuenta se incorporó un Análisis de Componentes Principales para decidir qué tanto convenía mover $\alpha$. Lo que se busca es encontrar la dirección $(\alpha, 1 - \alpha)$ que maximice la discriminación de hoteles. Aplicando ACP a los candidatos iniciales, sobre las variables similitud de perfil (1 - divergencia) y de servicios (1 - _hinge_ normalizada) se obtiene las ponderaciones $a_p$ y $a_s$, las entradas del eigenvector correspondiente a la primera componente principal. Normalizando para que sumen 1, se tiene que
+El objetivo del _score_ es que los hoteles sean una mejor recomendación conforme mayor sea su _score_. Para reflejar eso hay que elegir $\alpha$ de manera adecuada. Originalmente se había elegido tentativamente $\alpha = 0.5$ con la idea de que no hay razón a priori de favorecer una de las medidas. Sin embargo, un factor que afecta su importancia es la escala. Aunque ambos van de 0 a 1, en general la similitud de perfil tiende a variar menos que la de servicios. Para tomar eso en cuenta se incorporó un Análisis de Componentes Principales para decidir qué tanto convenía mover $\alpha$. Lo que se busca es encontrar la dirección $(\alpha, 1 - \alpha)$ que maximice la discriminación de hoteles. Aplicando ACP a los candidatos iniciales de todos los hotles sobre las variables similitud de perfil (1 - divergencia) y de servicios (1 - _hinge_ normalizada) se obtiene las ponderaciones $a_p$ y $a_s$, las entradas del eigenvector correspondiente a la primera componente principal. Normalizando para que sumen 1, se tiene que
 
 $$
   \alpha = \frac{a_p}{a_p + a_s} \\
   1 - \alpha = \frac{a_s}{a_p + a_s}
 $$
 
-La idea de utilizar este criterio es que se quiere una dirección que maximice la discriminación del _score_, y precisamente eso es lo que logra usar ACP. El cálculo de $\alpha$ es bastante estable, por lo que basta hacerlo una vez. Después de los análisis, resultó que la $\alpha$ óptima en este sentido es aproximadamente $1/3$, lo que indica que se le da un peso mayor a los servicios que al perfil.
+La idea de utilizar este criterio es que se quiere una dirección que maximice la discriminación del _score_, y precisamente eso es lo que logra usar ACP. El cálculo de $\alpha$ es relativamente estable, por lo que basta hacerlo una vez o actualizarlo periódicamente. Después de los análisis, resultó que la $\alpha$ óptima en este sentido está aproximadamente entre 0.33 y 0.4, lo que indica que se le da un peso mayor a los servicios que al perfil.
+
+Un detalle importante es que se quitaron los candidatos con servicios = 1. La razón de esto es que esto ocurre en la mayoría de las veces cuando la información de un hotel es mala y tiene muy pocos servicios capturados en el sistema. El resultado es que otros hoteles aparentemente tienen todos los servicios del hotel. En esos casos la elección de $\alpha$ no tiene prácticamente ningún efecto, pero sí afectan la estimación para los demás, de modo que se optó por eliminarlos de este análisis.
 
 ### Distancia: criterio dinámico
 
