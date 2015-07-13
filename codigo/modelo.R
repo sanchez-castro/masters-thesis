@@ -89,10 +89,20 @@ recomendados_lista <- lapply(intervalo, function(i){
              hinge_norm = ifelse(hinge == 0, 0,
                                  ifelse(temp == 0, 1, hinge/nserv)),
              score = alpha*(1 - diverg) + (1 - alpha)*(1 - hinge_norm)) %>%
-      dplyr::select(-temp) %>%
-      arrange(km) %>%
-      filter(cumsum(score*cand_idx) < needed_weight) %>%
-      arrange(desc(score))
+      dplyr::select(-temp)
+    
+    if(cand_info$type == 'n closest'){
+      selected <- selected %>%
+        arrange(km)
+    } else if(cand_info$type == 'dist'){
+      selected <- selected %>%
+        arrange(desc(score))
+    } else if(cand_info$type == 'dist & price') {
+      selected <- selected %>%
+        arrange(km) %>%
+        filter(cumsum(score*cand_idx) < needed_weight) %>%
+        arrange(desc(score))
+    }
     
     max_km <- max(selected$km)
   }

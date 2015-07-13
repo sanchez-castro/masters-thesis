@@ -1,0 +1,56 @@
+---
+title: "Análisis exploratorio"
+author: "Revenue Management. Preparado por Felipe Gerard"
+date: "Monday, July 13, 2015"
+output: html_document
+---
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(Matrix)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(knitr)
+#setwd("C:/Users/bmxddt005062/Documents/recomendacion_de_hoteles")
+
+# Datos
+load('../datos/datos_completos.Rdata')
+```
+
+
+Análisis exploratorio
+------------------------------------
+
+Número de hoteles: `r nrow(hoteles)`
+
+Número de servicios distintos: `r nrow(claves_servicios)`
+
+Servicios ordenados por popularidad:
+
+```{r, echo=FALSE, message=FALSE}
+x1 <- hoteles_servicios %>%
+  group_by(Clav_Servicio) %>%
+  summarise(Hoteles = n()) %>%
+  arrange(desc(Hoteles))
+
+kable(x1)
+```
+
+Número de hoteles que tienen cada servicio:
+
+```{r, echo=FALSE, message=FALSE}
+qplot(Hoteles, data=x1, geom='bar', ylab='Servicios', main='Histograma de popularidad de los servicios')
+```
+
+Número total de servicios registrados en todos los hoteles: `r nrow(claves_servicios)`
+
+Porcentaje de entradas distintas de cero de la matriz servicios-hoteles: `r nrow(claves_servicios)/prod(dim(servicios_hoteles_sparse))`
+
+Histograma de precios por noche de los hoteles, separados por disponibilidad de la información:
+
+```{r, echo=FALSE, message=FALSE, fig.width=10}
+qplot(Precio_Dlls, data=filter(hoteles, !is.na(Precio_Dlls)), geom='bar') +
+  facet_wrap(~ Date_Range) +
+  labs(title = 'Histograma de precios', x = 'Precio en dólares', y = 'Hoteles')
+```
