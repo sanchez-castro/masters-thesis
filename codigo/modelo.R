@@ -10,7 +10,6 @@ options(scipen = 10) # Solo los numeros grandes en notacion cientifica
 
 # Cargar los datos --------------------------------------------------------
 
-# setwd("entregable_v2")
 print(getwd())
 load('datos/datos_completos.Rdata')
 source('codigo/funciones.R')
