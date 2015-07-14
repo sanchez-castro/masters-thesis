@@ -3,12 +3,7 @@ library(pryr)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-# library(ggthemes)
-#library(parallel) # No funciona en windows
-# library(foreach)
-#library(doSNOW)
 library(Matrix)
-# library(ggmap)
 
 options(scipen = 10) # Solo los numeros grandes en notacion cientifica
 
@@ -37,112 +32,53 @@ a2 <- hoteles %>%
                 adult2=Adult_Only, allinc2=Categoria_Alimentos)
 
 
-# Parámetros globales -----------------------------------------------------
-
-# En paréntesis rango y valor recomendado
-alpha <- 0.3811553 # Parámetro de balance (Servicios: 0 -- 1: Perfil). Calculado una única vez
-needed_weight <- 30 # (1+, 30) Peso a acumular para generar la cerca interior
-price_range <- 0.3  # (0-1, 0.3) Rango de precio de hoteles a tomar en cuenta para cerca interior
-num_recom <- 20     # (1+, 20) Número de recomendaciones en precio a dar por hotel
-min_num_recom <-    # (1+, 10) Número mínimo de recomendaciones (para hoteles en despoblado)
-outer_fence <- 30   # (1+, 30) Radio de la cerca exterior, en kilómetros
-nbatch <- 1         # (1+, 1) Número de bloques para partir el cálculo. Disminuye la cantidad de memoria utilizada. Se recomienda para muchos hoteles.
-
-
 # Modelo completo de recomendaciones --------------------------------------
 
+rm(list=ls()[!(ls() %in% c('hoteles','hoteles_categorias','categorias_hoteles_sparse_cantidad',
+                  'categorias_hoteles_sparse_prob','a1','a2',
+                  'recomendar','filtra_cand','calcula_sim','geodesic_distance','deg2rad','lh'))])
 
-intervalo <- 1:nrow(hoteles)
-
-recomendados_lista <- lapply(intervalo, function(i){
-  if(i %% 50 == 1) print(i)
-  line <- hoteles[i,]
-  clav <- line$ID_Hotel
-  nserv <- filter(hoteles_categorias, ID_Hotel == clav)$Cantidad %>% sum ### MEJORABLE
-  
-  cand_info <- filtra_cand(clav, hoteles, price_range=price_range,
-                            outer_fence = outer_fence, min_num_recom = min_num_recom)
-  
-  # Candidatos dentro de la cerca exterior o en si se quitó, los primeros min_num_recom
-  if(cand_info$type == 'n closest'){
-    outer_idx <- cand_info$out_idx
-    cand_idx <- rep(TRUE, sum(outer_idx))
-  } else if(cand_info$type == 'dist'){
-    outer_idx <- cand_info$outer_fence_idx
-    cand_idx <- rep(TRUE, sum(outer_idx))
-  } else if(cand_info$type == 'dist & price') {
-    outer_idx <- cand_info$outer_fence_idx
-    cand_idx <- cand_info$precio_idx[cand_info$outer_fence_idx]
-  }
-  cand_outer <- cand_info$cand[outer_idx,]
-  
-  if(nrow(cand_outer) <= 1){
-    selected <- data.frame()
-  } else {
-    
-    salida <- calcula_sim(cand_outer,
-                          mat = categorias_hoteles_sparse_cantidad,
-                          mat_norm = categorias_hoteles_sparse_prob)
-    selected <- cand_outer %>%
-      left_join(salida, by=c('id1','id2')) %>%
-      mutate(temp = nserv,
-             hinge_norm = ifelse(hinge == 0, 0,
-                                 ifelse(temp == 0, 1, hinge/nserv)),
-             score = alpha*(1 - diverg) + (1 - alpha)*(1 - hinge_norm)) %>%
-      dplyr::select(-temp)
-    
-    if(cand_info$type == 'n closest'){
-      selected <- selected %>%
-        arrange(km)
-    } else if(cand_info$type == 'dist'){
-      selected <- selected %>%
-        arrange(desc(score))
-    } else if(cand_info$type == 'dist & price') {
-      selected <- selected %>%
-        arrange(km) %>%
-        filter(cumsum(score*cand_idx) < needed_weight) %>%
-        arrange(desc(score))
-    }
-    
-    max_km <- max(selected$km)
-  }
-  return(list(selected=selected,         # Hoteles recomendados (ignorando precio)
-              id_hotel=clav,             # Clave del hotel original
-              nserv=nserv,               # Número de servicios del hotel original
-              ncomp=nrow(cand_outer),    # Cantidad de comparaciones efectuadas
-              max_km=max_km,             # Radio de la cerca interior
-              filtro=cand_info$type))    # Tipo de filtro efectuado
+system.time({
+  r <- recomendar(
+    hoteles,
+    hoteles_categorias,
+    categorias_hoteles_sparse_cantidad,
+    categorias_hoteles_sparse_prob,
+    alpha = 0.3811553,
+    needed_weight = 30,
+    price_range = 0.3,
+    num_recom = 20,
+    min_num_recom = 10,
+    outer_fence = 30,
+    recommend = 'all',
+    verbose = 100)
 })
 
-recomendados <- lapply(recomendados_lista, function(l) l$selected ) %>%
-  rbind_all %>% # Es más rápido primero rbind_all y luego filtrar
-  group_by(id1) %>%
-  filter(#id1 != id2,
-         cumsum(p2 <= (1+price_range)*p1) <= num_recom) %>%
-  mutate(rank = row_number()) %>%
-  ungroup %>%
+dim(r$info)
+r$info %>% head(20)
+
+recomendados <- r$recomendados %>%
   left_join(a1[c('id1','cl1')], by='id1') %>%
   left_join(a2[c('id2','cl2')], by='id2')
-recomendados
 
+dim(recomendados)
+recomendados %>% head(10)
 
 # Exploración de resultados -----------------------------------------------
 
 if(FALSE){  
   object_size(recomendados)
-  object_size(rec)
-  length(recomendados)
-  recomendados[[sample(1:length(recomendados), 1)]]
-  inner <- sapply(recomendados, function(l) nrow(l$selected))
-  outer <- sapply(recomendados, function(l) l$ncomp)
-  filtros <- sapply(recomendados, function(l) l$filtro)
+  object_size(r$info)
+  dim(recomendados)
+  # inner = hoteles en la cerca interior (guardamos menos al final)
+  # outer = hoteles dentro de la cerca exterior en precio (en caso normal al menos)
   
-  qplot(inner, binwidth=5)
-  qplot(outer)
-  qplot(inner, outer)
-  round(table(filtros)/length(filtros), 2)
+  qplot(inner, data=r$info, binwidth=5)
+  qplot(ncomp, data=r$info)
+  qplot(inner, ncomp, data=r$info)
+  round(table(r$info$filtro)/sum(table(r$info$filtro)), 2)
   
-  ggplot(rec, aes(score)) +
+  ggplot(recomendados, aes(score)) +
     geom_histogram()
   
   ids <- unique(rec$id1)
