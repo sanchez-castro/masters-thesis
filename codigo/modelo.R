@@ -77,12 +77,33 @@ if(FALSE){
   qplot(inner, ncomp, data=r$info)
   round(table(r$info$filtro)/sum(table(r$info$filtro)), 2)
   
-  ggplot(recomendados, aes(score)) +
-    geom_histogram()
+  ### Por qué hay un salto en ncomp? --> Buenos Aires tiene muchísimos hoteles
+  qplot(inner, ncomp, data=r$info)
+  x1 <- inner_join(r$info, hoteles)
+  x1 %>%
+    filter(ncomp > 290) %>%
+    group_by(Clav_Pais) %>%
+    tally()
+
+  qplot(inner, ncomp, color=Nombre_Estado, size = 7, data=x1) +
+    facet_wrap(~ Clav_Pais)
+  # Un ejemplo de los argentinos que están todos pegados
+  filter(recomendados, id1 == 3595)
+  # Veamos qué porcentaje de los hoteles están en zonas pobladas
+  hoteles %>%
+    group_by(Clav_Pais, Nombre_Ciudad) %>%
+    tally %>%
+    group_by(Clav_Pais) %>%
+    mutate(N = sum(n),
+           prop = n/N) %>%
+    filter(prop > 0.03) %>%
+    View
+  
+  
   
   ids <- unique(rec$id1)
   temp <- filter(rec, id1 %in% sample(ids, 12))
-  qplot(score, data=temp) +facet_wrap(~ id1)
+  qplot(score, data=temp) + facet_wrap(~ id1)
   
   filter(hoteles, ID_Hotel == 2424)
   

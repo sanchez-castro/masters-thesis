@@ -206,7 +206,7 @@ recomendar <- function(
     cand_info <- filtra_cand(clav, hot, price_range=price_range,
                              outer_fence = outer_fence, min_num_recom = min_num_recom)
     
-    # Candidatos dentro de la cerca exterior o en si se quitó, los primeros min_num_recom
+    # Candidatos dentro de la cerca exterior o si se quitó, los primeros min_num_recom más cercanos
     if(cand_info$type == 'n closest'){
       outer_idx <- cand_info$out_idx
       cand_idx <- rep(TRUE, sum(outer_idx))
