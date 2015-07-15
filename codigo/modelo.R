@@ -39,10 +39,10 @@ rm(list=ls()[!(ls() %in% c('hoteles','hoteles_categorias','categorias_hoteles_sp
 
 system.time({
   r <- recomendar(
-    hoteles,
-    hoteles_categorias,
-    categorias_hoteles_sparse_cantidad,
-    categorias_hoteles_sparse_prob,
+    hot = hoteles,
+    hot_cat = hoteles_categorias,
+    mat = categorias_hoteles_sparse_cantidad,
+    mat_norm = categorias_hoteles_sparse_prob,
     alpha = 0.3811553,
     needed_weight = 30,
     price_range = 0.3,

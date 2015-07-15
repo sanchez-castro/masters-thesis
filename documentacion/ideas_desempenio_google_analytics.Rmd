@@ -1,0 +1,16 @@
+---
+title: "Análisis de desempeño"
+author: "Felipe Gerard"
+date: "Wednesday, July 15, 2015"
+output: html_document
+---
+
+
+# Medidas
+
+* Cambio en el click-through rate.
+* Cambio en la conversion rate (de los que dan click en recomendaciones).
+* Ver distribución de (precio recomendado / precio búsqueda) de los que dan click y compran:
+  +) Para el último paso
+  +) Vs. el primer hotel que buscaron
+* Comparar GB y utilidad de reservas que vienen de un click en cada uno de los sistemas de recomendación.
