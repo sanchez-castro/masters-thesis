@@ -1,0 +1,14 @@
+AWS + Ubuntu
+--------------------
+
+# Ver: http://sysads.co.uk/2014/07/install-r-base-3-1-1-ubuntu-14-04/
+sudo add-apt-repository ppa:marutter/rrutter
+sudo apt-get update
+sudo apt-get upgrade
+
+sudo apt-get install r-base-core #r-base-dev
+sudo apt-get install git
+
+sudo apt-get install unixodbc-dev # Lo necesito ubuntu: http://superuser.com/questions/283272/problem-with-rodbc-installation-in-ubuntu
+
+git clone https://github.com/felipegerard/masters-thesis.git
