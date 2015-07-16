@@ -177,6 +177,10 @@ calcula_sim <- function(candidatos, mat, mat_norm){
 # outer_fence: radio de la cerca exterior en km
 # recommend: 'all' para todos los hoteles (recomendado) o un vector 1:k para los primeros k que aparecen en hot En general, un vector con los hoteles a recomendar, según renglones de tabla hot.
 # verbose: número de iteraciones entre mensaje y mensaje de avance
+# Out.
+# Una lista con dos elementos:
+# recomendados: tabla de hotel - recomendaciones
+# info: tabla con estadísticas del algoritmo para cada hotel
 recomendar <- function(
   hot                  # hoteles
   , hot_cat            # hoteles_categorias
