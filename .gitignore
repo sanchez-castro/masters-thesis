@@ -5,3 +5,4 @@
 ~*
 *.tmp
 packrat/lib*/
+.httr-oauth

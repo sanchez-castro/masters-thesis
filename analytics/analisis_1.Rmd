@@ -1,0 +1,121 @@
+---
+title: "Recomendación de hoteles. Desempeño"
+author: "Revenue Management. Preparado Felipe Gerard"
+date: "21 de julio de 2015"
+output: html_document
+---
+
+
+```{r, eval=FALSE, echo=FALSE}
+library(RGoogleAnalytics)
+
+oauth_token <- Auth(client.id = "410202734756-vuek66j0asrnk5aicd0geog0uf5kje2u.apps.googleusercontent.com",
+                    client.secret = "81DW-mkNRQAF21-FD-89dkI2")
+
+ValidateToken(oauth_token)
+
+params_list_1 <- Init(start.date = '2015-01-01',
+                    end.date = '2015-07-19',
+                    dimensions = 'ga:userType,ga:date',
+                    metrics = 'ga:users,ga:sessions,ga:bounceRate,ga:avgSessionDuration,ga:goalConversionRateAll,ga:pageviews',
+#                     filters = 'ga:pagePath%3D@view=similarhotel',
+                    segments = 'sessions::condition::ga:pagePath=@view=similarhotel',
+                    table.id = 'ga:22605939')
+ga_query_1 <- QueryBuilder(query.params.list = params_list_1)
+ga_df_1 <- GetReportData(ga_query_1, token = oauth_token)
+
+###
+
+params_list_2 <- Init(start.date = '2015-01-01',
+                    end.date = '2015-07-19',
+                    dimensions = 'ga:userType,ga:date',
+                    metrics = 'ga:users,ga:sessions,ga:bounceRate,ga:avgSessionDuration,ga:goalConversionRateAll,ga:pageviews',
+                    segments = 'sessions::condition::!ga:pagePath=@view=similarhotel',
+#                     filters = '!ga:pagePath%3D@view=similarhotel',
+                    table.id = 'ga:22605939')
+ga_query_2 <- QueryBuilder(query.params.list = params_list_2)
+ga_df_2 <- GetReportData(ga_query_2, token = oauth_token)
+
+v <- ga_df_1
+nv <- ga_df_2
+save(list = c('v', 'nv'), file = 'datos/query_api_20150101_20150719.Rdata')
+head(ga_df_1)
+head(ga_df_2)
+
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+# library(lubridate)
+
+# Los archivos deben estar en utf-8!!
+# v <- read.csv('datos/vsh.psv', sep='|', header=TRUE, fileEncoding = 'UTF-8')
+# nv <- read.csv('datos/nvsh.psv', sep='|', header=TRUE, fileEncoding = 'UTF-8')
+# v <- ga_df_1
+# nv <- ga_df_2
+load('datos/query_api_20150101_20150719.Rdata')
+
+
+dat <- rbind(
+  data.frame(viewed_recom = 'yes', v),
+  data.frame(viewed_recom = 'no', nv)
+) %>%
+  group_by(viewed_recom, date) %>%
+  summarise(users = sum(users),
+            bounceRate = sum(bounceRate * sessions)/sum(sessions),
+            avgSessionDuration= sum(avgSessionDuration * sessions)/sum(sessions)/60,
+            goalConversionRateAll = sum(goalConversionRateAll* sessions)/sum(sessions),
+            pageviews = sum(pageviews),
+            sessions = sum(sessions)) %>%
+  mutate(pageviews_per_session = pageviews / sessions) %>%
+  filter(!is.na(date)) %>%
+  ungroup
+dat <- dat[dat$pageviews < max(dat$pageviews), ]
+
+dat$date <- strptime(dat$date, '%Y%m%d') %>%
+  as.character %>%
+  as.Date
+
+dat2 <- dat %>%
+  gather(var, val, sessions, bounceRate, avgSessionDuration, goalConversionRateAll, pageviews_per_session)
+
+```
+
+```{r, echo=FALSE}
+dat %>%
+  group_by(viewed_recom) %>%
+  summarise(tot_sessions = sum(sessions),
+            bounce_rate = sum(bounceRate * sessions)/sum(sessions),
+            avg_session_minutes= sum(avgSessionDuration * sessions)/sum(sessions),
+            conversion_rate = sum(goalConversionRateAll* sessions)/sum(sessions)) %>%
+  mutate(perc_sessions = 100*tot_sessions/sum(tot_sessions)) %>%
+  data.frame %>%
+  dplyr::select(viewed_recom, tot_sessions, perc_sessions, bounce_rate, avg_session_minutes, conversion_rate) %>%
+  kable(digits = 2)
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10}
+qplot(date, val, data=dat2, geom='line', color=viewed_recom) +
+  geom_smooth() +
+  facet_wrap(~ var, scales = 'free_y') +
+  theme(axis.text.x = element_text(angle=90)) +
+  scale_x_date()
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=15}
+qplot(date, val, data=dat2, geom='line', color=viewed_recom) +
+  geom_smooth() +
+  facet_wrap(var ~ viewed_recom, scales = 'free_y', ncol = 2) +
+  theme(axis.text.x = element_text(angle=90)) +
+  scale_x_date()
+```
+
+
+
+
+
+
+
