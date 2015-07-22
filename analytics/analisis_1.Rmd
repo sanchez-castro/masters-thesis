@@ -1,6 +1,6 @@
 ---
 title: "Recomendación de hoteles. Desempeño"
-author: "Revenue Management. Preparado Felipe Gerard"
+author: "Revenue Management. Preparado por Felipe Gerard"
 date: "21 de julio de 2015"
 output: html_document
 ---
@@ -19,7 +19,7 @@ params_list_1 <- Init(start.date = '2015-01-01',
                     dimensions = 'ga:userType,ga:date',
                     metrics = 'ga:users,ga:sessions,ga:bounceRate,ga:avgSessionDuration,ga:goalConversionRateAll,ga:pageviews',
 #                     filters = 'ga:pagePath%3D@view=similarhotel',
-                    segments = 'sessions::condition::ga:pagePath=@view=similarhotel',
+                    segments = 'sessions::condition::ga:pagePath=~view=(similarhotel|similarpackage)',
                     table.id = 'ga:22605939')
 ga_query_1 <- QueryBuilder(query.params.list = params_list_1)
 ga_df_1 <- GetReportData(ga_query_1, token = oauth_token)
@@ -30,7 +30,7 @@ params_list_2 <- Init(start.date = '2015-01-01',
                     end.date = '2015-07-19',
                     dimensions = 'ga:userType,ga:date',
                     metrics = 'ga:users,ga:sessions,ga:bounceRate,ga:avgSessionDuration,ga:goalConversionRateAll,ga:pageviews',
-                    segments = 'sessions::condition::!ga:pagePath=@view=similarhotel',
+                    segments = 'sessions::condition::ga:dimension18==Hotel;condition::!ga:pagePath=~view=(similarhotel|similarpackage)',
 #                     filters = '!ga:pagePath%3D@view=similarhotel',
                     table.id = 'ga:22605939')
 ga_query_2 <- QueryBuilder(query.params.list = params_list_2)
@@ -38,11 +38,12 @@ ga_df_2 <- GetReportData(ga_query_2, token = oauth_token)
 
 v <- ga_df_1
 nv <- ga_df_2
-save(list = c('v', 'nv'), file = 'datos/query_api_20150101_20150719.Rdata')
+# save(list = c('v', 'nv'), file = 'analytics/datos/query_api_20150101_20150719.Rdata')
 head(ga_df_1)
 head(ga_df_2)
 
 ```
+
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyr)
@@ -84,6 +85,8 @@ dat2 <- dat %>%
 
 ```
 
+### Estadísticas descriptivas
+
 ```{r, echo=FALSE}
 dat %>%
   group_by(viewed_recom) %>%
@@ -97,6 +100,8 @@ dat %>%
   kable(digits = 2)
 ```
 
+### Series de tiempo: comparación en la misma escala
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10}
 qplot(date, val, data=dat2, geom='line', color=viewed_recom) +
   geom_smooth() +
@@ -104,6 +109,8 @@ qplot(date, val, data=dat2, geom='line', color=viewed_recom) +
   theme(axis.text.x = element_text(angle=90)) +
   scale_x_date()
 ```
+
+### Series de tiempo: comparación en escalas distintas
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=15}
 qplot(date, val, data=dat2, geom='line', color=viewed_recom) +
