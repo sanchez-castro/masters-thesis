@@ -3,4 +3,5 @@ TO DO
 
 * Filtrar por pa√≠s primero? Podr√≠a acelerar mucho el algoritmo
 * Rstudio > Tools > Project Options > Packrat. Activarlo para que el proyecto tenga sus propios paquetes y quien sea lo pueda correr.
-* Al final filtrar para dejar menos hoteles?
+
+* Cambiar el c√digo para que use s√lo los dos SP
