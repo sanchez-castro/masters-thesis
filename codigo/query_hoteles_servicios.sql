@@ -1,15 +1,12 @@
+
 DECLARE @agrup_cat TABLE (
 	Clav_Agrupador CHAR(2)
-	, Categoria_Alimentos CHAR(4)
-	, BREAKFAST_INCLUDED BIT
-	, LUNCH_INCLUDED BIT
-	, DINNER_INCLUDED BIT
-	, BEVERAGES_INCLUDED BIT
-	, RANGO_PLAN INT
+	, Categoria_Alimentos CHAR(20)
 )
 
-DECLARE @serv TABLE (
-	Clav_Servicio CHAR(20)
+DECLARE @rangos_agrup TABLE (
+	Clav_Agrupador CHAR(2)
+	, Rango_Agrupador INT
 )
 
 DECLARE @hot_serv TABLE (
@@ -17,81 +14,82 @@ DECLARE @hot_serv TABLE (
 	, Clav_Servicio VARCHAR(20)
 )
 
-INSERT INTO @serv VALUES
-('BREAKFAST_INCLUDED')
-,('LUNCH_INCLUDED')
-,('DINNER_INCLUDED')
-,('BEVERAGES_INCLUDED')
+INSERT INTO @rangos_agrup VALUES
+('AI', 4)
+,('BB', 1)
+,('RO', 0)
+,('MD', 4)
+,('SA', 4)
+,('CP', 1)
+,('DB', 1)
+,('AG', 4)
+,('FP', 3)
+,('MP', 2)
+,('BD', 2)
+,('GA', 0)
+,('ND', 0)
 
 INSERT INTO @agrup_cat VALUES
-('AI', 'BLDR', 1, 1, 1, 1, 4)
-,('BB', 'B---', 1, 0, 0, 0, 1)
-,('RO', '----', 0, 0, 0, 0, 0)
-,('MD', 'BLDR', 1, 1, 1, 1, 4)
-,('SA', 'BLDR', 1, 1, 1, 1, 4)
-,('CP', 'B---', 1, 0, 0, 0, 1)
-,('DB', 'B---', 1, 0, 0, 0, 1)
-,('AG', 'BLDR', 1, 1, 1, 1, 4)
-,('FP', 'BLD-', 1, 1, 1, 0, 3)
-,('MP', 'B-D-', 1, 0, 1, 0, 2)
-,('BD', 'B-D-', 1, 0, 1, 0, 2)
-,('GA', '----', 0, 0, 0, 0, 0)
-,('ND', '----', 0, 0, 0, 0, 0)
+('AI', 'BREAKFAST_INCLUDED')
+,('AI', 'LUNCH_INCLUDED')
+,('AI', 'DINNER_INCLUDED')
+,('AI', 'BEVERAGES_INCLUDED')
+,('BB', 'BREAKFAST_INCLUDED')
+,('MD', 'BREAKFAST_INCLUDED')
+,('MD', 'LUNCH_INCLUDED')
+,('MD', 'DINNER_INCLUDED')
+,('MD', 'BEVERAGES_INCLUDED')
+,('SA', 'BREAKFAST_INCLUDED')
+,('SA', 'LUNCH_INCLUDED')
+,('SA', 'DINNER_INCLUDED')
+,('SA', 'BEVERAGES_INCLUDED')
+,('CP', 'BREAKFAST_INCLUDED')
+,('DB', 'BREAKFAST_INCLUDED')
+,('AG', 'BREAKFAST_INCLUDED')
+,('AG', 'LUNCH_INCLUDED')
+,('AG', 'DINNER_INCLUDED')
+,('AG', 'BEVERAGES_INCLUDED')
+,('FP', 'BREAKFAST_INCLUDED')
+,('FP', 'LUNCH_INCLUDED')
+,('FP', 'DINNER_INCLUDED')
+,('MP', 'BREAKFAST_INCLUDED')
+,('MP', 'DINNER_INCLUDED')
+,('BD', 'BREAKFAST_INCLUDED')
+,('BD', 'DINNER_INCLUDED')
 
-
---SELECT *
---FROM @serv
+--select * from @agrup_cat
+--select * from @rangos_agrup
 
 INSERT INTO @hot_serv
 SELECT
-	t2.Clav_Hotel,
-	t2.Clav_Servicio
-FROM
-	(
+	Clav_Hotel
+	, Categoria_Alimentos AS Clav_Servicio
+FROM (
 	SELECT
-		t.*
-		, s.Clav_Servicio
-		, CASE
-			WHEN s.Clav_Servicio = 'BREAKFAST_INCLUDED' THEN BREAKFAST_INCLUDED
-			WHEN s.Clav_Servicio = 'LUNCH_INCLUDED' THEN LUNCH_INCLUDED
-			WHEN s.Clav_Servicio = 'DINNER_INCLUDED' THEN DINNER_INCLUDED
-			WHEN s.Clav_Servicio = 'BEVERAGES_INCLUDED' THEN BEVERAGES_INCLUDED
-		END ind
-	FROM
-		(
-		SELECT
-			hct.Clav_Hotel
-			, p.Clav_Agrupador
-			, pa.Nombre_Agrupador
-			, BREAKFAST_INCLUDED
-			, LUNCH_INCLUDED
-			, DINNER_INCLUDED
-			, BEVERAGES_INCLUDED
-			, RANGO_PLAN
-			, ROW_NUMBER() 
-					over (Partition BY hct.Clav_Hotel
-						ORDER BY RANGO_PLAN DESC )
-				rango
-		FROM Matrix_Reloaded.dbo.hoteles_cuartos_Tarifas2 hct with (nolock)
-			INNER JOIN Matrix_Reloaded.dbo.Planes p with (nolock)
-				ON hct.Clav_Plan = p.Clav_Plan
-			INNER JOIN Matrix_Reloaded.dbo.Planes_Agrupadores pa with (nolock)
-				ON p.Clav_Agrupador = pa.Clav_Agrupador
-			INNER JOIN @agrup_cat ac
-				ON pa.Clav_Agrupador = ac.Clav_Agrupador
-		GROUP BY hct.Clav_Hotel
-			, p.Clav_Agrupador
-			, pa.Nombre_Agrupador
-			, BREAKFAST_INCLUDED
-			, LUNCH_INCLUDED
-			, DINNER_INCLUDED
-			, BEVERAGES_INCLUDED
-			, RANGO_PLAN
-		) t
-		, @serv s
-	WHERE t.rango = 1
-	) t2
-WHERE t2.ind = 1
+		hct.Clav_Hotel
+		, p.Clav_Agrupador
+		, pa.Nombre_Agrupador
+		, ra.Rango_Agrupador
+		, ROW_NUMBER() 
+				over (Partition BY hct.Clav_Hotel
+					ORDER BY ra.Rango_Agrupador DESC )
+			rango
+	FROM Matrix_Reloaded.dbo.hoteles_cuartos_Tarifas2 hct with (nolock)
+		INNER JOIN Matrix_Reloaded.dbo.Planes p with (nolock)
+			ON hct.Clav_Plan = p.Clav_Plan
+		INNER JOIN Matrix_Reloaded.dbo.Planes_Agrupadores pa with (nolock)
+			ON p.Clav_Agrupador = pa.Clav_Agrupador
+		LEFT JOIN @rangos_agrup ra
+			ON pa.Clav_Agrupador = ra.Clav_Agrupador
+	GROUP BY hct.Clav_Hotel
+		, p.Clav_Agrupador
+		, pa.Nombre_Agrupador
+		, ra.Rango_Agrupador
+	) t1
+	INNER JOIN @agrup_cat ac
+		ON t1.Clav_Agrupador = ac.Clav_Agrupador
+WHERE t1.rango = 1
+ORDER BY t1.Clav_Hotel
 
 
 ---------------------------------------------------
@@ -110,6 +108,8 @@ ORDER BY s.Orden
 
 SELECT *
 FROM @hot_serv
+ORDER BY Clav_Hotel, Clav_Servicio
+
 
 
 
