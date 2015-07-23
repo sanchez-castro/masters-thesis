@@ -269,7 +269,7 @@ lh <- function(qqq){
 lh(ls())
 
 #setwd("entregable_v1")
-#save.image(file = 'datos/datos_completos.Rdata')
+#save.image(file = 'datos/datos_completos_manual.Rdata')
 
 
 hoteles %>%

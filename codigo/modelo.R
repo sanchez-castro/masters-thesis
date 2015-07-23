@@ -14,27 +14,10 @@ print(getwd())
 load('datos/datos_completos.Rdata')
 source('codigo/funciones.R')
 
-
-# Cálculos previos --------------------------------------------------------
-
-a1 <- hoteles %>%
-  dplyr::select(id1=ID_Hotel, n1=Nombre_Hotel, cl1=Clav_Hotel, p1=Precio_Dlls, u1=Utilidad_Dlls,
-                range1=Date_Range,
-                pais1=Nombre_Pais, est1=Nombre_Estado, zip1=Codigo_Postal, stars1=Estrellas,
-                dest1=Clav_Destino, ubic1=Clav_Ubicacion, long1=longitude, lat1=latitude,
-                adult1=Adult_Only, allinc1=Categoria_Alimentos)
-a2 <- hoteles %>%
-  dplyr::select(id2=ID_Hotel, n2=Nombre_Hotel, cl2=Clav_Hotel, p2=Precio_Dlls, u2=Utilidad_Dlls,
-                range2=Date_Range,
-                pais2=Nombre_Pais, est2=Nombre_Estado, zip2=Codigo_Postal, stars2=Estrellas,
-                dest2=Clav_Destino, ubic2=Clav_Ubicacion, long2=longitude, lat2=latitude,
-                adult2=Adult_Only, allinc2=Categoria_Alimentos)
-
-
 # Modelo completo de recomendaciones --------------------------------------
 
 rm(list=ls()[!(ls() %in% c('hoteles','hoteles_categorias','categorias_hoteles_sparse_cantidad',
-                  'categorias_hoteles_sparse_prob','a1','a2',
+                  'categorias_hoteles_sparse_prob',
                   'recomendar','filtra_cand','calcula_sim','geodesic_distance','deg2rad','lh'))])
 
 system.time({
@@ -53,12 +36,12 @@ system.time({
     verbose = 100)
 })
 
-dim(r$info)
-r$info %>% head(20)
 
-recomendados <- r$recomendados %>%
-  left_join(a1[c('id1','cl1')], by='id1') %>%
-  left_join(a2[c('id2','cl2')], by='id2')
+info <- r$info
+recomendados <- r$recomendados
+
+dim(info)
+info %>% head(20)
 
 dim(recomendados)
 recomendados %>% head(10)

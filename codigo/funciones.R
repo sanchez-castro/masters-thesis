@@ -263,21 +263,29 @@ recomendar <- function(
                 max_km=max_km,             # Radio de la cerca interior
                 filtro=cand_info$type))    # Tipo de filtro efectuado
   })
-  
+  a1 <- hot %>%
+    dplyr::select(id1=ID_Hotel, cl1=Clav_Hotel)
+  a2 <- hot %>%
+    dplyr::select(id2=ID_Hotel, cl2=Clav_Hotel)
   recomendados <- lapply(recomendados_lista, function(l) l$selected ) %>%
     rbind_all %>% # Es más rápido primero rbind_all y luego filtrar
     group_by(id1) %>%
     filter(#id1 != id2,
       cumsum(p2 <= (1+price_range)*p1) <= num_recom) %>%
     mutate(rank = row_number()) %>%
-    ungroup
+    ungroup %>%
+    left_join(a1, by='id1') %>%
+    left_join(a2, by='id2') %>%
+    dplyr::select(id1,id2,cl1,cl2,rank,km,p1,p2,score,diverg,hinge_norm,hinge,diff_features)
   info <- data.frame(
     ID_Hotel = sapply(recomendados_lista, function(l) l$ID_Hotel)
     , nserv = sapply(recomendados_lista, function(l) l$nserv)
     , ncomp = sapply(recomendados_lista, function(l) l$ncomp)
     , inner = sapply(recomendados_lista, function(l) l$inner)
     , max_km = sapply(recomendados_lista, function(l) l$max_km)
-    , filtro = sapply(recomendados_lista, function(l) l$filtro))
+    , filtro = sapply(recomendados_lista, function(l) l$filtro)) %>%
+    left_join(hot[c('ID_Hotel','Clav_Hotel')], by='ID_Hotel') %>%
+    dplyr::select(ID_Hotel,Clav_Hotel,nserv,ncomp,inner,max_km,filtro)
   
   list(recomendados=recomendados, info=info)
 }
