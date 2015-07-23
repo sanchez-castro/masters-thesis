@@ -40,12 +40,12 @@ and R.Email not like '%@hoteldo.com%'
 and R.Email not like '%@e-travelsolution.com%'
 and R.status_reserva <> 'X'
 and R.status_pago='P'
-GROUP BY h.Clav_Hotel, h.longitude, h.latitude
+GROUP BY h.Clav_Hotel
 
 -- Pegar los precios a la lista de hoteles. Las coordenadas se pegan por separado porque hay hoteles con coordenadas pero sin precio
 SELECT
 	lh.Clav_Hotel
-	,h.longitude
+	, h.longitude
 	, h.latitude
 	, p.Precio_Dlls
 	, p.Volumen_Noches
