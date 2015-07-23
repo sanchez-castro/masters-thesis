@@ -1,5 +1,6 @@
 
 library(RODBC)
+library(Matrix)
 library(dplyr)
 library(tidyr)
 
@@ -42,10 +43,10 @@ SELECT
   hct.Clav_Hotel,
   p.Clav_Agrupador,
 	pa.Nombre_Agrupador
-FROM Matrix_Reloaded.dbo.hoteles_cuartos_Tarifas2 hct
-	INNER JOIN Matrix_Reloaded.dbo.Planes p
+FROM Matrix_Reloaded.dbo.hoteles_cuartos_Tarifas2 hct with (nolock)
+	INNER JOIN Matrix_Reloaded.dbo.Planes p with (nolock)
 		ON hct.Clav_Plan = p.Clav_Plan
-	INNER JOIN Matrix_Reloaded.dbo.Planes_Agrupadores pa
+	INNER JOIN Matrix_Reloaded.dbo.Planes_Agrupadores pa with (nolock)
 		ON p.Clav_Agrupador = pa.Clav_Agrupador
 GROUP BY Clav_Hotel, p.Clav_Agrupador, Nombre_Agrupador
 ORDER BY Clav_Hotel, p.Clav_Agrupador, Nombre_Agrupador
