@@ -7,13 +7,13 @@ ON [dbo].[Hoteles_Busquedas_Recomendaciones] ([Clav_Hotel])
 GO
 */
 
-DECLARE @hotel INT = 2277 --16--2277
+DECLARE @clav_hotel INT = 16 --16--2277
 DECLARE @fecha DATE = '2015-08-03'
 
 DECLARE @nrec INT = (
 	SELECT count(*)
 	FROM Hoteles_Busquedas_recomendaciones
-	WHERE Clav_Hotel = @hotel
+	WHERE Clav_Hotel = @clav_hotel
 )
 
 --SELECT @nrec
@@ -34,7 +34,7 @@ IF (@nrec = 0) BEGIN							-- NO HAY RECOMENDACIONES DEL ALGORITMO NUEVO
 		, Clav_Destino
 		, Clav_Categoria_Maletas
 	FROM Hoteles h WITH(NOLOCK)
-	WHERE Clav_Hotel = @hotel
+	WHERE Clav_Hotel = @clav_hotel
 
 	SET @destino = (SELECT Clav_Destino FROM @datos_hotel)
 	SET @estrellas = (SELECT Clav_Categoria_Maletas FROM @datos_hotel)
@@ -42,7 +42,7 @@ IF (@nrec = 0) BEGIN							-- NO HAY RECOMENDACIONES DEL ALGORITMO NUEVO
 	SELECT DISTINCT TOP 20
 		h.Clav_Hotel
 		, CASE
-			WHEN h.Clav_Hotel = @hotel THEN 0
+			WHEN h.Clav_Hotel = @clav_hotel THEN 0
 			ELSE ISNULL(so.posicion,1000000)
 		  END AS Posicion
 		--, h.Nombre_Hotel
@@ -69,7 +69,7 @@ IF (@nrec = 0) BEGIN							-- NO HAY RECOMENDACIONES DEL ALGORITMO NUEVO
 						ON hh.Clav_Hotel = hhct2.Clav_Hotel
 					INNER JOIN Planes pp WITH(NOLOCK)
 						ON hhct2.Clav_Plan = pp.Clav_Plan
-				WHERE hh.Clav_Hotel = @hotel
+				WHERE hh.Clav_Hotel = @clav_hotel
 			) opt
 			ON opt.Clav_Destino = h.Clav_Destino
 				AND opt.Clav_Categoria_Maletas = h.Clav_Categoria_Maletas
@@ -85,7 +85,7 @@ IF (@nrec = 0) BEGIN							-- NO HAY RECOMENDACIONES DEL ALGORITMO NUEVO
 	ORDER BY 
 		(
 			CASE
-				WHEN h.Clav_Hotel = @hotel THEN 0
+				WHEN h.Clav_Hotel = @clav_hotel THEN 0
 				ELSE ISNULL(so.posicion,1000000)
 			END
 		)
@@ -95,9 +95,8 @@ ELSE BEGIN										-- SÍ HAY RECOMENDACIONES DEL ALGORITMO NUEVO
 	SELECT TOP 20
 		Clav_HotelRecomendacion
 		, Prioridad AS Posicion
-		, 'Nuevo' AS Algoritmo
 	FROM Hoteles_Busquedas_recomendaciones
-	WHERE Clav_Hotel = @hotel
+	WHERE Clav_Hotel = @clav_hotel
 END
 
 
@@ -144,7 +143,7 @@ FROM
 					ON hh.Clav_Hotel = hhct2.Clav_Hotel
 				INNER JOIN Planes pp WITH(NOLOCK)
 					ON hhct2.Clav_Plan = pp.Clav_Plan
-			WHERE hh.Clav_Hotel = @hotel
+			WHERE hh.Clav_Hotel = @clav_hotel
 		) opt
 		ON opt.Clav_Destino = h.Clav_Destino
 			AND opt.Clav_Categoria_Maletas = h.Clav_Categoria_Maletas
