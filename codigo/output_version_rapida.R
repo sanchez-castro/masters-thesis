@@ -13,7 +13,7 @@ out <- r$recomendados %>%
   arrange(cl1, rank)
 
 out_final <- out %>%
-  dplyr::select(Clav_Hotel=cl1, Clav_HotelRecomendado=cl2) %>%
+  dplyr::select(Clav_Hotel=cl1, Clav_HotelRecomendacion=cl2) %>%
   mutate(Rank = row_number())
 
 out_final$Clav_Hotel %>% unique %>% length
