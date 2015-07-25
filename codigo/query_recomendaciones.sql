@@ -7,7 +7,7 @@ ON [dbo].[Hoteles_Busquedas_Recomendaciones] ([Clav_Hotel])
 GO
 */
 
-DECLARE @clav_hotel INT = 10119087 --90445895 --16--2277
+DECLARE @clav_hotel INT = 2789 --90445895 (BROKEN) --10119087 --16--2277
 DECLARE @fecha DATE = '2015-08-03'
 
 DECLARE @nrec INT = (
@@ -40,62 +40,43 @@ IF (@nrec = 0) BEGIN							-- NO HAY RECOMENDACIONES DEL ALGORITMO NUEVO
 	SET @destino = (SELECT Clav_Destino FROM @datos_hotel)
 	SET @estrellas = (SELECT Clav_Categoria_Maletas FROM @datos_hotel)
 
-	SELECT DISTINCT TOP 20
-		h.Clav_Hotel AS Clav_HotelRecomendacion
-		, CASE
-			WHEN h.Clav_Hotel = @clav_hotel THEN 0
-			ELSE ISNULL(so.posicion,1000000)
-		  END AS Posicion
-		--, h.Nombre_Hotel
-		--, h.Clav_Destino
-		--, h.Clav_Categoria_Maletas
-		/* -- OJO QUE SI PONEMOS LA CLAV_AGRUPADOR, ENTONCES SE PUEDEN REPETIR LOS HOTELES
-		, p.Clav_Agrupador
-		*/
-	FROM
-		Hoteles h
-		INNER JOIN hoteles_cuartos_Tarifas2 hct2 WITH(NOLOCK)
-			ON h.Clav_Hotel = hct2.Clav_Hotel
-		INNER JOIN Planes p WITH(NOLOCK)
-			ON hct2.Clav_Plan = p.Clav_Plan
-		INNER JOIN
-			(
-				SELECT DISTINCT
-					hh.Clav_Hotel
-					, hh.Clav_Destino
-					, hh.Clav_Categoria_Maletas
-					, pp.Clav_Agrupador
-				FROM Hoteles hh
-					INNER JOIN hoteles_cuartos_Tarifas2 hhct2 WITH(NOLOCK)
-						ON hh.Clav_Hotel = hhct2.Clav_Hotel
-					INNER JOIN Planes pp WITH(NOLOCK)
-						ON hhct2.Clav_Plan = pp.Clav_Plan
-				WHERE hh.Clav_Hotel = @clav_hotel
-			) opt
-			ON opt.Clav_Destino = h.Clav_Destino
-				AND opt.Clav_Categoria_Maletas = h.Clav_Categoria_Maletas
-				AND opt.Clav_Agrupador = p.Clav_Agrupador
-		LEFT JOIN BI_SortOrder so WITH(NOLOCK)
-			ON h.Clav_Hotel = so.Clav_Hotel
-				AND h.Clav_Destino = so.Clav_Destino
-	WHERE so.fecha_in <= @fecha
-		AND @fecha < so.fecha_out
-		AND so.clav_destino = @destino -- Esto no tiene ningún efecto en el resultado pero acelera mucho el query
-		AND h.Activo = 1
-		--AND h.Clav_Categoria_Maletas = @estrellas -- Esto alenta el query y no tiene ningun efecto en el resultado
-	ORDER BY 
-		(
-			CASE
-				WHEN h.Clav_Hotel = @clav_hotel THEN 0
-				ELSE ISNULL(so.posicion,1000000)
-			END
-		)
-		, h.Clav_Hotel
+	SELECT
+			Clav_HotelRecomendacion
+			, ROW_NUMBER() OVER (ORDER BY Posicion) AS Posicion
+		FROM (
+			SELECT DISTINCT TOP 50
+				h.Clav_Hotel AS Clav_HotelRecomendacion
+				, CASE
+					WHEN h.Clav_Hotel = @clav_hotel THEN 0
+					ELSE ISNULL(so.posicion,1000000)
+				  END AS Posicion
+			FROM
+				Hoteles h
+				INNER JOIN hoteles_Destinos hd
+					ON h.Clav_Hotel = hd.clav_hotel
+				LEFT JOIN
+					(
+						SELECT *
+						FROM BI_SortOrder so2 WITH(NOLOCK)
+						WHERE so2.fecha_in <= @fecha
+							AND @fecha < so2.fecha_out
+							AND so2.clav_destino = @destino
+					) so
+					ON h.Clav_Hotel = so.Clav_Hotel
+						AND h.Clav_Destino = so.Clav_Destino
+			WHERE h.Activo = 1
+				AND h.Internet = 1
+				AND h.Clav_Destino = @destino
+				AND hd.clav_destino = @destino 
+				AND h.Clav_Categoria_Maletas = @estrellas
+		) t
+		ORDER BY Posicion
 END
 ELSE BEGIN										-- SÍ HAY RECOMENDACIONES DEL ALGORITMO NUEVO
-	SELECT TOP 20
+	SELECT TOP 50
 		Clav_HotelRecomendacion
 		, Prioridad AS Posicion
+		, 'Nuevo' AS Metodo
 	FROM Hoteles_Busquedas_recomendaciones
 	WHERE Clav_Hotel = @clav_hotel
 END
