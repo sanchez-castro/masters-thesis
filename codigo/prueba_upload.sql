@@ -6,6 +6,7 @@ CREATE TABLE RM_PruebaHotelesRecomendaciones (
 	, Clav_Hotel INT
 	, Clav_HotelRecomendacion INT
 	, Prioridad INT
+	, Fecha_Actualizacion DATETIME
 	-- Indice por Clav_Hotel
 	--, CONSTRAINT IX_PruebaHotelesRecomendaciones_Clav_Hotel PRIMARY KEY CLUSTERED (Clav_Hotel)
 )
