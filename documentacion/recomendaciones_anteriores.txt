@@ -1,0 +1,33 @@
+{
+    "Client": {
+        "Affiliate": "bestdaymx",
+        "IsOffline": false,
+        "Language": "ESP",
+        "Site": "BDE",
+        "Country": "MX",
+        "Currency": "PE"
+    },
+    "Filters": {
+        "Destinations": [179892],
+        "IncludeDetails": {
+            "Reviews": true
+        },
+        "Categories": ["S25"],
+        "StatusList": [80, 90]
+    },
+    "Traveler": {
+        "CheckIn": "/Date(1438300800000)/",
+        "CheckOut": "/Date(1438646400000)/",
+        "Rooms": [{
+            "Adults": 2,
+            "Children": 0
+        }]
+    }
+} & _ = 1437764298203 http: //api.bestday.com/11/Hotels.svc/GetList/Json?callback=getProductResults&request={"Client":{"Affiliate":"bestdaymx","IsOffline":false,"Language":"ESP","Site":"BDE","Country":"MX","Currency":"PE"},"Filters":{"Destinations": [179892],"IncludeDetails":{"Reviews":true},"Categories":["S25"],   "StatusList": [80,90]},"Traveler": {"CheckIn": "/Date(1438300800000)/","CheckOut": "/Date(1438646400000)/","Rooms": [{"Adults":2,"Children":0}]}}
+
+
+# Criterios
+Está en hoteles
+Está en hoteles_destinos
+activos = 1, internet = 1
+por destino y estrellas
