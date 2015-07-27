@@ -2,7 +2,7 @@
 truncate table RM_PruebaHotelesRecomendaciones
 
 CREATE TABLE RM_PruebaHotelesRecomendaciones (
-	Clav_HotelBusquedaRecomendacion INT
+	Clav_HotelBusquedaRecomendacion INT PRIMARY KEY
 	, Clav_Hotel INT
 	, Clav_HotelRecomendacion INT
 	, Prioridad INT
@@ -29,6 +29,10 @@ SELECT *
 FROM RM_PruebaHotelesRecomendaciones WITH(NOLOCK, INDEX(IX_RM_PruebaHotelesRecomendaciones_Clav_Hotel))
 WHERE Clav_Hotel = @hotel
 
+
+SELECT *
+FROM RM_PruebaHotelesRecomendaciones WITH(NOLOCK, INDEX(IX_RM_PruebaHotelesRecomendaciones_Clav_Hotel))
+WHERE Clav_HotelRecomendacion < 0
 
 SELECT TOP 100 *
 FROM Hoteles_Busquedas_Recomendaciones WITH(NOLOCK)

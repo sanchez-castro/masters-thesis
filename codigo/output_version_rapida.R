@@ -3,7 +3,7 @@
 
 # Versión provisional para subir ya ---------------------------------------
 
-max_num_recom <- 20
+max_num_recom <- 50
 out <- r$recomendados %>%
   mutate(within_price = (p2 < p1 * (1 + 0.3))) %>%
   group_by(cl1) %>%
