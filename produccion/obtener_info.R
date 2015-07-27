@@ -1,14 +1,3 @@
-
-library(RODBC)
-library(Matrix)
-library(dplyr)
-library(tidyr)
-
-con <- odbcConnect(dsn = 'syscubo',
-                   uid = 'bmxddt005062',
-                   pwd = 'SQLFelipe142857')
-
-
 # Hoteles
 h1 <- sqlQuery(con, "EXEC spRM_ObtenerDatosHoteles @fecha_ini = '20130724'")
 h2 <- h1 %>%
@@ -41,11 +30,5 @@ categorias_hoteles_sparse_prob <- sparseMatrix(i = hoteles_categorias$ID_Categor
                                                j = hoteles_categorias$ID_Hotel,
                                                x = hoteles_categorias$Cantidad_Prob)
 
-# Salvar los resultados ---------------------------------------------------
-
-odbcCloseAll()
-rm(list=grep('hoteles|hoteles_categorias|categorias_hoteles_sparse|claves_categorias',
-             ls(),
-             value = T,
-             invert = T))
-save.image(file = 'temp/datos.Rdata')
+rm(h1,h2,hc1,hc2,hc3,claves_categorias)
+gc()

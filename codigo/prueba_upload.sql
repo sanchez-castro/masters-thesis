@@ -2,7 +2,7 @@
 truncate table RM_PruebaHotelesRecomendaciones
 
 CREATE TABLE RM_PruebaHotelesRecomendaciones (
-	Clav_HotelBusquedaRecomendacion INT PRIMARY KEY
+	Clav_HotelBusquedaRecomendacion INT
 	, Clav_Hotel INT
 	, Clav_HotelRecomendacion INT
 	, Prioridad INT
@@ -19,7 +19,14 @@ CREATE NONCLUSTERED INDEX [IX_RM_PruebaHotelesRecomendaciones_Clav_Hotel] ON [db
 	[Clav_Hotel] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+
 ----------------
+
+SELECT CAST(GETDATE() AS CHAR)
+
+SELECT GETDATE()
+
+SELECT CONVERT(VARCHAR, GETDATE(), 121)
 
 /**/
 
@@ -30,6 +37,8 @@ SELECT *
 FROM RM_PruebaHotelesRecomendaciones WITH(NOLOCK, INDEX(IX_RM_PruebaHotelesRecomendaciones_Clav_Hotel))
 WHERE Clav_Hotel = @hotel
 
+
+DELETE FROM RM_PruebaHotelesRecomendaciones\n                    WHERE Clav_Hotel = 2\n       AND Fecha_Actualizacion <> 2015-07-27 18:00:25.257
 
 SELECT *
 FROM RM_PruebaHotelesRecomendaciones WITH(NOLOCK, INDEX(IX_RM_PruebaHotelesRecomendaciones_Clav_Hotel))
