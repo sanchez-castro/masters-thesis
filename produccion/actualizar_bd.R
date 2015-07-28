@@ -27,7 +27,7 @@ for(i in claves){
                          "AND Fecha_Actualizacion <> '%s'"), i, fecha)
     sqlQuery(con, qry)
   }
-  if(floor(verbose/5) <= length(claves) & j %% floor(verbose/5) == 1){
+  if(floor(verbose/1) <= length(claves) & j %% floor(verbose/1) == 1){
     cat(paste0('Iter: ', j, '\t\t...\t\t', round(100*j/length(claves)), '%\n'))
   }
   j <- j + 1

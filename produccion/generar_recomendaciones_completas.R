@@ -27,7 +27,7 @@ source('produccion/obtener_info.R')
 source('produccion/correr_modelo.R')
 
 # Preparar resultados para subirlos a la base de datos --------------------
-source('produccion/preparar_salida_version_rapida.R')
+source('produccion/preparar_salida_version_completa.R')
 
 # Actualizar las recomendaciones en la base de datos ----------------------
 source('produccion/actualizar_bd.R')

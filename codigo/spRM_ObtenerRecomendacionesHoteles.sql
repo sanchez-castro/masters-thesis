@@ -103,7 +103,7 @@ BEGIN
 		SELECT TOP 50
 			Clav_HotelRecomendacion
 			, Prioridad AS Posicion
-		FROM Hoteles_Busquedas_recomendaciones
+		FROM Hoteles_Busquedas_recomendaciones WITH(NOLOCK)
 		WHERE Clav_Hotel = @clav_hotel
 	END
 
