@@ -1,14 +1,11 @@
 
 actualizar_info.R
 correr_modelo.R
-preparar_resultado[_version_rapida].R
+preparar_resultado_version_[rapida|completa].R
 actualizar_bd.R
 
 
 NOTAS:
 ------------
 
-* Para producci√≥n, hay que cambiar el nombre de la tabla *RM_PruebaHotelesRecomendaciones* al nombre bueno.
-* Falta crear el √≠ndice de la tabla de recomendaciones y ponerlo en el SP
-* La columna de recomendaciones Clav_HotelBusquedaRecomendacion **NO** puede ser PRIMARY KEY porque entonces truena al hacer las inserciones.
-
+* Hay que cambiar el spRM_ObtenerRecomendacionesHoteles por el que est√ en producci√n (correr el ALTER PROCEDURE).

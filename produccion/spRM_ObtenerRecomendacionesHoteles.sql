@@ -19,7 +19,7 @@
 
 -- ---------------------------------------------
 
--- 20150728		Felipe Gerard		Cambiamos el SP para usar la nueva tabla de recomendaciones (RM_Hoteles_HotelesRecomendaciones) y el índice.
+-- 20150728		Felipe Gerard		Cambiamos el SP para usar la nueva tabla de recomendaciones (RM_Hoteles_HotelesRecomendaciones), la fecha de actualización y el índice.
 
 -- =============================================
 
@@ -105,6 +105,13 @@ BEGIN
 			, Prioridad AS Posicion
 		FROM RM_Hoteles_HotelesRecomendaciones WITH(NOLOCK, INDEX(IX_RM_Hoteles_HotelesRecomendaciones_Clav_Hotel))
 		WHERE Clav_Hotel = @clav_hotel
+			AND Fecha_Actualizacion =
+			(
+				SELECT max(Fecha_Actualizacion)
+				FROM RM_Hoteles_HotelesRecomendaciones
+				WITH(NOLOCK, INDEX(IX_RM_Hoteles_HotelesRecomendaciones_Clav_Hotel))
+				WHERE Clav_Hotel = @clav_hotel
+			)
 	END
 
 	-- END CODE -----------------------------------------------------------------------------

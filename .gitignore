@@ -6,3 +6,4 @@
 *.tmp
 packrat/lib*/
 .httr-oauth
+.Rdata

@@ -8,5 +8,5 @@ out <- recomendados %>%
 #   arrange(cl1, rank) %>%
   dplyr::select(Clav_Hotel=cl1, Clav_HotelRecomendacion=cl2) %>%
   mutate(Prioridad = row_number()) %>%
-  ungroup %>%
-  mutate(Clav_HotelBusquedaRecomendacion = row_number())
+  ungroup
+
