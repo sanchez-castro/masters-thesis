@@ -1,4 +1,4 @@
-source('produccion/funciones.R')
+source('produccion/R/funciones.R')
 
 system.time({
   r <- recomendar(

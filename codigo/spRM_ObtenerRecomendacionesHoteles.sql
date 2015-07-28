@@ -105,6 +105,7 @@ BEGIN
 			, Prioridad AS Posicion
 		FROM Hoteles_Busquedas_recomendaciones WITH(NOLOCK)
 		WHERE Clav_Hotel = @clav_hotel
+		ORDER BY Prioridad
 	END
 
 	-- END CODE -----------------------------------------------------------------------------

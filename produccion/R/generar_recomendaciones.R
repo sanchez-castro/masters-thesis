@@ -21,16 +21,16 @@ con <- odbcConnect(dsn = 'syscubo',
                    pwd = 'SQLFelipe142857')
 
 # Actualizar información --------------------------------------------------
-source('produccion/obtener_info.R')
+source('produccion/R/obtener_info.R')
 
 # Correr modelo -----------------------------------------------------------
-source('produccion/correr_modelo.R')
+source('produccion/R/correr_modelo.R')
 
 # Preparar resultados para subirlos a la base de datos --------------------
-source('produccion/preparar_salida_version_rapida.R')
+source('produccion/R/preparar_salida_version_rapida.R') # [version_completa]
 
 # Actualizar las recomendaciones en la base de datos ----------------------
-source('produccion/actualizar_bd.R')
+source('produccion/R/actualizar_bd.R')
 
 # Limpiar y cerrar --------------------------------------------------------
 

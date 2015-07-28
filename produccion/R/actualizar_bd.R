@@ -7,6 +7,7 @@ idx_claves <- round(seq(1, length(claves), length.out = length(claves)/(500/max_
 
 j <- 0
 reg <- 0
+tic <- Sys.time()
 
 for(i in 1:(length(idx_claves) - 1)){
   cl <- claves[(idx_claves[i] + as.numeric(i!=1)):idx_claves[i+1]]
@@ -29,12 +30,13 @@ for(i in 1:(length(idx_claves) - 1)){
   
   j <- j + length(cl)
   reg <- reg + nrow(aux)
-  cat(paste0('# hoteles: ', j, '\t\t...\t\t# renglones: ', reg, '\t\t...\t\t', round(100*reg/nrow(out),1), '%\n'))
+  toc <- Sys.time()
+  segundos <- round(as.numeric(difftime(toc, tic, units = 'secs')), 1)
+  cat(paste0('# hoteles: ', j, '\t\t...\t\t# renglones: ', reg, '\t\t...\t\t', round(100*reg/nrow(out),1), '%\t\t...\t\t# tiempo: ', segundos, ' s\n'))
+  tic <- toc
 }
 
 # Borrar recomendaciones antiguas
-##### FALTA CHECAR SI SE INSERTARON TODAS
-
 qry_count_new <- sprintf(paste("SELECT count(*)",
                                "FROM RM_Hoteles_HotelesRecomendaciones",
                                "WHERE Fecha_Actualizacion = '%s'"), fecha)

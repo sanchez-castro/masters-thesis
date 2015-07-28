@@ -112,6 +112,7 @@ BEGIN
 				WITH(NOLOCK, INDEX(IX_RM_Hoteles_HotelesRecomendaciones_Clav_Hotel))
 				WHERE Clav_Hotel = @clav_hotel
 			)
+		ORDER BY Prioridad
 	END
 
 	-- END CODE -----------------------------------------------------------------------------
