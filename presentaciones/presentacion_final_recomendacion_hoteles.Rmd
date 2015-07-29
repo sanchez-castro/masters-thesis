@@ -368,25 +368,27 @@ Demo
     + Se está trabajando en la limpieza
 
 
-## Notas finales
+## Qué **sí** hace
 
-- Qué **sí** hace:
-    + **Recomienda** hoteles similares
-    + Toma en cuenta el **precio**
-    + Toma en cuenta la **cercanía**
-    + Promueve que el cliente **explore la página**
-- Qué **no** hace (y no queremos que haga):
-    + **No** encuentra sets competitivos
-        * Lo importante es cerrar ventas
-    + **No** da mayor peso a promociones
-        * Enfoque distinto
+- **Recomienda** hoteles similares
+- Toma en cuenta el **precio**
+- Toma en cuenta la **cercanía**
+- Promueve que el cliente **explore la página**
+    + Recomendaciones no transitivas
 
 
-## Notas finales
+## Qué **no** hace (y no queremos que haga)
 
-- Qué **podría** hacer:
-    + **Incorporar** más hoteles (EAN)
-    + **Mejorar** si se aumenta el detalle de servicios
+- **No** encuentra sets competitivos
+    + Lo importante es cerrar ventas
+- **No** da mayor peso a promociones
+    + Enfoque distinto
+
+
+## Qué **podría** hacer
+
+- **Incorporar** más hoteles (EAN)
+- **Ser más preciso** si se aumenta el detalle de servicios
 
 
 ## 
