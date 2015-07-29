@@ -1,0 +1,246 @@
+---
+title: "Modelo de recomendación de hoteles"
+author: "Revenue Management. Preparado por Felipe Gerard"
+date: "3 de agosto de 2015"
+output: ioslides_presentation
+logo: graficas/logo2.png
+---
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=T}
+library(Matrix)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(knitr)
+#setwd("C:/Users/bmxddt005062/Documents/recomendacion_de_hoteles")
+# # Servicios
+# load('datos/hoteles_servicios_mex.Rdata')
+# # Categorias
+# load('datos/hoteles_servicios_categorias_mex.Rdata')
+# # Precios, comentarios, geolocalizacion
+# load('datos/hoteles_precios_comentarios_geo_mex.Rdata')
+circleFun <- function(center = c(0,0),diameter = 1, npoints = 100){
+    r = diameter / 2
+    tt <- seq(0,2*pi,length.out = npoints)
+    xx <- center[1] + r * cos(tt)
+    yy <- center[2] + r * sin(tt)
+    return(data.frame(x = xx, y = yy))
+}
+```
+
+## Antecedentes
+
+- **Objetivo:** Recomendar hoteles similares a uno dado
+- **Solución actual:** Búsqueda por destino y estrellas
+- **Problemas:**
+    * Se ignora el precio del hotel
+    * No se toma en cuenta la filosofía del hotel
+    * La información geográfica no se aprovecha
+    * El criterio es estático
+
+
+## Ideas
+
+- No mostrar hoteles demasiado caros
+- Tomar en cuenta el perfil de los hoteles además de su categoría
+- Incorporar información geográfica detallada
+- Hacer que el criterio sea dinámico
+
+
+## Plan de ataque
+
+1. Obtener información relevante
+    - Precios, servicios, geolocalización
+2. Caracterizar los hoteles
+    - Categorías de servicios equivalentes
+3. Diseñar un criterio integral de similitud
+    - Precio
+    - Mismos servicios (categoría similar)
+    - Perfil similar
+    - Cercanía
+
+
+## Información
+
+- Diversas fuentes
+- Mala calidad
+- Problemas con EAN
+- Se está trabajando en mejorarla
+
+
+## Precio
+
+- Poner hoteles demasiado caros no promueve el interés del cliente
+- Favorecer precios bajos
+- Porcentaje máximo arriba del hotel original
+    + Siempre y cuando tenga la categoría suficiente
+- Hoteles por encima del precio establecido son invisibles
+
+
+## Caracterización de hoteles
+
+- Usar información de servicios
+- Directamente es ruidosa: no toma en cuenta los sustitutos
+- **Solución:** Agrupar servicios en categorías equivalentes
+- **Método:** Manual + aglomerado jerárquico:
+
+![Aglomerado jerárquico](graficas/dendrograma_parcial.png)
+
+
+## Definiendo una medida de similitud
+
+```{r, echo=FALSE, fig.width=8, fig.height=5}
+
+aux <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(0.1,6,10,8),
+                Hotel = rep('Original', 4))
+
+ggplot(aux) +
+  geom_bar(aes(x,y,fill=Hotel), stat='identity', position='dodge', width=0.5) +
+  scale_fill_manual(values = 'black') +
+  labs(title='Características del hotel original', x='', y='Número de servicios por categoría')
+
+```
+
+
+## Definiendo una medida de similitud
+
+```{r, echo=FALSE, fig.width=8, fig.height=5}
+
+x <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(0.1,6,10,8),
+                Hotel = rep('Original', 4))
+y <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(1,5,9,9),
+                Hotel = rep('Alternativa 1', 4))
+z <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(0.1,3,4,4),
+                Hotel = rep('Alternativa 2', 4))
+v <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(10,10,10,10),
+                Hotel = rep('Alternativa 3', 4))
+w <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(10,9,2,4),
+                Hotel = rep('Alternativa 4', 4))
+
+aux <- rbind(
+  cbind(x,div='Perfil similar', hinge='Servicios suficientes'),
+  cbind(y,div='Perfil similar', hinge='Servicios suficientes'),
+  cbind(x,div='Perfil similar', hinge='Servicios insuficientes'),
+  cbind(z,div='Perfil similar', hinge='Servicios insuficientes'),
+  cbind(x,div='Perfil diferente', hinge='Servicios suficientes'),
+  cbind(v,div='Perfil diferente', hinge='Servicios suficientes'),
+  cbind(x,div='Perfil diferente', hinge='Servicios insuficientes'),
+  cbind(w,div='Perfil diferente', hinge='Servicios insuficientes'))
+
+ggplot(aux) +
+  geom_bar(aes(x,y,fill=Hotel), stat='identity', position='dodge', width=0.5) +
+  scale_fill_manual(values = c('black', rgb(0.1,0.8,0.3),
+                               rgb(0.7,0.1,0.7), rgb(0.1,0.3,0.8), rgb(1,0.2,0.1))) +
+  facet_grid(div ~ hinge) +
+  labs(title='Características combinadas: perfil + servicios', x='', y='Número de servicios por categoría')
+
+```
+
+
+## Similitud
+
+- Medida de similitud de servicios:
+    + ¿Cuántos servicios le faltan?
+- Medida de similitud de perfil:
+    + ¿Son similares las proporciones de cada categoría?
+- **Medida de similitud:** Promedio entre ambas medidas
+- Ponderación de acuerdo a la variabilidad de cada una (ACP)
+
+
+## Cercanía
+
+- Lo importante es la distancia
+- ¿Qué significa "cerca"?
+    + Depende de densidad de hoteles
+    + Criterio dinámico
+- Evitar enmascaramiento por hoteles distintos
+
+
+## Cercanía
+
+```{r, echo=FALSE, fig.width=8, fig.height=5}
+set.seed(1234)
+x2 <- data.frame(x=c(0,rnorm(29),1.5,-1), y=c(0,rnorm(29),1.2,-1.3), s=c(5,2*runif(29),4,4), col=c('original',rep('opciones malas',29), 'opciones buenas', 'opciones buenas'))
+ggplot(x2, aes(x,y,size=s)) +
+  geom_point(aes(color=col)) +
+  geom_point(aes(alpha=(s>2)), shape=1, color='black') +
+  scale_size_continuous(guide=FALSE) +
+  scale_alpha_discrete(guide=FALSE) +
+  guides(color=guide_legend(title=NULL)) +
+  labs(x='Longitud', y='Latitud')
+#ggsave('documentacion/graficas/cercania.png')
+```
+
+
+## Integrando todo
+
+- Definir un radio de cercanía "razonable"
+    + Ignorar hoteles caros (precio de largo plazo)
+    + Acumular una cantidad de similitud
+- Recomendar dentro de la geocerca
+    + Ignorar hoteles caros (precio en fecha de la búsqueda)
+    + Ordenar por mayor similitud
+
+
+## Integrando todo
+
+```{r, echo=FALSE, fig.width=8, fig.height=5}
+set.seed(1234)
+circ <- circleFun(c(0,0),3,npoints = 100)
+x2 <- data.frame(x=c(0,rnorm(30)),
+                 y=c(0,rnorm(30)),
+                 s=c(5,4*runif(30))) %>%
+  mutate(col=ifelse(s==5, 'original',
+                    ifelse(sqrt(x^2 + y^2) < 1.5,
+                           ifelse(runif(31) < 0.5, 'recomendados', 'caros'),
+                                  'lejanos'))) %>%
+  group_by(col) %>%
+  mutate(r = rank(-s)) %>%
+  arrange(col, r)
+ggplot(x2) +
+  geom_point(aes(x,y,size=s, color=col)) +
+  scale_color_manual(values = c('original'=rgb(0.1,0.3,0.8),
+                                'recomendados'=rgb(0.1,0.8,0.3),
+                                'caros'=rgb(0.8,0.8,0.1),
+                                'lejanos'='black')) +
+  geom_path(data=circ, aes(x,y), linetype='dashed') +
+  geom_text(data=filter(x2, col=='recomendados') %>% head(5),
+            aes(x,y,label=r), hjust=-0.5, vjust=-0) +
+  guides(color=guide_legend(title=NULL)) +
+  scale_size_continuous(guide=FALSE) +
+  scale_alpha_discrete(guide=FALSE) +
+  labs(x='Longitud', y='Latitud')
+```
+
+
+## Notas sobre la implementación
+
+- **Respaldo:**
+    + Destino + Estrellas + Sort Order (en fecha buscada)
+    + Para hoteles que no han entrado al sistema *aún*
+    + Por si hay algún error
+- Aún no está el precio dinámico
+    + Se filtra desde el principio con precio de largo plazo
+- La base de servicios está sucia
+    + Se está trabajando en hoteles EAN
+
+
+## Demo
+
+- Mucha plática y poca acción...
+
+
+## (Más) preguntas
+
+
+## ¡Gracias!
+
+
+

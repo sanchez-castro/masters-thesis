@@ -19,7 +19,7 @@ shinyUI(fluidPage(
                 min = 1, max = 300, value = 30),
     sliderInput('alpha',
                 label = 'Cantidad de servicios - Perfil del hotel',
-                min = 0, max = 1, value = 0.338, step = 0.001),
+                min = 0, max = 1, value = 0.381, step = 0.001),
     sliderInput('needed_weight',
                 label = 'Tamaño de la vecindad de hoteles a considerar',
                 min = 1, max = 100, value = 30),
