@@ -42,15 +42,17 @@ circleFun <- function(center = c(0,0),diameter = 1, npoints = 100){
 
 ## Ejemplos
 
+<div class="centered">
 ![Oasis Cancún](graficas/rec_oasis.png)
 ![La Quinta Inn and Suites Cancún](graficas/rec_laquinta.png)
-
+</div>
 
 ## Ejemplos
 
+<div class="centered">
 ![Camino Real Aeropuerto CDMX](graficas/rec_craerop.png)
 ![Presidente InterContinental Cozumel](graficas/rec_picozumel.png)
-
+</div>
 
 ## Problemas
 
@@ -72,13 +74,16 @@ circleFun <- function(center = c(0,0),diameter = 1, npoints = 100){
 
 ## ¿Y si en lugar de esto...
 
+<div class="centered">
 ![La Quinta Inn and Suites Cancún](graficas/rec_laquinta.png)
 ![La Quinta Inn and Suites Cancún](graficas/map_laquinta.png)
-
+</div>
 
 ## ... recomendáramos esto?
 
+<div class="centered">
 ![La Quinta Inn and Suites Cancún](graficas/newrecmap_laquinta.png)
+</div>
 
 
 ## Plan de ataque
@@ -110,13 +115,13 @@ circleFun <- function(center = c(0,0),diameter = 1, npoints = 100){
 - **Solución:** Agrupar servicios en categorías equivalentes
 - **Método:** Manual + aglomerado jerárquico:
 
+<div class="centered">
 ![Aglomerado jerárquico](graficas/dendrograma_parcial.png)
+</div>
 
+## Similitud
 
-## Definiendo una medida de similitud
-
-```{r, echo=FALSE, fig.width=8, fig.height=5}
-
+```{r, echo=FALSE, fig.width=8, fig.height=5, fig.align='center'}
 aux <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
                 y = c(0.1,6,10,8),
                 Hotel = rep('Original', 4))
@@ -124,14 +129,86 @@ aux <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
 ggplot(aux) +
   geom_bar(aes(x,y,fill=Hotel), stat='identity', position='dodge', width=0.5) +
   scale_fill_manual(values = 'black') +
-  labs(title='Características del hotel original', x='', y='Número de servicios por categoría')
+  labs(title='Características del hotel original', x='', y='Número de servicios por categoría') +
+  theme(axis.text.x=element_text(angle=30, hjust=1))
 
 ```
 
 
-## Definiendo una medida de similitud
+## Similitud (servicios)
 
-```{r, echo=FALSE, fig.width=8, fig.height=5}
+```{r, echo=FALSE, fig.width=8, fig.height=5, fig.align='center'}
+x <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(0.1,6,10,8),
+                Hotel = rep('Original', 4))
+y <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(1,5,9,9),
+                Hotel = rep('Alternativa 1', 4))
+z <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(0.1,3,4,4),
+                Hotel = rep('Alternativa 2', 4))
+
+aux <- rbind(
+  cbind(x,div='Perfil similar', hinge='Servicios suficientes'),
+  cbind(y,div='Perfil similar', hinge='Servicios suficientes'),
+  cbind(x,div='Perfil similar', hinge='Servicios insuficientes'),
+  cbind(z,div='Perfil similar', hinge='Servicios insuficientes'))
+
+ggplot(aux) +
+  geom_bar(aes(x,y,fill=Hotel), stat='identity', position='dodge', width=0.5) +
+  scale_fill_manual(values = c('black', rgb(0.1,0.8,0.3), rgb(0.7,0.1,0.7))) +
+  facet_wrap( ~ hinge) +
+  labs(x='', y='Número de servicios por categoría') +
+  theme(axis.text.x=element_text(angle=30, hjust=1))
+
+```
+
+
+## Similitud (servicios)
+
+- El cliente busca al menos ciertos servicios
+- Los servicios faltantes restan similitud
+- Los servicios extras no se penalizan
+
+
+## Similitud (perfil)
+
+```{r, echo=FALSE, fig.width=8, fig.height=5, fig.align='center'}
+x <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(0.1,6,10,8),
+                Hotel = rep('Original', 4))
+y <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(1,5,9,9),
+                Hotel = rep('Alternativa 1', 4))
+v <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
+                y = c(10,10,10,10),
+                Hotel = rep('Alternativa 3', 4))
+
+aux <- rbind(
+  cbind(x,div='Perfil similar', hinge='Servicios suficientes'),
+  cbind(y,div='Perfil similar', hinge='Servicios suficientes'),
+  cbind(x,div='Perfil diferente', hinge='Servicios suficientes'),
+  cbind(v,div='Perfil diferente', hinge='Servicios suficientes'))
+
+ggplot(aux) +
+  geom_bar(aes(x,y,fill=Hotel), stat='identity', position='dodge', width=0.5) +
+  scale_fill_manual(values = c('black', rgb(0.1,0.8,0.3), rgb(0.1,0.3,0.8))) +
+  facet_wrap(~ div) +
+  labs(x='', y='Número de servicios por categoría') +
+  theme(axis.text.x=element_text(angle=30, hjust=1))
+```
+
+
+## Similitud (perfil)
+
+- Misma proporción de cada tipo de servicios
+- No importa la cantidad en sí
+- Puede dar hoteles más sencillos/más lujosos
+
+
+## Similitud (servicios + perfil)
+
+```{r, echo=FALSE, fig.width=8, fig.height=5, fig.align='center'}
 
 x <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
                 y = c(0.1,6,10,8),
@@ -164,19 +241,22 @@ ggplot(aux) +
   scale_fill_manual(values = c('black', rgb(0.1,0.8,0.3),
                                rgb(0.7,0.1,0.7), rgb(0.1,0.3,0.8), rgb(1,0.2,0.1))) +
   facet_grid(div ~ hinge) +
-  labs(title='Características combinadas: perfil + servicios', x='', y='Número de servicios por categoría')
-
+  labs(title='Características combinadas: perfil + servicios', x='', y='Número de servicios por categoría') +
+  theme(axis.text.x=element_text(angle=30, hjust=1))
 ```
 
 
-## Similitud
+## Similitud (servicios + perfil)
 
-- Medida de similitud de servicios:
-    + ¿Cuántos servicios le faltan?
-- Medida de similitud de perfil:
-    + ¿Son similares las proporciones de cada categoría?
-- **Medida de similitud:** Promedio entre ambas medidas
-- Ponderación de acuerdo a la variabilidad de cada una (ACP)
+- Medida de similitud de **servicios**: Calidad mínima
+- Medida de similitud de **perfil**: Proporciones de servicios
+- **Medida de similitud final:**
+    + Capturar ambos efectos
+    + Promedio entre ambas medidas
+    + Ponderación de acuerdo a la variabilidad de cada una (ACP)
+- ¿Por qué no diferencia absoluta?
+    + Es muy agresiva
+    + No es ajustable
 
 
 ## Cercanía
@@ -225,7 +305,7 @@ ggplot(x2, aes(x,y,size=s)) +
 
 ## Integrando todo
 
-- Definir un radio de cercanía "razonable"
+- Definir un radio de cercanía razonable
     + Ignorar hoteles caros (precio de largo plazo)
     + Acumular una cantidad de similitud
 - Recomendar dentro de la geocerca
@@ -264,9 +344,15 @@ ggplot(x2) +
 ```
 
 
-## Demo
+## Mucha plática y poca acción...
 
-- Mucha plática y poca acción...
+
+## Mucha plática y poca acción...
+
+<div class="centered" style="font-size:80px;">
+</br>
+Demo
+</div>
 
 
 ## Notas sobre la implementación
@@ -303,10 +389,20 @@ ggplot(x2) +
     + **Mejorar** si se aumenta el detalle de servicios
 
 
-## (Más) preguntas
+## 
+
+<div class="centered" style="font-size:60px;">
+</br>
+</br>
+(Más) preguntas
+</div>
 
 
-## ¡Gracias!
+## 
 
-
+<div class="centered" style="font-size:80px;">
+</br>
+</br>
+¡Gracias!
+</div>
 
