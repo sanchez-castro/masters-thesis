@@ -20,6 +20,7 @@
 -- ---------------------------------------------
 
 -- 20150728		Felipe Gerard		Cambiamos el SP para usar la nueva tabla de recomendaciones (RM_Hoteles_HotelesRecomendaciones), la fecha de actualización y el índice.
+-- 20150729		Felipe Gerard		Pequeñas mejoras de desempeño.
 
 -- =============================================
 
@@ -47,7 +48,6 @@ BEGIN
 	)
 
 	IF (@nrec = 0) BEGIN							-- NO HAY RECOMENDACIONES DEL ALGORITMO NUEVO
-	
 		DECLARE @destino INT = 0
 		DECLARE @estrellas CHAR(5) = ''
 		DECLARE @datos_hotel TABLE (
@@ -83,7 +83,10 @@ BEGIN
 					ON h.Clav_Hotel = hd.clav_hotel
 				LEFT JOIN
 					(
-						SELECT *
+						SELECT
+							so2.clav_hotel
+							, so2.clav_destino
+							, so2.posicion
 						FROM BI_SortOrder so2 WITH(NOLOCK)
 						WHERE so2.fecha_in <= @fecha
 							AND @fecha < so2.fecha_out
