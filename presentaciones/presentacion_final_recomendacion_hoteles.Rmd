@@ -32,12 +32,87 @@ circleFun <- function(center = c(0,0),diameter = 1, npoints = 100){
 
 ## Antecedentes
 
-- **Objetivo:** Recomendar hoteles similares a uno dado
-- **Solución actual:** Búsqueda por destino y estrellas
+- Los clientes no conocen los hoteles
+- Hay que promover que vean la opción adecuada
+- **Idea:** Recomendar hoteles similares a uno dado
+- Sección de hoteles similares
+- ¿Cómo se hace actualmente?
+    + Mismo destino
+    + Mismas estrellas
+    + ¿Ordenados por Sort Order?
+
+
+## Antecedentes
+
 - No está mal, pero:
     + No aprovecha la información disponible
     + Es poco robusto
-- Algunos ejemplos...
+    + ¿Habrá alguna alternativa?
+- Veamos qué hace la competencia...
+
+
+## Price Travel
+
+Gracias por participar...
+
+
+## Booking
+
+- Posición: Izquierda, algo abajo
+- Populares por destino (al principio)
+- Recientemente vistos (después)
+
+<div class="centered">
+![booking.com](graficas/booking1.png)
+</div>
+
+
+## Despegar
+
+- Posición: Izquierda, abajo
+- Hoteles recientemente vistos
+- Hoteles cercanos (aunque no se parezcan)
+- Populares por destino
+
+<div class="centered">
+![despegar.com](graficas/despegar0.png)
+</div>
+
+
+## Trip Advisor
+
+- No es competencia, pero ¿qué podemos aprender?
+- Posición: Derecha, abajo
+- Método desconocido, pero no es por estrellas
+
+<div class="centered">
+![tripadvisor.com](graficas/tripadvisor1.png)
+</div>
+
+
+## Expedia
+
+- Posición: Centro, hasta abajo
+- Hoteles recientemente vistos
+- Método desconocido, pero no es por estrellas
+    + Me gustó, aunque es algo rígido
+
+<div class="centered">
+![expedia.com](graficas/expedia1.png)
+</div>
+
+
+## ¿Qué aprendimos?
+
+- No hay un estándar en la industria
+- Salvo tal vez las consultas recientes
+    + Ya lo tenemos
+- Hay varios criterios, pero
+    + No siempre aplican
+    + Algunos son los mismos por destino
+    + **Casi nadie integra varios criterios**
+        * Salvo Expedia y TripAdvisor
+- Veamos el caso Best Day con mayor detalle
 
 
 ## Ejemplos

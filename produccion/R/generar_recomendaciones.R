@@ -18,7 +18,7 @@ verbose <- 100
 
 con <- odbcConnect(dsn = 'syscubo',
                    uid = 'bmxddt005062',
-                   pwd = 'SQLFelipe142857')
+                   pwd = '')
 
 # Actualizar información --------------------------------------------------
 source('produccion/R/obtener_info.R')
