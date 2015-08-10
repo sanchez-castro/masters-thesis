@@ -1,0 +1,1773 @@
+\documentclass[12pt]{report}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amsthm, amssymb, graphicx, subcaption, enumerate, hyperref, tikz, pgfplots, verbatim, pdfpages}
+\usepackage[algochapter]{algorithm2e}
+\usetikzlibrary{matrix}
+%\usepackage[]{algorithm2e}
+%\usepackage[top=1.5in, bottom=1.5in, left=1.5in, right=1.5in]{geometry}
+%\usepackage{geometry}
+ 
+%\addtolength{\oddsidemargin}{-.875in}
+%\addtolength{\evensidemargin}{-.875in}
+%\addtolength{\textwidth}{1.75in}
+%\addtolength{\topmargin}{-.875in}
+%\addtolength{\textheight}{1.75in}
+\addtolength{\footskip}{5pt} % Para que los numeros no esten tan pegados al texto
+
+%\renewcommand\figurename{Figura}
+\renewcommand\spanishtablename{Tabla}
+% NOTAR QUE HAY QUE PONERLE SPANISH LALA AL USAR BABEL
+%\renewcommand\spanishcontentsname{\'Indice general}
+\renewcommand\spanishlistfigurename{\'Indice de figuras}
+\renewcommand\spanishlisttablename{\'Indice de tablas}
+%\renewcommand\spanishchaptername{Cap\'itulo}
+%\renewcommand\bibname{Bibliograf\'ia}
+\SetAlgorithmName{Algoritmo}{algoritmo}{Lista de Algoritmos}
+
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\signo}{\text{ signo}}
+\newcommand\eq{=}
+\newcommand{\minimizar}[1]{\underset{#1}{\text{minimizar}} \;}
+
+\newtheorem{teo}{Teorema}[chapter]
+\newtheorem{defn}{Definici\'on}[chapter]
+\newtheorem{prop}{Proposici\'on}[chapter]
+\newtheorem{cor}{Corolario}[chapter]
+\newtheorem{lema}{Lema}[chapter]
+\newtheorem{obs}{Observaci\'on}[chapter]
+ 
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PORTADA 1a HOJA IMPRESA
+%\includepdf{CaratulaTesisFelipe.pdf}
+\pagenumbering{gobble}
+{\large
+\begin{center}
+INSTITUTO TECNOL\'OGICO AUT\'ONOMO DE M\'EXICO
+\end{center}
+\begin{figure}[h]
+ 	\centering
+	\includegraphics[width=0.4\textwidth]{imagenes/logo_ITAM.jpg}
+	\end{figure}
+\begin{center}
+\vspace{0cm}
+\textbf{SISTEMA DE RECOMENDACIÓN DE HOTELES SIMILARES}\\
+\vspace{1cm}
+TESIS\\
+\vspace{1cm}
+{\normalsize QUE PARA OBTENER EL T\'ITULO DE}\\
+\vspace{0.5cm}
+MAESTRO EN CIENCIA DE DATOS\\
+\vspace{0.5cm}
+{\normalsize PRESENTA}\\
+\vspace{1cm}
+FELIPE GERARD VALD\'ES\\
+\vspace{2cm}
+{\normalsize ASESOR: }\\
+\vspace{2cm}
+\end{center}
+\begin{flushleft}
+M\'EXICO, D.F.\hfill 2015%\phantom{20144}
+\end{flushleft}
+}
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% DISCLAIMER
+\newpage
+\noindent``Con fundamento en el art\'iculo 21 y 27 de la Ley Federal del Derecho de Autor y como titular de los derechos moral y patrimonial de la obra titulada \textbf{``M\'ETODOS NUM\'ERICOS PARA AJUSTAR MODELOS DE REGRESION LOG\'ISTICA REGULARIZADA''}, otorgo de manera gratuita y permanente al Instituto Tecnológico Aut\'onomo de M\'exico y a la Biblioteca Ra\'ul Bailleres Jr., autorizaci\'on para que fijen la obra en cualquier medio, incluido el electr\'onico, y la divulguen entre sus usuarios, profesores, estudiantes o terceras personas, sin que pueda percibir por tal divulgaci\'on una contraprestaci\'on"
+\vspace{40pt}
+\begin{center}
+\textbf{Felipe Gerard Vald\'es}\vspace{2cm}\\
+\noindent\begin{tabular}{c}
+\makebox[2in]{\hrulefill}\\
+FECHA\vspace{2cm}\\
+\makebox[2in]{\hrulefill}\\
+FIRMA
+\end{tabular}
+\end{center}
+
+\pagenumbering{Roman} % para comenzar la numeracion de paginas en numeros romanos
+
+
+
+% ----------------------------------------------------------------------------------------------------
+\tableofcontents
+\listoffigures
+\listoftables
+ 
+% ----------------------------------------------------------------------------------------------------
+\addcontentsline{toc}{chapter}{Pr\'ologo}
+\chapter*{Pr\'ologo}
+\pagenumbering{arabic}
+
+% ----------------------------------------------------------------------------------------------------
+\chapter{Análisis previo}
+\section{Análisis de la competencia}
+\section{Análisis del sistema actual}
+\section{Wish List}
+
+% ----------------------------------------------------------------------------------------------------
+\chapter{Modelo propuesto}
+\section{Puntos a resolver}
+\section{Distancia}
+\section{Precio}
+\section{Similitud de hoteles}
+\section{Distancia revisitada}
+\section{Integrando todo}
+
+% ----------------------------------------------------------------------------------------------------
+\chapter{Obtención de la información}
+\section{Formato necesario para el modelo}
+\section{Calidad de la información}
+\section{Sistema de respaldo}
+
+% ----------------------------------------------------------------------------------------------------
+\chapter{Desempeño}
+
+
+
+% \addcontentsline{toc}{chapter}{Pr\'ologo}
+% \chapter*{Pr\'ologo}
+%  \pagenumbering{arabic}
+ 
+%  En los \'ultimos a\~nos la informaci\'on disponible ha aumentado de una manera asombrosa. Es por eso que el aprendizaje autom\'atico (tambi\'en llamado aprendizaje de m\'aquina o \emph{machine learning}) ha cobrado mucha relevancia, pues adem\'as de permitir que las m\'aquinas tomen decisiones por s\'i solas (inteligencia artificial), nos permite aprovechar los enormes vol\'umenes de informaci\'on para fines cient\'ificos, comerciales o industriales.
+ 
+% El aprendizaje de m\'aquina est\'a dividido en dos grandes ramas, que son el \emph{aprendizaje supervisado} y el \emph{aprendizaje no supervisado}. En la primera se tiene un conjunto de observaciones de un fen\'omeno, que consisten de algunas caracter\'isticas o \emph{variables} y una variable objetivo o \emph{respuesta}. Lo que se busca en este caso es ajustar o \emph{entrenar} un modelo que dadas observaciones nuevas de las variables de entrada, estime la variable objetivo. En la segunda se tiene \'unicamente las variables de entrada y lo que se busca es encontrar patrones en los datos con el fin de entenderlos mejor.
+
+% El aprendizaje supervisado a su vez se subdivide en dos problemas t\'ipicos, que son de \emph{regresi\'on} y de \emph{clasificaci\'on}. En los problemas de clasificaci\'on se intenta predecir valores discretos, es decir etiquetas (por ejemplo, se quiere saber si un individuo tiene una enfermedad o no), mientras que en los problemas de regresi\'on se quiere predecir valores continuos (por ejemplo, \emph{cu\'anto} valdr\'a una casa determinada el pr\'oximo mes). En ambos casos se le proporciona al programa un conjunto de datos, tambi\'en llamado \emph{muestra de entrenamiento}, con el que se estima los par\'ametros del modelo.
+
+% En el presente trabajo nos enfocaremos en un algoritmo de clasificaci\'on muy popular llamado \emph{regresi\'on log\'istica}, que sirve para predecir respuestas binarias, es decir que solamente pueden tomar dos valores (m\'as adelante quedar\'a claro por qu\'e lleva ``regresi\'on'' en el nombre cuando en realidad se usa para clasificar). Dado que se trata de etiquetas y el valor en realidad no nos importa, convencionalmente se utilizan los valores 0 para una respuesta negativa y 1 para una afirmativa.
+
+% T\'ipicamente, en los problemas de clasificaci\'on se busca predecir variables de respuesta muy costosas de verificar o que no se pueden observar a tiempo (por ejemplo, se quiere saber si un deudor dejar\'a de pagar o no \emph{antes} de que lo haga, bas\'andonos en su comportamiento reciente). La ventaja de la regresi\'on log\'istica es que ya ajustado el modelo, hacer predicciones es sumamente f\'acil y pr\'acticamente no consume recursos computacionales.
+
+% Las aplicaciones de este m\'etodo son muy extensas e incluyen las finanzas, las puntuaciones de calidad crediticia, la medicina, la industria y en general cualquier problema en el que se necesite decidir entre dos opciones. La cantidad de datos con la que se debe trabajar puede variar mucho seg\'un la aplicaci\'on. Por ejemplo, en la detecci\'on de operaciones fraudulentas o de lavado de dinero, se trabaja con cientos de miles o millones de transacciones, de cada una de las cu\'ales se tiene un pu\~nado de variables (el monto, la ubicaci\'on, el beneficiario, etc.), en el orden de las decenas o centenas. Usualmente se cuenta con muchas m\'as observaciones (que denotaremos $n$ de aqu\'i en adelante) que variables (que denotaremos $p$), es decir $n>>p$. Sin embargo, hay algunas aplicaciones en las que esto no sucede.
+
+% Dado que se desea resolver problemas de clasificaci\'on potencialmente grandes, es deseable que los algoritmos que ajusten los modelos sean eficientes. De hecho, como veremos, la regresi\'on log\'istica tal cu\'al ni siquiera est\'a definida cuando $p>n$, pero presentaremos la \emph{regresi\'on log\'istica regularizada}, una modificaci\'on que siempre funciona, junto con un m\'etodo eficiente para llevar a cabo el entrenamiento.
+
+% En el cap\'itulo 1 describiremos m\'as a detalle el problema por resolver, la regresi\'on log\'istica est\'andar y la regularizada. En el cap\'itulo 2 estableceremos el marco te\'orico general de optimizaci\'on, que consiste de conceptos necesarios para el desarrollo de los cap\'itulos siguientes. En el cap\'itulo 3 detallaremos un m\'etodo de descenso por coordenadas para ajustar cualquiera de los dos modelos, mientras que en el 4 describiremos otro m\'etodo basado en t\'ecnicas cuasi-Newton de optimizaci\'on. Finalmente, en el cap\'itulo 5 haremos experimentos num\'ericos para comparar el desempe\~no de ambos m\'etodos.
+ 
+%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  \chapter{El problema por resolver}
+ 
+%  En este cap\'itulo hablaremos m\'as a profundidad del problema por resolver. Primero definiremos algunos conceptos indispensables para el desarrollo de los temas posteriores, luego daremos una breve introducci\'on a los modelos est\'andar de aprendizaje que son importantes para el tema y finalmente presentaremos y motivaremos las modificaciones de dichos modelos que son el tema principal de este trabajo.
+ 
+%  %-----------------------------------------------------------------------------------------------------------------------------------------------------------
+%  \section{Algunos conceptos importantes}
+%  Los modelos que trataremos son exclusivamente de aprendizaje supervisado, es decir, se tiene un conjunto de observaciones de las cuales se conoce la respuesta correcta. Denotaremos las $p$ \textbf{variables de entrada} por $\mathbf{X_j}$, para $j = 1, \dots, p$ y a la \textbf{variable de respuesta} por $\mathbf{Y}$. Adicionalmente, supondremos que tendremos a nuestra disposici\'on una \textbf{muestra de entrenamiento} $\mathcal{L}$, que es un conjunto que consiste de $n$ observaciones de la variable aleatoria $(\mathbf{X}, \mathbf{Y})$, donde $\mathbf{X} = (1, \mathbf{X_1}, \dots, \mathbf{X_p})^T$ (explicaremos m\'as adelante por qu\'e aparece un $1$ en el vector $\mathbf{X}$), es decir, $\mathcal{L} = \{ (x_i, y_i) \}_{i=1}^n$, con $x_i = (1, x_{i1}, \dots, x_{ip})^T$. Los valores que puede tomar $\mathbf{Y}$, y por consiguiente las $y_i$, dependen de si el problema en cuesti\'on es de regresi\'on ($\mathbf{Y} \in \mathbb{R}$) o de clasificaci\'on (en cuyo caso $\mathbf{Y}$ pertenece a alg\'un conjunto finito).
+ 
+%  Para hacer m\'as pr\'acticos los c\'alculos, conviene utilizar notaci\'on matricial. Definimos el \textbf{vector de respuestas}, $y$, y la \textbf{matriz de dise\~no}, $X$, como sigue:
+% \begin{align*}
+% y = \left[
+% \begin{array}{c}
+% 	y_1\\
+% 	\vdots\\
+% 	y_n
+% \end{array} \right]
+% \quad\quad\text{y}\quad\quad
+% X = \left[
+% \begin{array}{cccc}
+% 	1 & x_{11} & \dots & x_{1p}\\
+% 	1 & x_{21} & \dots & x_{2p}\\
+% 	\vdots & \vdots & \ddots & \vdots \\
+% 	1 & x_{n1} & \dots & x_{np}
+% \end{array} \right]
+% = (\mathbf{1}, X_1, \dots, X_p),
+% \end{align*}
+% donde $\mathbf{1}$ denota un vector de unos. De este modo, nos referiremos a las columnas de $X$ por medio de $X_j = (x_{1j}, \dots, x_{nj})^T \in \R^{n\times1}$, para $j = 1, \dots, p$, mientras que representaremos sus renglones como $x_i^T \in \R^{1\times p}$, para $i = 1, \dots, n$.
+
+% El tema principal de esta tesis es una modificaci\'on que le haremos al modelo de regresi\'on log\'istica. Sin embargo, utilizaremos conceptos de regresi\'on lineal, por lo que a continuaci\'on expondremos brevemente dicho modelo.
+%  % EXPLICAR INTERCEPTO
+ 
+%  %-----------------------------------------------------------------------------------------------------------------------------------------------------------
+%  \section{Regresi\'on lineal}
+%  El modelo de regresi\'on lineal es ampliamente utilizado en el caso en que la variable de respuesta $\mathbf{Y}$ es num\'erica. En este caso, dada la muestra de entrenamiento $\mathcal{L}$, se modela
+%  \begin{equation*}
+%  	y_i = x_i^T\beta + \varepsilon_i, \text{ para } i = 1, \dots, n,
+%  \end{equation*}
+%  donde las $\varepsilon_i$ son t\'erminos de error normales i.i.d. y no correlacionados, o m\'as exactamente, $\varepsilon_i \sim N(0,\sigma^2)$ para toda $i = 1, \dots, n$ y $cov(\varepsilon_i, \varepsilon_j) = 0$ si $i \neq j$. As\'i, si definimos $\varepsilon = (\varepsilon_1, \dots, \varepsilon_n)^T$, entonces
+%  \begin{equation} \label{lineal}
+%  	y = X\beta + \varepsilon
+%  \end{equation}
+%  El ajuste m\'as popular para los coeficientes $\beta$ se hace por \emph{m\'inimos cuadrados} (equivalente a m\'axima verosimilitud bajo ciertos supuestos, ver por ejemplo (Montgomery et al., 2002)), que consiste en minimizar los errores al cuadrado de nuestro modelo. Es decir que dada una muestra de entrenamiento $\mathcal{L}$,
+%  \begin{equation}
+%  	\hat{\beta}^{MC} = \arg\min_\beta \left\{ \frac{1}{2n}\sum_{i=1}^n(y_i - x_i^T\beta)^2 \right\} = \arg\min_\beta \left\{ \frac{1}{2n}(y - X\beta)^T(y - X\beta) \right\}
+%  \end{equation}
+%  De manera m\'as general, podr\'iamos pedir que cada observaci\'on tuviera un peso positivo $w_i$ distinto a $\frac{1}{n}$. Por comodidad pero sin p\'erdida de generalidad, supondremos que $\sum_{i=1}^n w_i = 1$. Para incluir las $w_i$ a la notaci\'on matricial, sea $W = \text{diagonal}(w_1, \dots, w_n) \in \R^{nxn}$. Entonces, el problema de regresi\'on lineal ponderada por $W$ est\'a dado por: 
+% \begin{equation}
+% \begin{aligned}
+%  	\hat{\beta}^{MCP}
+% 	&= \arg\min_\beta \left\{ \frac{1}{2}\sum_{i=1}^n w_i (y_i - x_i^T\beta)^2 \right\}\\
+% 	&= \arg\min_\beta \left\{ \frac{1}{2}(y - X\beta)^T W (y - X\beta) \right\}
+% \end{aligned}
+%  \end{equation}
+%  Este modelo (en especial con la ponderaci\'on $w_i = \frac{1}{n}$) es sin duda uno de los m\'as populares en la vida pr\'actica por la variedad de aplicaciones que tiene y porque el teorema de Gauss-Markov establece que si el modelo es cierto, entonces los estimadores de m\'inimos cuadrados son los insesgados de menor varianza. En (Montgomery et al., 2002) se encuentra un desarrollo muy detallado de este modelo.
+  
+%  %-----------------------------------------------------------------------------------------------------------------------------------------------------------
+% \section{Regresi\'on log\'istica}
+% El modelo de regresi\'on log\'istica supone que se tiene una variable aleatoria binaria, $\mathbf{Y} \in \{0, 1\}$, y un vector aleatorio, $\mathbf{X} = (\mathbf{1}, \mathbf{X_1}, \dots, \mathbf{X_p})^T$ tales que $\mathbf{Y}$, dado que $\mathbf{X} = x$, sigue una distribuci\'on Bernoulli con par\'ametro dado por:
+% \begin{align} \label{deflogistico}
+% 	p(x) &\overset{def}{=} h(\beta^Tx)\\
+% 	1 - p(x) &\overset{def}{=} 1 - h(\beta^Tx),
+% \end{align}
+%  donde $h: \R \to (0,1)$ es la funci\'on log\'istica,
+% \[
+% 	h(z) = \frac{e^z}{1 + e^z}
+% \]
+% y $\beta = (\beta_0, \beta_1, \dots, \beta_p)^T$. Ya teniendo las probabilidades condicionales en funci\'on de las entradas, se procede a estimarlas por el m\'etodo de m\'axima verosimilitud. Para ello, notemos que los renglones de $X$ junto con las entradas de $y$ forman una muestra aleatoria de $(\mathbf{X}, \mathbf{Y})$ y que por lo mismo, $y_i$ s\'olo depende de $x_i$ y del par\'ametro desconocido $\beta$. De este modo, la funci\'on de verosimilitud dada la muestra $\mathcal{L}$ resulta ser
+%  \begin{align*}
+% 	 L(\beta) &= f(y | X, \beta) = \prod_{i=1}^n f(y_i | x_i, \beta) \\
+% 	 &= \prod_{i=1}^n p(x_i)^{y_i} (1 - p(x_i))^{1 - y_i}
+%  \end{align*}
+%  Por lo tanto, el logaritmo natural de la funci\'on, o \textbf{log-verosimilitud}, es
+%  \begin{align*}
+%  	\ell(\beta) &= \ln L (\beta) = \sum_{i=1}^n [ y_i \ln (p(x_i)) + (1 - y_i) \ln (1 - p(x_i))]
+%  \end{align*}
+%  El siguiente paso en el m\'etodo de m\'axima verosimilitud es precisamente maximizar la funci\'on de verosimilitud, o equivalentemente, la log-verosimilitud, para obtener nuestra $\beta$ estimada:
+ 
+%  \[
+%  	\hat{\beta} = \arg\max_\beta \left\{ \ell(\beta) \right\}
+%  \]
+%  Ya teniendo los par\'ametros estimados, procedemos a estimar la probabilidad condicional de \'exito para un nuevo valor observado de las entradas $\mathbf{X}$ de la siguiente manera:
+%  \[
+%  	P(\mathbf{Y} = 1 | \mathbf{X} = x_0) \approx \widehat{p(x_0)} = h(\beta^Tx_0)
+%  \]
+% Finalmente, se procede a predecir el valor de $\mathbf{Y}$ utilizando la probabilidad utilizando un valor de corte $d \in (0,1)$, es decir, nuestra predicci\'on del valor de la respuesta ser\'a:
+% \[
+% 	\hat{y_0} = \left \{
+% 	\begin{array}{cc}
+% 		1 & \text{si } \widehat{p(x_0)} \geq d\\
+% 		0 & \text{en otro caso}
+% 	\end{array}
+% 	\right .
+% \]
+% La idea detr\'as de esto es que como $\widehat{p(x_0)}$ estima la probabilidad de que $y_0 = 1$ dado que observamos $x_0$, entonces mientras mayor sea esta probabilidad, m\'as probablemente $y_0 = 1$, de modo que predecimos eso exactamente. An\'alogamente a la inversa, si la probabilidad es muy peque\~na (y por lo tanto la probabilidad de que valga cero es grande), entonces predecimos $y_0 = 0$.
+ 
+%  %-----------------------------------------------------------------------------------------------------------------------------------------------------------
+%  \section{Notas sobre regresi\'on log\'istica}
+%  La parte importante en el proceso anterior es precisamente la maximizaci\'on de la funci\'on de verosimilitud, que es el tema central de este trabajo. A diferencia del caso de regresi\'on lineal, por ejemplo, no existe una f\'ormula cerrada para $\hat{\beta}$, por lo que es necesario aproximarla num\'ericamente. Para ello es importante conocer algunas propiedades del m\'etodo y de la funci\'on de log-verosimilitud que nos permitan usar con confianza los algoritmos de optimizaci\'on.
+ 
+% En primer lugar, algo importante que entender sobre la regresi\'on log\'istica es que genera fronteras lineales, es decir que genera un hiperplano $H_{\beta,d} = \{ x \in \R^{p+1} | \beta^Tx = d\}$ que parte el espacio de entradas en dos. La predicci\'on se lleva a cabo de la siguiente manera: se predice 1 si $\beta^Tx \geq d$ y 0 en otro caso. En el caso de una variable de entrada se tiene entonces que predecimos 1 si $\beta_0 + \beta_1x \geq d$, o bien, suponiendo que $\beta_1 \neq 0$, si $x \geq \frac{d - \beta_0}{\beta_1}$. En el caso de dos variables de entrada, se tiene que una recta divide a $\R^2$, etc\'etera. Ilustramos lo que sucede en $\R$ y en $\R^2$ en la figura \ref{fig1}.
+
+% % GRAFICA ANTERIOR %%%%%%%%%%%%%%%%%%
+% \begin{comment}
+%  \begin{figure}[h]
+%  	\begin{subfigure}{0.6\textwidth}
+%  		\includegraphics[width=\textwidth]{./graficas/fig1a.pdf}
+%  		\caption{En este caso predecimos 1 si la probabilidad es mayor a 0.5, por ejemplo. \label{fig1b}}
+%  	\end{subfigure}
+%  	\begin{subfigure}{0.5\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/fig1b.pdf}
+%  		\caption{Divisi\'on de $\R^2$ con $d=0.5$ \label{fig1a}}
+%  	\end{subfigure}
+% 	\caption{Clasificaci\'on con regresi\'on log\'istica \label{fig1}}
+%  \end{figure}
+% \end{comment}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%
+% \shorthandoff{<>} 
+% \begin{figure}
+% 	\centering
+% 	\caption{Clasificaci\'on con regresi\'on log\'istica \label{fig1}}
+% 	\begin{subfigure}{0.49\textwidth}
+% 		\begin{tikzpicture}
+% 			\begin{axis}[scale=0.85, xlabel=$x$, legend style={overlay,at={(1,0.5)}}, anchor=center]
+% 				% Funcion y lineas
+% 				\addplot+[thick, black, no marks, smooth, domain=-1:1] plot{1/(1 + exp(-6*x))};
+% 				\addlegendentry{$p(x)$};
+% 				\addplot[dashed] coordinates {(-1.5,1) (1.5,1)};
+% 				\addplot[dashed] coordinates {(-1.5,0) (1.5,0)};
+% 				% "Plano"
+% 				\addplot[<->, black] coordinates {(-0.5,0.5) (0.5,0.5)};
+% 				\addplot[black, mark=*] coordinates {(0,0.5)};
+% 				\node at (axis cs: -0.25,0.6) {$H_{\beta,d}$};
+% 				% Puntos
+% 				\foreach \p in {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}{
+% 					\addplot+[only marks, black, mark=o] coordinates {(rand + 0.5,1)};
+% 				};
+% 				\foreach \p in {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}{
+% 					\addplot+[only marks, black, mark=o] coordinates {(rand - 0.5,0)};
+% 				};
+% 			    \end{axis}	
+% 		\end{tikzpicture}
+% 		\caption{En $\R$, $H_{\beta,d}$ es un punto. \label{fig1a}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.49\textwidth}
+% 		\begin{tikzpicture}
+% 			\begin{axis}[scale=0.85, xlabel=$x$]
+% 				% Plano separador
+% 				\addplot[ultra thick] coordinates {(-1.5,1.3) (1.5,-1.3)};
+% 				\node at (axis cs: -0.9,1.1) {$H_{\beta,d}$};
+% 				% Puntos
+% 				\foreach \p in {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}{
+% 					\addplot+[only marks, black, mark=o] coordinates {(0.5 + rand,0.5 + rand)};
+% 				};
+% 				\foreach \p in {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}{
+% 					\addplot+[only marks, black, mark=triangle*, fill=black] coordinates {(-0.5 + rand,-0.5 + rand)};
+% 				};
+% 			    \end{axis}	
+% 		\end{tikzpicture}
+% 		\caption{En $\R^2$, $H_{\beta,d}$ es un plano.  \label{fig1b}}
+% 	\end{subfigure}
+% \end{figure}
+% \shorthandon{<>} 
+
+
+% No contamos con una f\'ormula cerrada para $\hat{\beta}$, pero afortunadamente, la funci\'on de verosimilitud resulta ser una funci\'on c\'oncava, que bajo ciertos supuestos, tiene un \'unico punto m\'aximo. En realidad la \'unica condici\'on que se requiere para que dicha soluci\'on exista (en cuyo caso es \'unica) es que los datos no sean \emph{separables}, esto es, que no exista un hiperplano $H_{\beta,d}$ tal que $\beta^Tx_i \geq d$ siempre que $y_i = 1$ y $\beta^Tx_i < d$ siempre que $y_i = 0$. En este caso el modelo no tiene soluci\'on porque, por ejemplo, en el caso de una variable, se obtiene un mejor ajuste a mayor valor de $\beta_1$. Intuitivamente, el modelo es ``demasiado bueno'' y sobreajusta los datos, intentando aproximar una funci\'on de salto que est\'a en la frontera (pero no adentro) del espacio de funciones que puede generar el modelo de regresi\'on log\'istica, es decir intenta aproximar:
+
+% \[
+% g(x) = \left \{
+% \begin{array}{ll}
+% 1 & \text{si } x \geq \frac{d - \beta_0}{\beta_1}\\
+% 0 & \text{en otro caso}
+% \end{array}
+% \right.
+% \]
+% Ilustramos esto en la figura \ref{fig2} para el caso de una sola variable de entrada.
+
+% Intuitivamente podr\'iamos pensar que el mejor caso que podr\'iamos tener es justamente uno en el que lo datos resultaran ser linealmente separables, pues nuestro predictor ser\'ia perfecto. Sin embargo, vemos que nuestro m\'etodo ni siquiera da un resultado cuando tenemos este caso. En nuestro ejemplo ilustrativo podemos encontrar f\'acilmente un hiperplano separador, que consiste de un punto en $\R$, pero en problemas de dimensi\'on alta (ie. con muchas variables de entrada), donde no podemos graficar nada, necesitamos una soluci\'on autom\'atica para este problema.
+
+% \shorthandoff{<>} 
+% \begin{figure}
+% 	\centering
+% 	\begin{tikzpicture}
+% 		\begin{axis}[height=10cm, width=13cm, xlabel=$x$, ylabel=$P(\mathbf{Y} \eq 1 | \mathbf{X} \eq x)$,
+% 		legend style={overlay,at={(1,0.5)}}, anchor=center, title=Un problema separable]
+% 			% Lineas
+% 			\addplot+[thin, black, no marks, smooth, domain=-1:1] plot{1/(1 + exp(-x))};
+% 			\addplot+[semithick, black, no marks, smooth, domain=-1:1] plot{1/(1 + exp(-2*x))};
+% 			\addplot+[thick, black, no marks, smooth, domain=-1:1] plot{1/(1 + exp(-4*x))};
+% 			\addplot+[ultra thick, black, no marks, smooth, domain=-1:1] plot{1/(1 + exp(-10*x))};
+% 			% Leyenda
+% 			\addlegendentry{$\beta = 1$}
+% 			\addlegendentry{$\beta = 2$}
+% 			\addlegendentry{$\beta = 4$}
+% 			\addlegendentry{$\beta = 10$}
+% 			% Lineas punteadas
+% 			\addplot[dashed] coordinates {(-1,1) (1,1)};
+% 			\addplot[dashed] coordinates {(-1,0) (1,0)};
+% 			% Puntos
+% 			\foreach \p in {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}{
+% 				\addplot+[only marks, black, mark=o] coordinates {(0.5*rand + 0.5,1) (0.5*rand + 0.5,1) (0.5*rand + 0.5,1) (0.5*rand + 0.5,1)};
+% 			};
+% 			\foreach \p in {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}{
+% 				\addplot+[only marks, black, mark=o] coordinates {(0.5*rand - 0.5,0) (0.5*rand - 0.5,0) (0.5*rand - 0.5,0) (0.5*rand - 0.5,0)};
+% 			};
+% 		    \end{axis}	
+% 	\end{tikzpicture}
+% 	\caption{Al aumentar $\beta$ mejora el ajuste \label{fig2}}
+% \end{figure}
+
+% % GRAFICA ANTERIOR %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{comment}
+% \begin{figure}
+% 	\centering
+% 	\begin{tikzpicture}[xscale=2.5, yscale = 3.5]
+% 		\draw[->] (-1.5,0) -- (1.5,0);
+% 		\draw[->] (0,-0.5) -- (0,1.5);
+% 		\draw[dashed] (-1.5,1) -- (1.5,1);
+% 		\node at (-0.1,1.15) {1};
+% 		\draw[dashed, ultra thin, domain=-1.5:1.5] plot (\x, {1/(1+exp(-1*\x)});
+% 		\draw[dashed, thick, domain=-1.5:1.5] plot (\x, {1/(1+exp(-2*\x)});
+% 		\draw[dashed, ultra thick, domain=-1.5:1.5] plot (\x, {1/(1+exp(-4*\x)});
+% 		\foreach \p in {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}{
+% 			\node at (0 + 1.5*rnd,1) {\textbullet};
+% 			\node at (-1.5 + 1.5*rnd,0) {\textbullet};
+% 		}
+		
+% 		\draw[dashed, ultra thin] (2.2,1.05) -- (2.5,1.05);
+% 		\draw[dashed, thick] (2.2,1.1-0.2) -- (2.5,1.1-0.2);
+% 		\draw[dashed, ultra thick] (2.2,1.1-0.35) -- (2.5,1.1-0.35);
+% 		\matrix [matrix of nodes,row sep=-\pgflinewidth,row 1/.style={nodes={rectangle,draw,minimum width=3em}}] at (2,1)
+% 			{
+% 			$\beta_1$ & \\
+% 			1   &  \\
+% 			2   &  \\
+% 			4   &    \\
+% 			};
+% 	\end{tikzpicture}
+% 	\caption{Al aumentar $\beta_1$ mejora el ajuste \label{fig2}}
+% \end{figure}
+% \end{comment}
+
+% \shorthandon{<>} 
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Un segundo asunto importante es que cuando los datos son casi separables, las soluciones que nos proporciona el algoritmo se vuelven muy inestables. Esto se debe a que la devianza se vuelve muy plana cerca del \'optimo en estos casos, lo que genera problemas num\'ericos. Nos gustar\'ia que el m\'etodo no solamente siempre funcionara, sino que adem\'as fuera robusto y estable.
+
+% Una tercera consideraci\'on es que en las aplicaciones con muchas variables es com\'un que se quiera una soluci\'on rala, es decir que el modelo solamente utilice unas pocas de ellas que hagan (casi) el mismo trabajo de predicci\'on que el conjunto completo. Hay muchas razones para querer seleccionar variables, como por ejemplo mejorar la interpretabilidad del modelo.
+
+% Existen m\'etodos espec\'ificos para solucionar cada uno de estos problemas. Por ejemplo, la regularizaci\'on $\ell^2$, conocida como \emph{regresi\'on ridge} en el campo de regresi\'on lineal (ver, por ejemplo, (Friedman, et al., 2008)), es una buena soluci\'on para la separabilidad y adicionalmente aumenta la robustez; para la selecci\'on de variables hay varias alternativas, como \emph{forward selection}, que utiliza la significancia de los coeficientes (existen estad\'isticos para probar la hip\'otesis de si cada coeficiente es significativo) para meterlos al modelo. Sin embargo, hay una clara motivaci\'on para desarrollar un modelo que haga las tres cosas a la vez. En la siguiente secci\'on presentaremos una forma muy popular de regularizaci\'on, y las propiedades que la hacen una alternativa atractiva de un modelo \emph{todo-en-uno} para clasificaci\'on.
+
+% %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+% \section{Regresi\'on log\'istica regularizada}
+% Como mencion\'abamos, el ajuste de los coeficientes en regresi\'on log\'istica se hace por m\'axima verosimilitud, es decir que escogemos los coeficientes que maximizan la funci\'on de (log-)verosimilitud dada la muestra. Alternativamente, podemos obtener el mismo resultado minimizando la funci\'on escalada por un factor negativo. Cuando el factor es $-1/n$ la funci\'on se llama \textbf{devianza}:
+% \[
+% 	D(\beta) = -\frac{1}{n} \ell(\beta)
+% \]
+% Con esta notaci\'on, nuestros coeficientes de regresi\'on log\'istica son resultado de maximizar la log-verosimilitud o, equivalentemente, de minimizar la devianza. Al ajustar un modelo regularizado se modifica la devianza sum\'andole la norma uno del vector par\'ametros (sin incluir el intercepto $\beta_0$) escalada por un factor positivo $\lambda$:
+% \begin{equation} \label{lasso}
+% 	\minimizar{\beta} \left \{ DP(\beta) \overset{def}{=} D(\beta) + \lambda \sum_{j=1}^p | \beta_j | \right\}
+% \end{equation}
+% El par\'ametro $\lambda > 0$ debe ser escogido antes de ajustar el modelo y hay varias maneras de elegirlo, como veremos m\'as adelante. La ventaja de regularizar con la norma uno y no con la norma dos es que es una funci\'on no diferenciable en los puntos en los que alguna $\beta_j$ vale cero (la norma uno es una generalizaci\'on del valor absoluto). Lo que eso ocasiona es que la regularizaci\'on $\ell_1$, adem\'as de disminuir la varianza de las estimaciones, puede hacer que uno o varios de los coeficientes sean exactamente cero, es decir, saca variables del modelo. El intercepto $\beta_0$ no se penaliza porque un modelo constante es tomado como base y no tiene sentido penalizar el intercepto, sino las ``pendientes''.
+
+% Para tener m\'as claro por qu\'e funciona as\'i la regularizaci\'on $\ell_1$, hay que notar que el problema (\ref{lasso}) es la forma de Lagrange del siguiente problema:
+% \begin{align} \label{lasso2}
+% 	&\minimizar{\beta} D(\beta) \\ \nonumber
+% 	&\text{s. a } \sum_{j=1}^p | \beta_j | \leq t
+% \end{align}
+% Es decir que para cada valor de $\lambda > 0$ existe un \'unico $t > 0$ tal que (\ref{lasso}) y (\ref{lasso2}) son equivalentes. Al rev\'es tambi\'en es cierto, por lo que hay una correspondencia uno a uno entre $\lambda$ y $t$ (Boyd y Vandenberghe, 2009). Suponiendo que el problema no es separable, la devianza es convexa y en (\ref{lasso2}) tenemos una restricci\'on en forma de rombo (en $\R^2$). La figura \ref{fig3} ilustra lo que sucede.
+
+% %%% Figura 3: Curvas de nivel de la devianza con la restriccion L1
+% \shorthandoff{<>} 
+% \begin{figure}
+% 	\centering
+% 	\begin{tikzpicture}[scale=1.5]
+% 		\node at (-2,2) {\textbullet};
+% 		\draw[->] (-2,0) -- (2,0);
+% 		\draw[->] (0,-2) -- (0,2);
+% 		\draw[fill=lightgray] (-1,0) -- (0,1) -- (1,0) -- (0,-1) -- (-1,0);
+% 		\node at (0,0) {$\|\beta\|_1 \leq t$};
+% 		\node at (-1.8,2) {$\beta^*$};
+% 		\draw[rotate around={70:(-2,2)}, dashed] (-2,2) ellipse (10pt and 20pt);
+% 		\draw[rotate around={70:(-2,2)}, dashed] (-2,2) ellipse (20pt and 40pt);
+% 		\draw[rotate around={70:(-2,2)}, dashed] (-2,2) ellipse (27pt and 55pt);
+% 		\draw[rotate around={70:(-2,2)}, dashed] (-2,2) ellipse (30pt and 65pt);
+% 	\end{tikzpicture}
+% 	\caption{Curvas de nivel de una funci\'on convexa con la restricci\'on $\ell_1$ \label{fig3}}
+% \end{figure}
+% \shorthandon{<>} 
+
+% La regresi\'on log\'istica regularizada tiene varias caracter\'isticas adicionales que la hacen muy deseable en algunos contextos. Por ejemplo, el hecho de que permita resolver problemas separables (te\'oricamente para cualquier valor positivo de $\lambda$) hace que podamos ajustar el modelo incluso en casos en los que se tenga m\'as variables que observaciones (que siempre resultan ser separables). En el siguiente cap\'itulo analizaremos con m\'as detalle y formalidad las propiedades de la regresi\'on log\'istica regularizada y luego proseguiremos a investigar m\'etodos eficientes para ajustar este tipo de modelos num\'ericamente.
+
+
+%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  \chapter{Marco te\'orico}
+ 
+%  El problema general de optimizaci\'on sin restricciones es el siguiente:
+%  \begin{equation} \label{gral}
+%  	\underset{\beta}{\text{minimizar }} f(x)
+%  \end{equation}
+%  donde $f: \R^n \to \R$ es una funci\'on cualquiera. La existencia de soluciones para el problema (\ref{gral}) depende de las caracter\'isticas de la funci\'on objetivo $f$. En este cap\'itulo desarrollaremos condiciones necesarias y suficientes para que $f$ tenga un \'unico minimizador global. Primero hablaremos de convexidad y luego de algunos resultados de optimizaci\'on no diferenciable. Posteriormente desarrollaremos brevemente la teor\'ia b\'asica detr\'as de algunos algoritmos de optimizaci\'on importantes.
+ 
+% %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+%  \section{Optimizaci\'on convexa}
+%  La convexidad es una propiedad que poseen algunas funciones que conlleva muchos resultados muy \'utiles en el contexto de optimizaci\'on. Antes de examinar con m\'as cuidado los beneficios, comencemos por definir lo que es una funci\'on convexa:
+%  \begin{defn}[Convexidad] \label{convexidad}
+%  Decimos que una funci\'on $f: \R^n \to \R$ es convexa si para cualesquiera $x, y \in \R^n$ y $\theta \in [0,1]$ se cumple:
+%  \[
+%  	f(\theta x + (1 - \theta) y) \leq \theta f(x) + (1 - \theta) f(y)
+% \]
+% Si la desigualdad es estricta, entonces decimos que $f$ es estrictamente convexa.
+%  \end{defn}
+ 
+% Veremos las ventajas de la convexidad m\'as adelante en el cap\'itulo; por el momento enunciaremos tres resultados \'utiles para el desarrollo de temas posteriores. Las pruebas son relativamente sencillas, por lo que referiremos al lector interesado a (Boyd y Vandenberghe, 2009). La primera proposici\'on establece que se puede subestimar cualquier funci\'on convexa con funciones lineales, hecho que motiva la definici\'on de subgradiente (ver la definici\'on \ref{defsubgradiente}).
+%  %% Desigualdad del gradiente.
+%  \begin{prop}[Desigualdad del gradiente] \label{desiggrad}
+%  	Una funci\'on diferenciable $f: \R^n \to \R$ es convexa si y s\'olo si satisface la desigualdad del gradiente:
+% 	\begin{equation} \label{desigualdaddelgradiente}
+% 		f(x) \geq f(y) + \nabla f(y)^T (x - y), \quad \forall \, x, y \in \R^n
+% 	\end{equation}
+% 	Por otro lado, $f$ es estrictamente convexa si y s\'olo si la desigualdad es estricta para todo $x, y \in \R$ distintos.
+%  \end{prop}
+ 
+%  La siguiente proposici\'on es bien conocida y establece una caracterizaci\'on alternativa para las funciones convexas dos veces continuamente diferenciables. Su utilidad consiste en que podemos conocer informaci\'on global de la funci\'on (ie. si es o no convexa) utilizando \'unicamente su matriz hessiana.
+ 
+%  \begin{prop}[Curvatura de funciones convexas] \label{curvaturaconvexas}
+%  	Una funci\'on de clase $\mathcal{C}^2$, $f: \R^n \to \R$ es convexa si y s\'olo si su matriz hessiana, $\nabla^2 f(x)$, es positiva semidefinida para todo $x \in \R^n$.
+%  \end{prop}
+ 
+%  Finalmente, el resultado anterior se puede aplicar parcialmente al caso de convexidad estricta, aunque el resultado es menos fuerte:
+  
+%   \begin{prop}[Curvatura de funciones estrictamente convexas] \label{curvaturaestricta}
+%  	Si $f: \R^n \to \R$ es una funci\'on de clase $\mathcal{C}^2$ y su matriz hessiana, $\nabla^2 f(x)$, es positiva definida para todo $x \in \R^n$, entonces $f$ es estrictamente convexa.
+%  \end{prop}
+ 
+%  Cabe notar que el inverso no es v\'alido, es decir que existen funciones estrictamente convexas cuya matriz hessiana es solamente positiva semidefinida en algunos puntos. Un ejemplo sencillo de esto es la funci\'on $f(x) = x^4$, cuya segunda derivada (ie. su hessiana) es $f''(x) = 12x^2 \geq 0$, pero $f''(0) = 0$.
+ 
+%  %% La devianza es convexa
+% Para poder utilizar los resultados de convexidad en el problema que nos interesa, es necesario garantizar que la devianza regularizada es una funci\'on convexa. A continuaci\'on mostramos la demostraci\'on de ese hecho:
+% \begin{prop}[Convexidad de la devianza regularizada]
+% 	La devianza regularizada, $D(\beta) + \lambda \sum_{j=1}^p | \beta_j |$, es convexa. En particular, si $rango(X) \geq p+1$, entonces la devianza regularizada es estrictamente convexa.
+% \end{prop} 
+% \begin{proof}[\bf Demostraci\'on]
+% El t\'ermino de regularizaci\'on es la norma uno del vector de par\'ametros $\beta$ sin el intercepto, de modo que la desigualdad del tri\'angulo garantiza su convexidad. Dado que la suma de dos funciones convexas es convexa (la prueba es muy sencilla y s\'olo requiere aplicar la definici\'on de convexidad), basta probar que la devianza es convexa. Para ello veremos que su matriz hessiana es positiva semidefinida, pero primero, notemos que podemos escribir la devianza de la siguiente forma:
+%  \begin{align} \label{devianza2}
+% 	D(\beta) \nonumber
+% 	&= -\frac{1}{n}\ln L (\beta) = -\frac{1}{n}\sum_{i=1}^n [ y_i \ln (p(x_i)) + (1 - y_i) \ln (1 - p(x_i))] \\ \nonumber
+% 	&= -\frac{1}{n}\sum_{i=1}^n [ y_i (x_i^T \beta - \ln (1 + e^{x_i^T \beta})) + (1 - y_i) (\ln(1) - \ln (1 + e^{x_i^T \beta})] \\
+% 	&= -\frac{1}{n}\sum_{i=1}^n [ y_i (x_i^T \beta)  - \ln (1 + e^{x_i^T \beta})]
+% \end{align}
+% Ahora calculemos el gradiente:
+%  \begin{align} \label{devianzagrad}
+%  	\nabla D(\beta) \nonumber
+% 	&= -\frac{1}{n}\sum_{i=1}^n [ y_i \nabla(x_i^T \beta) - \nabla(\ln(1 + e^{x_i^T \beta}) ]\\ \nonumber
+% 	&= -\frac{1}{n}\sum_{i=1}^n \left [ y_i x_i - \left( \frac{e^{x_i^T \beta}}{1 + e^{x_i^T \beta}} \right) x_i \right ] \\
+% 	&= - \frac{1}{n}X^T y+ \frac{1}{n}\sum_{i=1}^n p(x_i) x_i
+%  \end{align}
+%  Y finalmente su hessiana:
+%   \begin{equation}
+% 	  \begin{aligned}
+% 	 	\nabla^2 D(\beta)
+% 		&= \frac{1}{n}\nabla (\nabla D(\beta)^T) \\
+% 		&= -\frac{1}{n}\nabla (X^T y) + \frac{1}{n}\sum_{i=1}^n \nabla p(x_i) x_i^T \\
+% 		&= \frac{1}{n}\sum_{i=1}^n \nabla p(x_i) x_i^T \\
+% 		&= \frac{1}{n}\sum_{i=1}^n \left( \frac{e^{x_i^T \beta} (1 + e^{x_i^T \beta}) x_i - e^{2x_i^T \beta} x_i}{(1 + e^{x_i^T \beta})^2} \right) x_i^T \\
+% 		&= \frac{1}{n}\sum_{i=1}^n \left( \frac{e^{x_i^T \beta} x_i}{(1 + e^{x_i^T \beta})^2} \right) x_i^T \\
+% 		&= \frac{1}{n}\sum_{i=1}^n \left( \frac{e^{x_i^T \beta}}{1 + e^{x_i^T \beta}} \right)\left( \frac{1}{1 + e^{x_i^T \beta}} \right) x_i x_i^T \\
+% 		&= \frac{1}{n}\sum_{i=1}^n p(x_i) (1 - p(x_i)) x_i x_i^T
+% 	 \end{aligned}
+%  \end{equation}
+%  Ahora veamos que $\nabla^2 D(\beta)$ es positiva definida. Sea $z \in \R^{p+1}$, $z \neq 0$. Entonces,
+%  \begin{align*}
+%  	z^T \nabla^2 D(\beta) z 
+% 	&= \frac{1}{n}\sum_{i=1}^n p(x_i) (1 - p(x_i)) z^T x_i x_i^T z \\
+% 	&= \frac{1}{n}\sum_{i=1}^n p(x_i) (1 - p(x_i)) (z^Tx_i)^2 \\
+% 	&\geq 0
+%  \end{align*}
+%  La cantidad anterior es igual a cero si y s\'olo si $z^Tx_i = 0$ para toda $i \in 1, \dots, n$, pues las probabilidades son siempre positivas. Si $n \geq p+1$ y el rango de $X$ es igual a $p+1$, entonces lo anterior no puede suceder (el \'unico vector ortogonal a todo el espacio es el cero). Por lo tanto, si el rango de $X$ es igual a $p+1$, entonces $\nabla^2 D(\beta)$ es positiva definida. Sin embargo, en el caso en el que el rango de $X$ sea menor que $p+1$ (ya sea porque $X$ no es de rango completo o porque $p+1 > n$), $\nabla^2 D(\beta)$ es positiva semidefinida en el espacio nulo de $X^T$ y positiva definida en el resto del espacio.
+%  \end{proof}
+%  %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+%  \section{Optimizaci\'on no diferenciable}
+%  Para ajustar un modelo de regresi\'on log\'istica se puede utilizar cualquier m\'etodo de optimizaci\'on diferenciable sin restricciones que resuelva (\ref{gral}), pues la devianza es una funci\'on diferenciable y convexa. Basta garantizar la no-separabilidad del problema para que la soluci\'on exista y sea \'unica; posteriormente cualquier algoritmo de prop\'osito general como Newton o BFGS (Nocedal y Wright, 1999) permite encontrar los coeficientes. Sin embargo, uno de los principales beneficios que tiene el modelo de regresi\'on log\'istica con regularizaci\'on $\ell_1$ resulta ser tambi\'en su mayor problema: la funci\'on objetivo no es diferenciable, por lo que no podremos recurrir a los m\'etodos de optimizaci\'on tradicionales sin modificarlos de alguna manera. A continuaci\'on presentamos algunos conceptos que generalizan nociones de derivadas para funciones Lipschitz (es un tipo de continuidad m\'as fuerte que la usual) que se presentan en (Clarke, 1990).
+%  \begin{defn}[Lipschitz]
+%  Decimos que $f: \R^n \to \R^m$ es localmente $K$-Lipschitz (lo llamaremos simplemente Lipschitz en lo que resta de este trabajo) si para todo $x \in \R^n$ existen $\delta > 0$ y $K > 0$ tales que
+%  \[
+%  	\| f(x) - f(y) \| \leq K \| x - y \|, \quad \forall \, y \in B_\delta(x)
+%  \]
+%  \end{defn}
+
+% Para este tipo de funciones podemos definir un concepto de derivada m\'as amplio que el usual, que en particular funcionar\'a para funciones como la regularizaci\'on $\ell_1$, que son ``bien portadas''. A continuaci\'on presentamos el concepto de \emph{derivada direccional generalizada}, que est\'a basada sobre l\'imites superiores en vez de l\'imites usuales.
+% \begin{defn}[Derivada direccional generalizada] \label{derivdirgen}
+%  Sea $f: \R^n \to \R$ una funci\'on Lipschitz y sea $x \in \R^n$. La derivada direccional de $f$ en $x$ en la direcci\'on $h$ est\'a dada por
+%  \begin{align*}
+%  	Df(x ; h) &= \limsup_{\substack{y \to x \\ t \to 0^+}} \left\{ \frac{f(y + th) - f(y)}{t} \right \} \\
+% 	&= \lim_{\delta \to 0} \sup_{\substack{y \in B_\delta(x) \\ 0 < t < \delta}} \left\{ \frac{f(y + th) - f(y)}{t} \right \}
+%  \end{align*}
+%  \end{defn}
+ 
+%  Para funciones suficientemente regulares como las que nos interesan, la derivada direccional generalizada coincide con la derivada direccional por la derecha (definida igual a la usual pero con el l\'imite acerc\'andose a cero por la derecha). La \'ultima definici\'on de esta secci\'on es una generalizaci\'on del gradiente para funciones convexas que de hecho est\'a basada en la Proposici\'on \ref{desigualdaddelgradiente}. La idea es que si las funciones convexas diferenciables tienen un hiperplano tangente en cada punto que subestima a la funci\'on, en la definici\'on general tomamos el conjunto de todos los hiperplanos con esa propiedad y le llamamos \emph{subgradiente} (o gradiente generalizado, como le llama (Clarke, 1990)).
+%  \begin{defn}[Subgradiente] \label{defsubgradiente}
+%  Sea $f: \R^n \to \R$ una funci\'on Lipschitz y convexa. El subgradiente de $f$ en $x$ est\'a dado por el conjunto
+%  \begin{align}
+%  	\partial f(x) = \{\xi \in \R^n \; | \; Df(x ; h) \geq \xi^Th, \forall \, h \in \R^n \} \label{eqsubgradiente}
+% \end{align}
+% \end{defn}
+ 
+% El gradiente de una funci\'on diferenciable y convexa $f$ caracteriza un hiperplano de soporte del ep\'igrafe de $f$, $epi(f) = \{ (x,t) \in \R^{n+1} | f(x) \leq t \}$. En particular, de la Proposici\'on \ref{desigualdaddelgradiente} podemos ver que si $\xi \in \partial f(x)$, entonces para cualquier $(y,t) \in epi(f)$,
+% \[
+% 	\xi^T (y - x) \leq D(x; y - x) \leq f(y) - f(x) \leq t - f(x)
+% \]
+% de modo que 
+% \[
+% 	(\xi^T, -1) \begin{bmatrix} y - x \\ t - f(x) \end{bmatrix} \leq 0
+% \]
+
+% As\'i vemos que $H_\xi = \{ (z, s) \in \R^{n+1} | (\xi^T, -1) \left[ \begin{smallmatrix} y \\ t \end{smallmatrix} \right] = 0 \}$ es un hiperplano de soporte de $epi(f)$. Ilustramos la situaci\'on en la figura \ref{soporteepi}.
+% \shorthandoff{<>} 
+% \begin{figure}
+% 	\centering
+% 	\begin{tikzpicture}[scale=2]
+% 		\draw[fill = lightgray, samples = 101, domain = -1.5:1.3] plot(\x, {0.5*pow(\x + 0.5, 2) + 0.3 + 0.5*abs(\x)});
+% 		\draw[->] (-2,0) -- (2,0);
+% 		\draw[->] (0,-1) -- (0,2);
+% 		\node at (-0.5,1.2) {$epi(f)$};
+% 		\draw (-1.5, -0.5) -- (0 + 1.5, 2*0.3 + 2*0.5^3 + 0.5);
+% 		\draw[dashed] (-1.5, 0) -- (0 + 1.5, 2*0.5^3 + 2*0.3);
+% 		\draw[dashed] (-1.5, 0.5^3 + 0.3) -- (0 + 1.5, 0.5^3 + 0.3);
+% 		\draw[->] (0, 0.3 + 0.5^3) -- (0.7*0.3 + 0.7*0.5^3 + 0.7*0.25, -0.7*0.75);
+% 		\node at (1.1,0.9) {$H_\xi$};
+% 		\node at (0.7,-0.3) {$\begin{bmatrix} \xi \\ -1 \end{bmatrix}$};
+% 	\end{tikzpicture}
+% 	\caption{Los elementos de $\partial f(x)$ caracterizan hiperplanos de soporte de $epi(f)$ \label{soporteepi}}
+% \end{figure}
+% \shorthandon{<>} 
+
+% De la misma forma que la derivada direccional generalizada extiende la noci\'on de derivada direccional, el subgradiente extiende la noci\'on de gradiente, pues, por ejemplo, si la funci\'on $f$ es diferenciable en $x$, entonces $\partial f(x) = \{ \nabla f(x) \}$. Al lector interesado en estos temas lo remitimos a (Clarke, 1990) y a (Boyd y Vandenberghe, 2011).
+ 
+%  %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+%  \section{Condiciones de optimalidad}
+ 
+% Lo primero que necesitamos antes de intentar minimizar una funci\'on son condiciones que nos garanticen que hemos llegado a un m\'inimo. Definamos formalmente a qu\'e nos referimos exactamente con ese t\'ermino:
+% \begin{defn}[M\'inimo local, m\'inimo global]
+% 	Sea $f: \R^n \to \R$ cualquier funci\'on. Decimos que $x^* \in \R^n$ es un m\'inimo global de $f$ si para cualquier $y \in \R^n$ se tiene que $f(x^*) \leq f(y)$.
+	
+% 	Por otro lado, decimos que $x^* \in \R^n$ es un m\'inimo local de $f$ si existe $\varepsilon > 0$ tal que para cualquier $y \in B_\varepsilon(x^*) \overset{def}{=} \{z \in \R \; | \; \| x^* - z \| < \varepsilon \}$ se tiene que $f(x^*) \leq f(y)$. Similarmente, si la desigualdad es estricta, se diremos que $x^*$ es un m\'inimo local fuerte.
+% \end{defn}
+
+% Evidentemente, cualquier m\'inimo global es a su vez un m\'inimo local (tomando $\varepsilon > 0$ arbitraria), y un m\'inimo global que a su vez es un m\'inimo local fuerte, es \'unico. Ya con la noci\'on formal de lo que es un m\'inimo, daremos resultados varios que nos permitir\'an saber qu\'e puntos son m\'inimos. Empezaremos con condiciones necesarias y luego con condiciones suficientes para la optimalidad en funciones de clase $\mathcal{C}^1$ \'o $\mathcal{C}^2$ y luego las extenderemos al caso no diferenciable.
+
+% %------------------------------------------
+% \subsection{Caso diferenciable}
+% Empezaremos dando condiciones necesarias y suficientes para el caso diferenciable por ser el m\'as conocido y f\'acil de tratar. El siguiente Teorema es uno de los m\'as importantes en optimizaci\'on de funciones diferenciables:
+
+% \begin{teo}[Condiciones necesarias de primer orden: caso diferenciable] \label{cnpodif}
+% 	Sea $f: \R^n \to \R$ de clase $\mathcal{C}^1$ en $\R^n$ y sea $x^* \in \R^n$ un m\'inimo local de $f$. Entonces, $\nabla f(x^*) = 0$.
+% \end{teo}
+
+% El teorema anterior es bien conocido en c\'alculo como las condiciones de Karush-Kuhn-Tucker (KKT) y puede ser generalizado a problemas con restricciones (en cuyo caso hay m\'as condiciones que s\'olo que el gradiente se anule en el \'optimo). Para ver esto m\'as a detalle se puede ir a (Nocedal y Wright, 1999) o bien a (Boyd y Vandenberghe, 2009). De hecho, la mayor\'ia de los algoritmos de optimizaci\'on est\'an basados en este principio, es decir, buscan puntos en donde el gradiente de la funci\'on sea cero. Sin embargo, esa condici\'on no es suficiente. A continuaci\'on presentamos las condiciones suficientes de optimalidad.
+
+% \begin{teo}[Condiciones suficientes de segundo orden: caso diferenciable] \label{cssodif}
+% 	Sea $f: \R^n \to \R$ de clase $\mathcal{C}^2$ en $\R^n$ y sea $x^* \in \R^n$ que cumple las siguientes dos condiciones:
+% 	\begin{enumerate}[(i)]
+% 		\item $\nabla f(x^*) = 0$ \label{cnpo}
+% 		\item Existe $\varepsilon > 0$ tal que $\nabla^2 f(x)$ es positiva definida en para todo $x \in B_\varepsilon(x^*)$ \label{csso}
+% 	\end{enumerate}
+% 	Entonces, $x^*$ es un m\'inimo local fuerte de $f$.
+% \end{teo}
+ 
+%  La segunda condici\'on del teorema anterior se refiere a la curvatura local de $f$, que est\'a capturada en la matriz hessiana. Hay que notar que estas condiciones son suficientes pero no necesarias, es decir que existen m\'inimos locales que no las cumplen. Un caso muy sencillo de ver es $f(x,y) = x^2 + y^4$, cuya hessiana, $ \nabla^2f(x,y) = \left [\begin{smallmatrix} 2 & 0\\0  &12y \end{smallmatrix}\right ]$, es solamente positiva semidefinida en el minimizador global, $(0,0) \in \R^2$.
+  
+% Una versi\'on m\'as fuerte de este teorema pide que la hessiana sea positiva definida en todo el dominio. En ese caso la conclusi\'on es tambi\'en mejor, pues se garantiza entonces que se tiene un m\'inimo global y que adem\'as es \'unico. Sin embargo, ese resultado se puede mejorar a pedir convexidad estricta en lugar de imponer directamente restricciones sobre la matriz hessiana. La mejora consiste en que hessiana positiva definida implica convexidad estricta, pero no al rev\'es. Mostramos ese resultado como un Corolario del Teorema \ref{cnpodif}, pues basta combinarlo con la desigualdad del gradiente (la Proposici\'on \ref{desiggrad}) para probarlo.
+ 
+%  \begin{cor}[Al Teorema \ref{cnpodif}]
+%  	Sea $f: \R^n \to \R$ una funci\'on diferenciable y estrictamente convexa y sea $x^*$ un m\'inimo local de $f$. Entonces, $x^*$ es un m\'inimo global de $f$ y adem\'as es \'unico.
+% \end{cor}
+% \begin{proof}[\bf Demostraci\'on]
+% Por el Teorema \ref{cnpodif}, como $x^*$ es un m\'inimo local, entonces $\nabla f(x^*) = 0$. Adem\'as, por la versi\'on estricta de la Proposici\'on \ref{desiggrad}, tenemos que para cualquier $y \neq x^*$,
+% \[
+% 	f(y) > f(x^*) + \nabla f(x^*)^T(y - x^*) = f(x^*),
+% \]
+% lo que prueba que $x^*$ es un minimizador global y que adem\'as es \'unico.
+% \end{proof}
+
+% Lo interesante de este resultado es que, dada la convexidad estricta, nos permite conocer informaci\'on global (ie. que tenemos un minimizador global) mediante informaci\'on puramente local (el gradiente). Adem\'as, no requiere que la funci\'on sea dos veces continuamente diferenciable, como el Teorema \ref{cssodif}.
+ 
+% %------------------------------------------
+% \subsection{Caso no diferenciable}
+% Hasta este punto hemos tratado \'unicamente con funciones una o dos veces continuamente diferenciables. Es m\'as complicado dar condiciones tan generales para funciones no diferenciables o cuyas derivadas no son continuas. Sin embargo, si la funci\'on objetivo es convexa (como es el caso de nuestro problema de inter\'es), entonces s\'i podemos dar condiciones similares. El siguiente teorema nos proporcionar\'a una condici\'on necesaria de optimalidad.
+% \begin{teo}[Condiciones necesarias de optimalidad: caso no diferenciable] \label{cnponodif}
+% 	Sea $f: \R^n \to \R$ una funci\'on Lipschitz en $\R^n$ y sea $x^* \in \R^n$ un m\'inimo local estricto de $f$. Entonces, $0 \in \partial f(x^*)$.
+%  \end{teo}
+%  \begin{proof}[\bf Demostraci\'on]
+%  Dado que $x^*$ es un m\'inimo local estricto de $f$, existe $\delta > 0$ tal que $f(x^* + h) > f(x^*)$, para cualquier $h \in B_\delta(x^*)$. De ah\'i tenemos que si $\| h \| = 1$, entonces $f(x^* + t h) - f(x^*) > 0$, para cualquier $0 < t < \delta$. Como $f$ es Lipschitz, en particular es continua, de modo que existe $\varepsilon > 0$ tal que $f(y + t h) - f(y) > 0$, para cualquier $y \in B_\varepsilon(x^*)$. Dividiendo entre $t > 0$ y tomando l\'imites se obtiene la derivada direccional generalizada de $f$, que resulta ser entonces mayor o igual a cero.
+ 
+%  La conclusi\'on es que entonces $Df(x^*; h) \geq 0 = 0^Th$, para toda $h \in \R^n$, por lo que cero est\'a en el subgradiente de $f$.
+%  \end{proof}
+ 
+% El teorema anterior es el equivalente de las condiciones KKT para el caso no diferenciable y se puede extender a m\'inimos locales no estrictos, pero la prueba lleva m\'as detalles t\'ecnicos, por lo que remitimos al lector interesado a (Clarke, 1990). 
+
+% Las condiciones anteriores son suficientes pero no necesarias para la optimalidad. Adem\'as, s\'olo proporcionan informaci\'on local de $f$. En el siguiente teorema damos condiciones suficientes para optimalidad global.
+
+% \begin{teo}[Condiciones suficientes de optimalidad: caso no diferenciable] \label{cssonodif}
+% 	Sea $f: \R^n \to \R$ una funci\'on Lipschitz y $x^* \in \R^n$ tal que $0 \in \partial f(x^*)$. Supongamos adicionalmente que existe $\varepsilon > 0$ tal que $f$ es estrictamente convexa en $B_\varepsilon (x^*)$. Entonces, $x^*$ es el \'unico m\'inimo local de $f$ en la vecindad $B_\varepsilon(x^*)$.
+%  \end{teo}
+% \begin{proof}[\bf Demostraci\'on]
+% Sea $t \in (0,1]$, $x^* \in \R^n$ tal que $0 \in \partial f(x^*)$ y sea $h \in B_\varepsilon(x^*)$ cualquier vector. Para ver que $x^*$ es en efecto un m\'inimo local de $f$ basta probar que para cualquier $h \in B_\varepsilon(x^*)$, $f(x^* + h) > f(x^*)$. Primero, utilizando el hecho de que $f$ es estrictamente convexa, tenemos que para $0 < t \leq 1$,
+% \[
+% 	f(x^* + th) = f((1 - t) x^* + t (x^* + h)) < (1-t) f(x^*) + t f(x^* + h)
+% \]
+% De este modo,
+% \[
+% 	f(x^* + h) > \frac{f(x^* + th) - (1-t) f(x^*)}{t}
+% \]
+% Restando $f(x^*)$ de ambos lados tenemos que
+% \[
+% 	f(x^* + h) - f(x^*)> \frac{f(x^* + th) - f(x^*)}{t}
+% \]
+% Nuevamente utilizaremos el hecho de que $f$ es continua, por lo que existe $\varepsilon > \delta > 0$ tal que
+% \[
+% 	f(x^* + h) - f(x^*) > \frac{f(y + th) - f(y)}{t}
+% \]
+% para toda $y \in B_\delta(x^*)$. Tomando l\'imites se tiene que entonces
+% \[
+% 	f(x^* + h) - f(x^*) \geq Df(x^*; h) \geq 0,
+% \]
+% pues $0 \in \partial f(x^*)$. En estricto sentido lo anterior solamente demuestra que $x^*$ es un m\'inimo local, pero no necesariamente \'unico, de $f$. Sin embargo, la existencia de otro punto $x^{**} \neq x^*$ tal que $f(x^{**}) = f(x^*)$ contravendr\'ia el hecho de que $x^*$ es un m\'inimo en la vecindad, pues usando la convexidad estricta de $f$, se tendr\'ia que $f(t x^* + (1-t)x^{**}) < t f(x^*) + (1-t) f(x^{**}) = f(x^*)$ para cualquier $0 < t < 1$.
+% \end{proof}
+
+% Del igual manera que en el caso diferenciable, si $f$ es estrictamente convexa en todo el dominio $\R^n$, entonces podemos mejorar la conclusi\'on del teorema a optimalidad global y unicidad. Presentamos el resultado generalizado a continuaci\'on:
+
+% \begin{cor}[Condiciones suficientes de optimalidad globales] \label{cssoglobales}
+% 	Sea $f: \R^n \to \R$ una funci\'on Lipschitz y estrictamente convexa en $\R^n$ y sea $x^* \in \R^n$ tal que $0 \in \partial f(x^*)$. Entonces, $x^*$ es el \'unico m\'inimo global de $f$.
+% \end{cor}
+% \begin{proof}[\bf Demostraci\'on]
+% Dado que $f$ es estrictamente convexa en $\R^n$, tenemos que en particular lo es en $B_\varepsilon(x^*)$, para toda $\varepsilon > 0$. De este modo, cualquier $x^*$ que cumpla las condiciones del teorema cumplir\'a $f(x^*) < f(x)$, para todo $x \in B_\varepsilon(x^*)$ y para cualquier $\varepsilon > 0$, lo que concluye la prueba.
+% \end{proof}
+
+% Cabe mencionar que las versiones no diferenciables que presentamos en realidad son una extensi\'on de los teoremas del caso diferenciable. El teorema \ref{cnponodif} extiende al \ref{cnpodif} porque en el caso diferenciable se tiene que $\partial f(x) = \{ \nabla f(x) \}$, de modo que $0 \in \partial f(x) \iff 0 \in \{ \nabla f(x)\}$. En el caso de las condiciones suficientes el teorema \ref{cssonodif} extiende al teorema \ref{cssodif}, pues si $f$ es diferenciable y su hessiana es positiva definida en una vecindad del \'optimo, entonces por la Proposici\'on \ref{curvaturaconvexas} (tomando la vecindad en vez de $\R^n$), $f$ es estrictamente convexa. Sucede lo mismo en el Corolario \ref{cssoglobales}.
+
+% La teor\'ia que presentamos fue desarrollada en buena medida por Clarke (Clarke, 1990) y sienta las bases para c\'alculo y optimizaci\'on generalizados. En nuestro caso nos permite tener condiciones que garantizan la optimalidad a\'un cuando la funci\'on objetivo no es diferenciable. Lo interesante de esta teor\'ia es que, como mencion\'abamos, se trata de una genuina generalizaci\'on del c\'alculo suave, pues los teoremas que probamos abarcan las versiones que ya conoc\'iamos.
+ 
+ 
+%  %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+%  \section{El m\'etodo de Newton}
+
+% El m\'etodo de Newton para encontrar ceros de funciones es muy importante en optimizaci\'on debido a su tasa de convergencia cuadr\'atica. El algoritmo de descenso por coordenadas para regresi\'on log\'istica (que describiremos a detalle en el siguiente cap\'itulo) est\'a basado en el este m\'etodo, pero lo implementa de forma especial.
+
+% Comencemos por definir el algoritmo de Newton para funciones de clase $\mathcal{C}^1$ (ie. diferenciables y cuya derivada es continua). Sea $F: \R^n \to \R^n$ una funci\'on de clase $\mathcal{C}^1$ y $x_0 \in \R^n$ una aproximaci\'on inicial. Definimos la k-\'esima iteraci\'on del m\'etodo de Newton, $x_k$, por
+% \begin{equation}
+% 	x_{k+1} = x_k - J(x_k)^{-1} F(x_k)
+% \end{equation}
+% donde $J(x_k) \in \R^{nxn}$ es la matriz jacobiana de $F$ evaluada en $x_k$. Tomando como ejemplo el caso $n=1$, se tiene que $x_{k+1} = x_k - \frac{F(x_k)}{F'(x_k)}$, que es el cero de la recta tangente a $F$ que pasa por el punto $(x_k, F(x_k))$. Entonces, lo que hace el m\'etodo es tomar el modelo lineal de $F$ alrededor de la aproximaci\'on actual y encontrar d\'onde vale cero, tomando este punto como su nueva aproximaci\'on.
+
+% Lo que a nosotros nos va a interesar es la versi\'on de este algoritmo que se usa en optimizaci\'on. La idea es que si tenemos una funci\'on $f: \R^n \to \R$ de clase $\mathcal{C}^2$ (es decir, con derivadas parciales de orden dos continuas) que queremos minimizar (maximizar), las condiciones de optimalidad de primer orden \ref{cnpodif} nos dicen que debemos empezar por encontrar un punto en donde el \emph{gradiente} de $f$, $\nabla f: \R^n \to \R^n$, valga cero. De ese modo, podemos aplicar el algoritmo de Newton al gradiente de $f$ para encontrar uno de sus ceros, que a su vez ser\'a un punto estacionario (m\'inimo, m\'aximo o punto silla) de $f$. En este caso, la matriz jacobiana de $\nabla f$ es la matriz hessiana de $f$, $\nabla^2 f(x)$, de modo que la actualizaci\'on de Newton para optimizar $f$ empezando en $x_0 \in \R^n$ queda como sigue:
+% \begin{equation} \label{actualizacionnewton}
+% 	x_{k+1} = x_k - \nabla^2f(x_k)^{-1} \nabla f(x_k)
+% \end{equation}
+
+% Hay toda una familia de algoritmos de optimizaci\'on basados en el m\'etodo de Newton. Cada uno tiene ventajas y desventajas, pero una que la mayor\'ia comparte es que solamente tiene sentido utilizarlos para minimizar funciones de clase $\mathcal{C}^2$. En las partes posteriores de este trabajo expondremos dos algoritmos derivados de este m\'etodo.
+
+% Si bien la tentaci\'on para implementar este algoritmo es invertir la matriz hessiana, en realidad no es una buena pr\'actica, pues se trata de un proceso inestable y costoso para problemas dif\'iciles. Suponiendo que la matriz es positiva definida, podemos encontrar la direcci\'on de descenso, $d_k = -\nabla^2f(x_k)^{-1} \nabla f(x_k)$ minimizando el modelo cuadr\'atico de $f$ proveniente del Teorema de Taylor:
+% \begin{align} \label{sistnewton}
+%  	\underset{d}{\text{minimizar }} q^N_k(d) = \frac{1}{2} d^T \nabla^2f(x_k) d + \nabla f(x_k)^T d + f(x_k)
+% \end{align}
+% La justificaci\'on de esto es que si $d_k$ minimiza (\ref{sistnewton}), entonces por las condiciones de primer orden \ref{cnpodif}, suponiendo que la hessiana de $f$ es positiva definida en $x_k$,
+% \begin{align*}
+% 	\nabla q^N_k(d_k) = \nabla^2f(x_k) d_k + \nabla f(x_k) = 0 \implies d_k = -\nabla^2f(x_k)^{-1}\nabla f(x_k)
+% \end{align*}
+% Es decir que el sistema tiene exactamente una soluci\'on si la hessiana es positiva definida, por lo cual existe un \'unico minimizador del problema, que corresponde con la direcci\'on de descenso que buscamos en (\ref{actualizacionnewton}). Esperaremos hasta un poco m\'as adelante para detallar el algoritmo computacional que utiliza el m\'etodo de Newton, pues falta el elemento de la b\'usqueda de l\'inea para garantizar la convergencia global del algoritmo.
+
+ 
+% %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+% \section{Condiciones de Wolfe y b\'usqueda lineal}
+%  El m\'etodo de Newton no tiene garant\'ia de convergencia desde cualquier punto inicial $x_0$. Sin embargo, podemos imponer restricciones sobre las direcciones de avance del m\'etodo de tal modo que s\'i haya garant\'ia de convergencia. Lo que haremos ser\'a modificar la longitud de la direcci\'on de descenso $d_k$, es decir que tomaremos $x_{k+1} = x_k + \alpha_k d_k$ para alg\'un valor positivo de $\alpha$. Lo que nos gustar\'ia idealmente ser\'ia encontrar el m\'inimo de $\phi(\alpha) = f(x_k + \alpha_k d_k)$, que es simplemente $f$ restringida a una l\'inea, que representa el mayor descenso al que podemos aspirar al movernos en una direcci\'on dada $d_k$. Sin embargo, encontrar un m\'inimo de $\phi$ puede ser demasiado costoso computacionalmente, lo que podr\'ia ralentizar la optimizaci\'on, de modo que resulta mejor utilizar una $\alpha_k$ razonablemente buena pero f\'acil de calcular.
+ 
+%  A continuaci\'on presentaremos las \emph{condiciones de Wolfe} como aparecen en (Nocedal y Wright, 1999), que dan un criterio que dice precisamente qu\'e valores de $\alpha_k$ son razonables. Alentamos al lector a ir a la referencia antes mencionada para un tratamiento con mayor profundidad del tema y c\'omo es que las condiciones que veremos garantizan convergencia global para una amplia gama de funciones.
+ 
+%  La primera condici\'on importante al definir el tama\~no del paso es que presente un descenso suficiente, para evitar casos en los que se tiene una sucesi\'on decreciente que no converge (o al menos no suficientemente r\'apido) al m\'inimo. El modelo lineal de $\phi(\alpha)$ alrededor de $\alpha  = 0$ est\'a dado por $l(\alpha) = f(x_k) + \alpha \nabla f(x_k)^Td_k$. La primera condici\'on de Wolfe, tambi\'en llamada \emph{condici\'on de Armijo}, consiste en lo siguiente:
+% \begin{align*}
+% 	f(x_k + \alpha d_k) \leq f(x_k) + c_1 \alpha \nabla f(x_k)^T d_k
+% \end{align*}
+% para alguna $c_1 \in (0,1)$. Intuitivamente, lo que dice esta desigualdad es que mientras m\'as grande la pendiente de $\phi(\alpha)$, mayor descenso pediremos.
+ 
+% Si bien la condici\'on anterior ayuda, no es suficiente por s\'i sola, pues siempre se cumplir\'a para valores suficientemente peque\~nos de $\alpha$. La segunda condici\'on de Wolfe, o \emph{condici\'on de curvatura}, garantiza que esto no suceda. Para lograrlo fuerza a la pendiente de $\phi$ a tener un aumento razonable:
+% \begin{align*}
+% 	\nabla f(x_k + \alpha d_k)^T d_k \geq c_2 \nabla f(x_k)^T d_k
+% \end{align*}
+%  con $c_2 \in (c_1, 1)$. En la figura \ref{figwolfe} mostramos los puntos que son aceptables seg\'un estas dos condiciones.
+%  \shorthandoff{<>} 
+%  \hspace{-2cm}
+%  \begin{figure}[h]
+% 	\centering
+% 	\begin{tikzpicture}
+% 		\begin{axis}[height=10cm, width=13cm, xlabel=$\alpha$, ylabel=$\phi(\alpha)$]
+% 		        % Funcion
+% 			\addplot[smooth, thick] plot coordinates {
+% 			        (0, 2)
+% 			        (0.3, 0.4)
+% 			        (0.6, 0.2)
+% 			        (1, 1.5)
+% 			        (1.5, 1.7)
+% 			        (2, 0.7)
+% 			        (3, 2)
+% 			};
+% 			\addlegendentry{$\phi(\alpha)$}
+			
+% 			% Descenso suficiente
+% 			\addplot[thick, dotted] coordinates {
+% 				(0,2)
+% 				(3,1)
+% 			};
+% 			\addlegendentry{$f(x_k) + c_1 \alpha \nabla f(x_k)^T d_k$}
+			
+% 			% Condicion de curvatura
+% 			\addplot[dashed] coordinates {
+% 				(0.2, 0.25 + 0.01)
+% 				(0.6, 0.05 + 0.01)
+% 			};
+% 			\addplot[dashed] coordinates {
+% 				(0.2 + 1.5, 0.25 + 0.57)
+% 				(0.6 + 1.5, 0.05 + 0.57)
+% 			};
+% 			\addlegendentry{$\phi'(\alpha) = c_2 \nabla f(x_k)^T d_k$}
+			
+% 			% Puntos aceptables
+% 			\addplot[<->, thick] coordinates {
+% 				(0.47, 0)
+% 				(1.11, 0)
+% 			};
+% 			\addplot[<->, thick] coordinates {
+% 				(1.95, 0)
+% 				(2.45, 0)
+% 			};
+% 			\addplot + [ycomb, black] plot coordinates {
+% 				(0.47,0.14)
+% 				(1.11,1.62)
+% 				(1.95,0.7)
+% 				(2.45, 1.18)
+% 			};
+% 			\node at (axis cs:0.5,-0.2) [anchor=south west] {Aceptable};
+% 			\node at (axis cs:1.93,-0.2) [anchor=south west] {Aceptable};
+% 		    \end{axis}
+% 	\end{tikzpicture}
+% 	\caption{Condiciones de Wolfe \label{figwolfe}}
+% \end{figure}
+% \shorthandon{<>} 
+
+%  En la pr\'actica se utiliza $c_1$ bastante peque\~no, por ejemplo $10^{-4}$ y $c_2$ relativamente cercano a 1, digamos $0.9$. Para futura referencia, presentamos ambas desigualdades juntas:
+%  \begin{align}
+%  	&f(x_k + \alpha d_k) \leq f(x_k) + c_1 \alpha \nabla f(x_k)^T d_k \label{wolfe1}\\
+% 	&\nabla f(x_k + \alpha d_k)^T d_k \geq c_2 \nabla f(x_k)^T d_k \label{wolfe2}
+% \end{align}
+
+% Hasta ahora hemos dicho que queremos encontrar una $\alpha$ que cumpla las condiciones de Wolfe y que a la vez sea r\'apida y f\'acil de calcular. Para ello hay algoritmos de b\'usqueda de l\'inea muy sofisticados, pero quedan fuera del inter\'es de este trabajo. Para nuestros fines bastar\'a definir el m\'as simple de ellos, que se denomina \emph{b\'usqueda hacia atr\'as} (o \emph{backtracking}), que nada m\'as garantiza la primera condici\'on de Wolfe, pero sirve suficientemente bien en la pr\'actica.
+
+% \RestyleAlgo{boxruled}
+% \begin{algorithm}[h]
+% 	\caption{B\'usqueda de l\'inea hacia atr\'as \label{backtracking}}
+% 	Sea $\alpha > 0, \rho \in (0,1)$ y $c_2 \in (0,1)$.\\
+% 	\While{$f(x_k + \alpha d_k) \geq f(x_k) + c_1 \alpha \nabla f(x_k)^T d_k$}{
+%   		$\alpha \gets \rho \alpha$
+% 	}
+% 	Terminar con resultado $\alpha_k = \alpha$
+% \end{algorithm}
+% La b\'usqueda de l\'inea garantiza que el m\'etodo de Newton converja globalmente (siempre y cuando la funci\'on objetivo sea acotada inferiormente y no presente secciones planas, ie. decrecientes eternamente como $1/x$), por lo que ya con el algoritmo \ref{backtracking} podemos presentar paso a paso el m\'etodo de Newton:
+
+% \RestyleAlgo{boxruled}
+% \begin{algorithm}[h]
+% 	\caption{M\'etodo de Newton \label{algnewton}}
+% 	Sea $x_0$ un punto inicial y $tol > 0$\\
+% 	$k \gets 0$\\
+% 	\While{$\| \nabla f(x_k) \| > tol \times \| \nabla f(x_0) \|$}{
+%   		Calcular $\nabla f(x_k)$ y $\nabla^2 f(x_k)$\\
+% 		Resolver el subproblema cuadr\'atico (\ref{sistnewton}) para obtener $d_k$\\
+% 		Aplicar la b\'usqueda de l\'inea \ref{backtracking} para obtener $\alpha_k$\\
+% 		Avanzar: $x_{k+1} \gets x_k + \alpha_k d_k$\\
+% 		$k \gets k + 1$
+% 	}
+% 	Terminar con resultado $x^* = x_k$
+% \end{algorithm}
+% %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+% \section{M\'etodos cuasi-Newton}
+% El m\'etodo de Newton calcula el siguiente iterando a partir del modelo cuadr\'atico de Taylor, que obtiene su informaci\'on de segundo orden de la matriz hessiana de $f$. En la pr\'actica evaluar $f$ puede ser costoso y calcular su hessiana por diferencias finitas es un proceso que acumula errores y disminuye la eficacia del m\'etodo. Los m\'etodos cuasi-Newton son una variante de Newton que utiliza una matriz sim\'etrica $B_k$ en lugar de $\nabla^2 f(x_k)$:
+% \begin{align} \label{sistcuasinewton}
+%  	\underset{d}{\text{minimizar }} q^C_k(d) = \frac{1}{2} d^T B_k d + \nabla f(x_k)^T d + f(x_k)
+% \end{align}
+% La matriz $B_k$ se va actualizando en cada iteraci\'on \'unicamente con informaci\'on de primer orden (ie. el gradiente de $f$). El punto es tener una matriz que refleje la curvatura de $f$ suficientemente bien para que el paso producido al minimizar el sistema cuadr\'atico genere un descenso sobre $f$, pero que sea menos costosa de calcular que la matriz hessiana verdadera. Los m\'etodos cuasi-Newton populares consiguen una convergencia superlineal (ver (Nocedal y Wright, 1999)), pero dado que las iteraciones pueden ser menos costosas que las de Newton en algunos casos, pueden obtener llegar al \'optimo en menos tiempo (si bien no en menos iteraciones).
+
+% Lo interesante de los m\'etodos cuasi-Newton es la construcci\'on de $B_k$. En general, se intenta forzar a que sean matrices con propiedades como simetr\'ia y positividad, y que cambien poco de una iteraci\'on a otra, en el sentido de que $B_{k+1}$ sea ``parecida'' a $B_k$. Cada criterio de cercan\'ia resulta en un m\'etodo diferente. A continuaci\'on mostraremos uno de los m\'as populares (por no decir el m\'as popular) de esta familia de m\'etodos y luego una variante del mismo pensada para problemas grandes.
+ 
+% %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+% \subsection{BFGS}
+% El m\'etodo BFGS (por Broyden, Fletcher, Goldfarb y Shanno) es uno de los m\'etodos cuasi-Newton m\'as usados, y de hecho uno de los m\'etodos de optimizaci\'on m\'as difundidos. Una referencia interesante es (Goldfarb, 1970), aunque en esta secci\'on mostraremos una forma de derivar el m\'etodo que aparece en (Nocedal y Wright, 1999).
+
+% Supongamos que tenemos una matriz $B_k$ dada y que queremos construir un modelo cuadr\'atico de $f$ alrededor de $x_{k+1} = x_k + \alpha_k d_k$:
+% \[
+% 	q^C_{k+1}(d) = \frac{1}{2} d^T B_{k+1} d + \nabla f(x_{k+1})^T d + f(x_{k+1})
+% \]
+% Algunas propiedades importantes del modelo de Taylor $q^N_{k+1}$ que se usa en Newton es que, evaluado en $x_{k+1}$, coincide con $f$, su gradiente coincide con el gradiente de $f$ y adem\'as su hessiana coincide con la de $f$. Es decir, tiene el mismo valor, pendiente y curvatura que $f$ en $x_{k+1}$. En aras de ahorrar tiempo de c\'omputo, hemos prescindido de la \'ultima propiedad. Sin embargo, algo que podemos hacer es pedir que el gradiente coincida con el de $f$ en $x_k$ y en $x_{k+1}$. La segunda condici\'on se da autom\'aticamente, pues $\nabla q^C_{k+1}(0) = \nabla f(x_{k+1})$. Sin embargo, para que se cumpla la primera propiedad necesitaremos que se cumpla:
+% \[
+% 	\nabla q^C_{k+1}(x_k - x_{k+1}) = \nabla q^C_{k+1}(-\alpha_k x_k) = \nabla f(x_{k+1}) - \alpha_kB_{k+1} x_k = \nabla f(x_k)
+% \]
+% Reordenando, tenemos que la condici\'on anterior queda:
+% \[
+% 	 \nabla f(x_{k+1}) - \nabla f(x_k) = \alpha_kB_{k+1} x_k = B_{k+1} (x_{k+1} - x_k)
+% \]
+% Por comodidad, definimos:
+% \begin{align} \label{presecante}
+% s_k = x_{k+1} - x_k \text{\; y \;} y_k = \nabla f(x_{k+1}) - \nabla f(x_k)
+% \end{align}
+% con lo que la condici\'on anterior, que es com\'unmente llamada \emph{ecuaci\'on de la secante}, queda como:
+% \begin{align} \label{secante}
+% 	B_{k+1} s_k = y_k
+% \end{align}
+
+% La ecuaci\'on de la secante impone solamente $n$ restricciones a $B_{k+1}$, por lo que existe una infinidad de matrices que las cumplen. Sin embargo, para que al menos alguna de ellas sea positiva definida, se debe cumplir la \emph{condici\'on de curvatura}:
+% \begin{align} \label{curvatura}
+% 	s_k^T y_k > 0,
+% \end{align}
+%  que resulta de multiplicar (\ref{secante}) por la izquierda por $s_k^T$. Para funciones estrictamente convexas eso se cumple siempre (basta hacer un dibujo y pensar un poco para convencerse; la prueba formal implica m\'as detalles), pero no en general. Sin embargo, si se cumple la segunda condici\'on de Wolfe, (\ref{wolfe2}), se tiene que
+% \[
+%  	\nabla f(x_{k+1})^T s_k \geq c_2 \nabla f(x_k)^T s_k \implies y_k^T s_k \geq (c_2 - 1) \nabla f(x_k)^T s_k > 0,
+% \]
+% pues $d_k$ es una direcci\'on de descenso y $c_2 < 1$. De este modo, al ajustar los pasos con las condiciones de Wolfe, garantizamos que haya soluci\'on a la ecuaci\'on de la secante.
+
+% En conclusi\'on, se busca que $B_{k+1}$ cumpla dos propiedades: la ecuaci\'on de la secante y simetr\'ia (la positividad se dar\'a autom\'aticamente, como veremos). Para determinarla de manera \'unica utilizaremos el siguiente criterio de cercan\'ia entre $B_{k+1}$ y $B_k$:
+% \begin{equation} \label{mindfp}
+% 	\begin{aligned}
+% 		&\underset{B}{\text{minimizar }} \| B - B_k \| \\
+% 		&\text{sujeta a}\quad B = B^T, \; Bs_k = y_k 
+% 	\end{aligned}
+% \end{equation}
+% La norma que se utiliza en este problema es muy particular, y referimos al lector interesado a (Nocedal y Wright, 1999) para m\'as detalles t\'ecnicos al respecto.
+
+% Hasta el momento podr\'ia parecer que hemos ganado poco, pues falta resolver el problema (\ref{mindfp}). Sin embargo, aqu\'i radica el atractivo de esta formulaci\'on: su soluci\'on es una f\'ormula cerrada, que presentamos a continuaci\'on:
+% \begin{align} \label{dfp}
+% 	B_{k+1} = (I - \rho_k y_k s_k^T) B_k (I - \rho_k s_k y_k^T) + \rho_k y_k y_k^T
+% \end{align}
+% donde $\rho_k = \frac{1}{y_k^T s_k}$. La desventaja de esto es que en realidad lo que nos interesa es resolver las condiciones de primer orden del problema cuadr\'atico, es decir, encontrar una soluci\'on de:
+% \[
+% 	B_{k+1} d_{k+1}  = - \nabla f(x_{k+1})
+% \]
+% para conseguir el siguiente iterando, por lo que tenemos que conseguir $H_{k+1} = B_{k+1}^{-1}$ o resolver el sistema utilizando factorizaci\'on $LU$, por ejemplo. Afortunadamente, la f\'ormula (\ref{dfp}) es una actualizaci\'on de rango dos, por lo que utilizando iteradamente la f\'ormula de Sherman-Morrison-Woodbury, tenemos que si $H_k = B_k^{-1}$, entonces
+% \begin{align} \label{invdfp}
+% 	H_{k+1} = H_k  - \frac{H_k y_k y_k^T H_k}{y_k^T H_k y_k} + \frac{s_k s_k^T}{y_k^T s_k},
+% \end{align}
+% que tambi\'en resulta ser una actualizaci\'on de rango dos. Lo sorprendente de esto es que ya no necesitamos calcular $B_k$, pues si obtenemos $H_0 = B_0^{-1}$ en la primera iteraci\'on, podemos obtener $H_1, H_2, \dots$ directamente. El m\'etodo basado en la soluci\'on dada por (\ref{invdfp}) es conocido como \emph{DFP} (por Davidon, Fletcher y Powell) y es muy efectivo.
+
+% Una idea alternativa consistir\'ia en modificar (\ref{mindfp}) para obtener $H_{k+1}$ directamente y ahorrarnos el tener que pasar por $B_k$ (al menos conceptualmente, dado que no la tenemos que calcular). El m\'etodo resultante es conocido como BFGS y consiste en obtener directamente $H_{k+1}$ resolviendo el siguiente problema:
+% \begin{equation} \label{minbfgs}
+% 	\begin{aligned}
+% 		&\underset{H}{\text{minimizar }} \| H - H_k \| \\
+% 		&\text{sujeta a}\quad H = H^T, \; Hy_k = s_k 
+% 	\end{aligned}
+% \end{equation}
+% Cabe notar que en este caso est\'a al rev\'es la ecuaci\'on de la secante en el sentido de que la matriz multiplica a $y_k$ y no a $s_k$. De igual modo que DFP, el problema anterior tiene una soluci\'on cerrada, que est\'a dada por:
+% \begin{align} \label{bfgs}
+% 	H_{k+1} = (I - \rho_k s_k y_k^T) H_k (I - \rho_k y_k s_k^T) + \rho_k s_k s_k^T
+% \end{align}
+% con $\rho_k$ definida del mismo modo. De cualquier modo, ya sea que utilicemos la actualizaci\'on DFP o la BFGS, ya no tenemos que invertir ninguna matriz, por lo que obtener la direcci\'on de avance es sencillamente calcular:
+% \[
+% 	d_{k+1} = - H_{k+1} \nabla f(x_{k+1}),
+% \]
+% A pesar de que podr\'ia parecer que ambos m\'etodos son igual de buenos, en la pr\'actica BFGS es superior a DFP, por lo que es por mucho el m\'as usado. En el algoritmo \ref{algbfgs} mostramos BFGS en su versi\'on computacional.
+
+% \RestyleAlgo{boxruled}
+% \begin{algorithm}[h]
+% 	\caption{BFGS \label{algbfgs}}
+% 	Sea $x_0$ un punto inicial, $H_0$ una aproximaci\'on s.p.d. a $\nabla^2 f(x_0)^{-1}$ y $tol > 0$\\
+% 	$k \gets 0$\\
+% 	\While{$\| \nabla f(x_k) \| > tol \times \| \nabla f(x_0) \|$}{
+%   		Calcular $\nabla f(x_k)$\\
+% 		Calcular la direcci\'on de descenso: $d_k = - H_k \nabla f(x_k)$\\
+% 		Aplicar la b\'usqueda de l\'inea del algoritmo \ref{backtracking} para obtener $\alpha_k$\\
+% 		Avanzar: $x_{k+1} \gets x_k + \alpha_k d_k$\\
+% 		Definir $s_k$ y $y_k$ mediante (\ref{presecante})\\
+% 		Calcular $H_k$ con la f\'ormula BFGS (\ref{bfgs})\\
+% 		$k \gets k + 1$
+% 	}
+% 	Terminar con resultado $x^* = x_k$
+% \end{algorithm}
+
+% Antes de introducir L-BFGS, una versi\'on de BFGS para problemas de gran escala, hay algunos asuntos que hay que notar sobre BFGS y DFP. El primero es que, contrario a lo que se podr\'ia pensar, las matrices $B_k$ producidas por DFP no convergen a la hessiana verdadera $\nabla^2 f(x_k)$ y las $H_k$ producidas por BFGS no convergen a $\nabla^2 f(x_k)^{-1}$. Sin embargo, la informaci\'on que contienen es suficiente para producir convergencia superlineal de $\{x_k\}$, por lo que la falta de convergencia de $\{B_k\}$ no es un problema en la pr\'actica. Otro asunto es que la positividad se \emph{hereda} en las $H_k$ (y en las $B_k$), es decir que si $H_k$ es positiva definida y $z \neq 0$ es un vector cualquiera, entonces como $\rho_k > 0$ (pues cumple la ecuaci\'on de la secante):
+% \begin{align*}
+% 	z^T H_{k+1} z &= z^T (I - \rho_k s_k y_k^T) H_k (I - \rho_k y_k s_k^T) z + \rho_k z^T s_k s_k^T z\\
+% 	&= w^T H_k w + \rho_k (z^T s_k)^2 \geq 0
+% \end{align*}
+% donde $w = z - \rho_k y_k s_k^T z$. El segundo t\'ermino vale cero solamente cuando $z^T s_k = 0$, pero en ese caso $w = z \neq 0$ y el primer t\'ermino es positivo. En cualquier otro caso, el primer t\'ermino es no negativo y el segundo es estrictamente positivo, por lo que la desigualdad es estricta y tenemos que $H_{k+1}$ es positiva definida. El argumento para las $B_k$ es an\'alogo.
+
+% Una de las mayores ventajas de la actualizaci\'on BFGS es que hereda la positividad de las matrices $H_k$, de modo que basta hacer que $H_0$ sea positiva definida para garantizar que las subsecuentes lo sean. Opciones comunes son $H_0 = I$, o si $\nabla^2 f(x_0)$ es positiva definida, hacer $H_0 = \nabla^2 f(x_0)^{-1}$. En el caso de que $\nabla^2 f(x_0)$ no sea positiva definida podemos hacer algo como $H_0 = (\nabla^2 f(x_0) + \delta I)^{-1}$ para alg\'un $\delta > 0$ peque\~no pero suficientemente grande para que al sumarle $\delta I$ a la hessiana se tenga una matriz invertible. En realidad hay muchas formas de elegir $H_0$, pero no se ha encontrado una que domine en todos los casos.
+
+% Ya con todo esto aclarado, proseguiremos a describir L-BFGS, que es una variante de BFGS para problemas grandes. Lo necesitaremos porque uno de los dos m\'etodos que veremos para minimizar la devianza regularizada est\'a basado en L-BFGS.
+ 
+ 
+% %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+% \subsection{L-BFGS}
+% En la pr\'actica BFGS es muy efectivo cuando los problemas son de tama\~nos moderados. Sin embargo, en problemas realmente grandes con miles de variables, las matrices $H_k$ se vuelven inmanejablemente grandes, lo que hace que el tenerlas almacenadas en memoria sea un problema. El tema principal es que las matrices $H_k$ son densas en general, por lo que no son f\'aciles de comprimir. Una idea es imponer un cierto patr\'on de raleza en las aproximaciones $H_k$ mediante restricciones en el problema de optimizaci\'on (\ref{minbfgs}), de modo que se tenga una aproximaci\'on rala a $H_k$. Sin embargo, en la pr\'actica eso no ha dado muy buenos resultados, como se expone en (Nocedal y Wright, 1999).
+
+% Las matrices $H_k$ cumplen con la ecuaci\'on de la secante en cada iteraci\'on, pero adem\'as guardan cierta informaci\'on de todas las anteriores. La idea detr\'as de L-BFGS (por Limited-memory BFGS) es no guardar la informaci\'on de curvatura de todas las iteraciones, sino solamente de las $m$ anteriores. Es decir, almacenaremos las \'ultimas $m$ parejas de vectores $\{s_i, y_i\}$ y al ir iterando iremos tirando las m\'as viejas. Adem\'as de eso, no necesitamos guardar $H_k$ expl\'icitamente, pues lo \'unico que necesitamos saber para iterar es el producto $H_k \nabla f(x_k)$.
+
+% El procedimiento es como sigue: supongamos que tenemos $H_k^0$ una aproximaci\'on inicial a la hessiana en $x_k$ y que tenemos los $m$ vectores $\{s_i, y_i\}$ m\'as recientes, esto es, $i = k-m, \dots, k-1$. Queremos obtener $H_k$ utilizando la f\'ormula BFGS $m$ veces. Si definimos $V_k = I - \rho_k y_k s_k$, entonces aplicando la f\'ormula (\ref{bfgs}) iteradamente tenemos que
+% \begin{equation}
+% 	\begin{aligned}
+% 		H_k &= (V_{k-1}^T \dots V_{k-m}^T) H_k^0 (V_{k-m} \dots V_{k-1})\\
+% 		& + \rho_{k-m} (V_{k-1}^T \dots V_{k-m+1}^T) s_{k-m} s_{k-m}^T (V_{k-m+1} \dots V_{k-1})\\
+% 		& + \rho_{k-m+1} (V_{k-1}^T \dots V_{k-m+2}^T) s_{k-m+1} s_{k-m+1}^T (V_{k-m+2} \dots V_{k-1})\\
+% 		& + \dots\\
+% 		& + \rho_{k-1} s_{k-1} s_{k-1}^T
+% 	\end{aligned}
+% \end{equation}
+% De la ecuaci\'on anterior buscamos una estrategia para calcular $H_k \nabla f(x_k)$ sin tener que hacer c\'alculos con matrices. Para ello notemos la siguiente propiedad: para cualquier vector $z$, se tiene que $V_i z = z - \rho_i (s_i^T z) y_i$, de modo que si tenemos $z = (V_{i+1} \dots V_{k-1}) \nabla f(x_k)$, entonces definimos $\alpha_i = \rho_i (s_i^T z) = \rho_i s_i^T (V_{i+1} \dots V_{k-1})$ y $z - \alpha_i y_i = (V_i \dots V_{k-1}) \nabla f(x_k)$. Similarmente, como $V_i^T w = w - \rho_i (y_i^T w) s_i$, si definimos $\beta_i = \rho_i (y_i^T w)$, entonces $-\beta_i s_i = V_i^T w - w$. De este modo, se tiene que $w + s_i (\alpha_i - \beta_i) = V_i^T w + s_i \alpha_i$ y es f\'acil ver que aplicando iteradamente esta \'ultima expresi\'on sobre $w = H_k^0 (V_{k-m} \dots V_{k+1})\nabla f(x_k)$ da el resultado deseado. Con esto en mente, mostramos el algoritmo \ref{twolooprecursion} para calcular las direcciones de avance en L-BFGS.
+
+% \RestyleAlgo{boxruled}
+% \begin{algorithm}[h]
+% 	\caption{Direcci\'on de L-BFGS \label{twolooprecursion}}
+% 	$z \gets \nabla f(x_k)$\\
+% 	\For{$i = k-1, \dots, k-m$}{
+%   		$\alpha_i \gets \rho_i s_i^T z$\\
+% 		$z \gets  z - \alpha_i y_i$
+% 	}
+% 	$w \gets H_k^0 z$\\
+% 	\For{$j = k-m, \dots, k-1$}{
+%   		$\beta \gets \rho_i (y_i^T w)$\\
+% 		$w \gets w + s_i(\alpha_i - \beta)$
+% 	}
+% 	Terminar con resultado $H_k \nabla f(x_k) = w$
+% \end{algorithm}
+
+% Cabe notar que el primer ciclo es decreciente y el segundo es creciente. El algoritmo anterior es la esencia de L-BFGS, pero falta una pieza antes de que podamos poner el algoritmo completo: la elecci\'on de $H_k^0$. En general permitimos que $H_k^0$ var\'ie de iteraci\'on a iteraci\'on, pero no queremos que calcularla sea demasiado costoso. Una opci\'on es utilizar:
+% \begin{align} \label{inilbfgs}
+% 	H_k^0 = \left(\frac{s_{k-1}^T y_{k-1}}{ y_{k-1} y_{k-1}} \right) I,
+% \end{align}
+% que es la matriz identidad escalada aproximadamente al ``tama\~no'' de la verdadera $H_k$. En el algoritmo \ref{alglbfgs} presentamos la versi\'on de L-BFGS como aparece en (Nocedal y Wright, 1999), en donde tambi\'en vienen m\'as detalles de por qu\'e es razonable escoger $H_k^0$ de esta manera.
+
+% \RestyleAlgo{boxruled}
+% \begin{algorithm}[h]
+% 	\caption{L-BFGS \label{alglbfgs}}
+% 	Sea $x_0$ un punto inicial, $m$ un entero positivo y $tol > 0$\\
+% 	$k \gets 0$\\
+% 	\While{$\| \nabla f(x_k) \| > tol \times \| \nabla f(x_0) \|$}{
+% 		Escoger $H_k^0$, por ejemplo mediante (\ref{inilbfgs})\\
+%   		Calcular $\nabla f(x_k)$\\
+% 		Calcular la direcci\'on de descenso: $d_k = - H_k \nabla f(x_k)$ mediante el algoritmo \ref{twolooprecursion}\\
+% 		Generar $\alpha_k$ con el algoritmo \ref{backtracking}\\
+% 		Avanzar: $x_{k+1} \gets x_k + \alpha_k d_k$\\
+% 		\If{$k > m$}{
+% 			Descartar de la memoria la pareja $\{s_{k-m}, y_{k-m}\}$
+% 		}
+% 		Calcular y guardar en memoria $s_k$ y $y_k$ mediante (\ref{presecante})\\
+% 		$k \gets k + 1$
+% 	}
+% 	Terminar con resultado $x^* = x_k$
+% \end{algorithm}
+
+% El m\'etodo L-BFGS es equivalente al BFGS usual si se toma $H_k^0 = I$ en cada iteraci\'on y si no se borran los $\{s_i, y_i\}$ de la memoria (o bien, si se toma $H_k^0 = I$ en cada iteraci\'on y se llega en menos de $m$ iteraciones a la soluci\'on). El par\'ametro $m$ se escoge usualmente entre 3 y 30, pero su elecci\'on \'optima var\'ia de problema en problema. Dado que a menor $m$ se utiliza menos memoria y el c\'alculo de las direcciones $d_k$ es m\'as veloz, en problemas ``f\'aciles'' utilizar $m$ peque\~na puede ser lo m\'as conveniente. Sin embargo, si $m$ es demasiado chica, el m\'etodo podr\'ia no converger (num\'ericamente) en problemas dif\'iciles. Otro factor que hay que tener en cuenta es que se tiende a evaluar m\'as veces a $f$ cuando $m$ es peque\~na (aunque no es un comportamiento regular), por lo que si es un proceso muy costoso, habr\'ia que considerar una $m$ no demasiado chica.
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \chapter{M\'etodos de descenso por coordenadas}
+ 
+% En este cap\'itulo desarrollaremos el algoritmo de optimizaci\'on que utiliza el paquete \emph{glmnet} (Friedman, et al., 2010) para el software estad\'istico R. R (\url{http://cran.r-project.org/}) es una plataforma abierta con una extensa paqueter\'ia estad\'istica y \emph{glmnet} es uno de los paquetes de \emph{machine learning} m\'as conocidos de R.
+
+% \emph{glmnet} utiliza un enfoque de descenso por coordenadas para ajustar regresiones lineales y log\'isticas regularizadas. Es interesante que en este caso espec\'ifico funcione bien un m\'etodo de descenso por coordenadas, pues en general son considerados como lentos. A continuaci\'on describiremos a detalle en qu\'e consiste este algoritmo y c\'omo se implementa.
+ 
+% %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+% \section{La base del algoritmo}
+% El algoritmo que presentaremos est\'a basado en la conexi\'on entre el modelo de regresi\'on log\'istica y el de regresi\'on lineal, por lo que necesitaremos introducir la regresi\'on lineal regularizada con la norma uno de los par\'ametros, tambi\'en conocida como \emph{regresi\'on LASSO} (por Least Absolute Shrinkage and Selection Operator, (Tibshirani, 1994)), que consiste en lo siguiente: Dada una muestra de entrenamiento $\mathcal{L}$, ajustamos un modelo de regresi\'on lineal usual, pero obteniendo los par\'ametros v\'ia el siguiente problema de optimizaci\'on:
+%  \begin{equation} \label{linlasso}
+%  	\hat{\beta}^{lasso} = \arg\min_\beta \left\{ \frac{1}{2}(y - X\beta)^T W (y - X\beta) + \lambda \sum_{j=1}^p | \beta_j | \right\}
+%  \end{equation}
+%  Aqu\'i nuevamente $\lambda > 0$ es un par\'ametro que debe ser elegido antes de ajustar el modelo. Lo interesante que encontraron los autores de \emph{glmnet} es que resolver el problema (\ref{lasso}) se reduce a resolver sucesivamente varias instancias del problema (\ref{linlasso}). Para ser m\'as precisos, lo que vieron es que cada iteraci\'on del m\'etodo de Newton al resolver (\ref{lasso}) es equivalente a resolver una instancia de (\ref{linlasso}). La ventaja de ello es que si encontr\'aramos un m\'etodo eficiente para resolver (\ref{linlasso}), autom\'aticamente tendr\'iamos uno para ajustar nuestro modelo log\'istico regularizado. La siguiente proposici\'on establece formalmente este hecho.
+ 
+%  \begin{prop} \label{propnewton}
+%  	Sea $\mathcal{L} = \{(x_i, y_i)\}_{i=1}^n$ una muestra de entrenamiento con $y_i \in \{0, 1\}$ para toda $i = 1, \dots, n$. Sea $\tilde{\beta} \in \R^{p+1}$ una aproximaci\'on inicial a los par\'ametros. Entonces, el modelo cuadr\'atico de Taylor de $D(\beta)$ alrededor de $\tilde{\beta}$, $D_Q(\beta)$, est\'a dado por:
+% 	\begin{equation} \label{modcuaddev}
+% 		D_Q(\beta) = \frac{1}{2n} \sum_{i=1}^n w_i (z_i - x_i^T \beta)^2 + C(\tilde{\beta}),
+% 	\end{equation}
+% 	donde $C(\tilde{\beta})$ es una funci\'on constante con respecto a $\beta$ y 
+% 	\begin{equation}
+% 	\begin{aligned} \label{artificiales}
+% 		& \tilde{p}(x_i) = \frac{1}{1 + e^{-x_i^T \tilde{\beta}}}\\
+% 		&w_i = \tilde{p}(x_i)(1 - \tilde{p}(x_i)) \\
+% 		&z_i = x_i^T \tilde{\beta} + \frac{y_i - \tilde{p}(x_i)}{w_i} 
+% 	\end{aligned}
+% 	\end{equation}
+% 	Es decir, maximizar el modelo cuadr\'atico de Newton de $D$ alrededor de $\tilde{\beta}$ es equivalente a resolver una regresi\'on lineal mediante m\'inimos cuadrados ponderados, con respuesta $z_i$ y pesos $w_i$.
+%  \end{prop}
+ 
+%  \begin{proof}[\bf Demostraci\'on]
+%  Antes de calcular el modelo cuadr\'atico, recordemos que la devianza, su gradiente y su hessiana est\'an dados, respectivamente, por:
+%  \begin{align}
+% 	D(\beta) &= -\frac{1}{n}\sum_{i=1}^n [ y_i (x_i^T \beta)  - \ln (1 + e^{x_i^T \beta})] \\
+% 	\nabla D(\beta) &= - \frac{1}{n}X^T y + \frac{1}{n}\sum_{i=1}^n p(x_i) x_i \label{graddev} \\
+% 	\nabla^2 D(\beta) &= \frac{1}{n} \sum_{i=1}^n p(x_i) (1 - p(x_i)) x_i x_i^T \label{hessdev}
+% \end{align}
+% Sea ahora $\tilde\beta \in \R^{p+1}$ fija. El modelo cuadr\'atico de Newton de la devianza alrededor de $\tilde\beta$ est\'a dado por su aproximaci\'on de Taylor de segundo orden, es decir:
+% \begin{equation} \label{modcuad}
+% 	D_Q(\beta) = D(\tilde\beta) + \nabla D(\tilde\beta)^T (\beta - \tilde\beta) + \frac{1}{2} (\beta - \tilde\beta)^T \nabla^2 D(\tilde\beta) (\beta - \tilde\beta)
+% \end{equation}
+% Combinando \eqref{hessdev}, \eqref{graddev} y \eqref{modcuad}, tenemos que:
+% \begin{equation}
+% \begin{aligned}
+% 	D_Q(\beta)
+% 	&= D(\tilde\beta) + \nabla D(\tilde\beta)^T (\beta - \tilde\beta) + \frac{1}{2} (\beta - \tilde\beta)^T \nabla^2 D(\tilde\beta) (\beta - \tilde\beta)\\
+% 	&= C_1(\tilde{\beta}) + \frac{1}{n}(- X^Ty + \sum_{i=1}^n \tilde{p}(x_i) x_i)^T \beta \\
+% 	& \hspace{45pt}+ \frac{1}{2n} \beta^T \left( \sum_{i=1}^n \tilde{p}(x_i) (1 - \tilde{p}(x_i)) x_i x_i^T \right) \beta\\
+% 	& \hspace{45pt}- \frac{1}{n}\beta^T \left( \sum_{i=1}^n \tilde{p}(x_i) (1 - \tilde{p}(x_i)) x_i x_i^T \right) \tilde{\beta} \\
+% 	&= C_1(\tilde{\beta}) - \frac{1}{n}\sum_{i=1}^n y_i x_i^T \beta + \frac{1}{n}\sum_{i=1}^n \tilde{p}(x_i) x_i^T \beta \\
+% 	& \hspace{45pt}+ \frac{1}{2n} \sum_{i=1}^n \tilde{p}(x_i) (1 - \tilde{p}(x_i)) (x_i^T \beta)^2 \\
+% 	& \hspace{45pt} - \frac{1}{n}\sum_{i=1}^n p(x_i) (1 - p(x_i)) (x_i^T \beta)(x_i^T \tilde{\beta})\\
+% 	& % Para que quede mejor espaciado
+% \end{aligned}
+% \end{equation}
+% Definimos ahora los pesos $w_i$ y la respuesta artificial $z_i$ como en (\ref{artificiales}):
+% \[
+% 	w_i = \tilde{p}(x_i) (1 - \tilde{p}(x_i)) \hspace{24pt} \text{y} \hspace{24pt} z_i = x_i^T \tilde{\beta} + \frac{y_i - \tilde{p}(x_i)}{w_i}
+% \]
+% Sustituyendo estas dos definiciones en la expresi\'on anterior vemos que:
+% \begin{equation} \label{dq}
+% 	 \begin{aligned}
+% 	 	D_Q(\beta) 
+% 		&= C_1(\tilde{\beta}) - \frac{1}{n}\sum_{i=1}^n y_i x_i^T \beta + \frac{1}{n}\sum_{i=1}^n \tilde{p}(x_i) x_i^T \beta + \frac{1}{2n} \sum_{i=1}^n w_i (x_i^T \beta)^2 \\
+% 		& \hspace{45pt}- \frac{1}{n}\sum_{i=1}^n w_i (x_i^T \beta)(x_i^T \tilde{\beta}) \\
+% 		&= C_1(\tilde{\beta}) - \frac{1}{n}\sum_{i=1}^n w_i \left(\frac{y_i - \tilde{p}(x_i)}{w_i} \right) x_i^T \beta + \frac{1}{2n} \sum_{i=1}^n w_i (x_i^T \beta)^2 \\
+% 		& \hspace{45pt}- \frac{1}{n}\sum_{i=1}^n w_i (x_i^T \beta)(x_i^T \tilde{\beta}) \\
+% 		&= C_1(\tilde{\beta}) - \frac{1}{n}\sum_{i=1}^n w_i \left(x_i^T \tilde{\beta} + \frac{y_i - \tilde{p}(x_i)}{w_i} \right) x_i^T \beta \\
+% 		& \hspace{45pt}+ \frac{1}{2n} \sum_{i=1}^n w_i (x_i^T \beta)^2 \\
+% 		&= C_1(\tilde{\beta}) - \frac{1}{n}\sum_{i=1}^n w_i z_i (x_i^T \beta) + \frac{1}{2n} \sum_{i=1}^n w_i (x_i^T \beta)^2 \\
+% 		&= \frac{1}{2n} \sum_{i=1}^n w_i (z_i  - x_i^T \beta)^2 + C(\tilde{\beta}) \\
+% 	 \end{aligned}
+%  \end{equation}
+% Que es lo que quer\'iamos probar. Cabe notar que como las probabilidades que da el modelo de regresi\'on log\'istica son estrictamente positivas, las $w_i$ siempre son mayores a cero, por lo que est\'a bien definida $z_i$. En el \'ultimo paso simplemente completamos el cuadrado y metemos lo sobrante (que s\'olo depende de $\tilde\beta$) en la funci\'on $C(\tilde\beta)$ junto con lo que ya est\'abamos acarreando.
+%  \end{proof}
+
+%  %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+%  \section{Descenso por coordenadas para regresi\'on lineal}
+
+% El algoritmo de descenso por coordenadas permite minimizar una funci\'on cuadr\'atica regularizada con la norma $\ell_1$. La idea es conseguir direcciones de avance en las que sea f\'acil lidiar con la no-diferenciabilidad, incluso si no son las que generan mayor descenso. Es decir, buscaremos direcciones poco eficientes pero muy baratas de calcular y permitiremos un n\'umero m\'aximo de iteraciones muy grande (much\'isimo m\'as que en los algoritmos con convergencia superlineal o cuadr\'atica). Las direcciones que utilizaremos son simplemente los vectores can\'onicos, es decir, optimizaremos con respecto a un solo par\'ametro a la vez.
+
+% Lo atractivo de este enfoque es que existen f\'ormulas cerradas para las actualizaciones coordenada a coordenada, por lo que ser\'an sumamente veloces. Para pruebas de convergencia de esta clase de m\'etodos remitimos al lector interesado a (Tseng, 2001), en el que tambi\'en se apoyan los autores de \emph{glmnet}.
+
+% Antes de la proposici\'on, cabe mencionar que sin p\'erdida de generalidad utilizaremos entradas estandarizadas (es una buena pr\'actica para que la regularizaci\'on sea igual para todas), es decir que $\sum_{i=1}^n w_i x_{ij} = 0$ y $\sum_{i=1}^n w_i x_{ij}^2 = 1$, para toda $j = 1, \dots, p$. Cabe notar que no estandarizamos la columna de unos (pues como veremos, el intercepto se trata de forma distinta). En la siguiente proposici\'on mostramos dichas f\'ormulas.
+% \begin{prop} \label{softthresh}
+% 	En el contexto del problema (\ref{linlasso}), sea $\tilde\beta \in \R^{p+1}$ una aproximaci\'on inicial a la soluci\'on. Entonces, las actualizaciones coordenada a coordenada est\'an dadas por:
+% 	\begin{enumerate}[(i)]
+% 		\item $\tilde\beta_0 \leftarrow \sum_{i=1}^n w_i y_i$
+% 		\item $\tilde\beta_k \leftarrow S(\sum_{i=1}^n w_i x_{ik} (y_i - \tilde{y}_i^{(k)}), \lambda)$
+% 	\end{enumerate}
+% 	donde
+% 	\begin{itemize}
+% 		\item $\tilde{y}_i^{(k)} = \tilde\beta_0 + \sum_{j \neq k} \tilde\beta_{j} x_{ij}$, es decir el modelo ajustado sin incluir a $X_k$. %% MAS?
+% 		\item $S: \R \times (\R^+ \cup \{0\}) \to \R$ es el \emph{operador de umbral suave}, dado por
+% 			\[
+% 				S(z, \gamma) = \signo(z) (|z| - \gamma)_+ = \left \{
+% 				\begin{array}{ll}
+% 				z - \gamma & \text{si } z > 0 \text{ y } \gamma < |z| \\
+% 				z + \gamma & \text{si } z < 0 \text{ y } \gamma < |z| \\
+% 				0                  & \text{si } \gamma \geq |z|
+% 				\end{array}
+% 				\right.
+% 			\]
+% 	\end{itemize}
+% \end{prop}
+
+% \begin{proof}[\bf Demostraci\'on]
+% 	Primero probaremos la primera parte. Para ello, basta ver que para cualquier $\tilde\beta$ que se tenga, la devianza penalizada dada en (\ref{linlasso}), vista como funci\'on de $\beta_0$, alcanza su m\'inimo en $\tilde\beta_0 = \sum_{i=1}^n w_i y_i$. Para simplificar la notaci\'on, sea $\tilde\beta$ fija (excluyendo $\beta_0$) y definamos
+% 	\begin{align}
+% 		g(\beta_0) = \frac{1}{2} \sum_{i=1}^n w_i (y_i - \beta_0 - \sum_{j=1}^p \tilde\beta_j x_{ij})^2 + \lambda \sum_{j=1}^p |\tilde\beta_j |
+% 	\end{align}
+% 	El t\'ermino no diferenciable de dicha funci\'on es constante respecto a $\beta_0$, por lo que $g(\beta_0)$ es diferenciable. Para minimizarla, notemos que como los pesos suman uno y los regresores est\'an estandarizados, su derivada es:
+% 	\begin{align*}
+% 		g'(\beta_0) &=  - \sum_{i=1}^n w_i (y_i - \beta_0 - \sum_{j=1}^p \tilde\beta_j x_{ij}) \\
+% 		&= - \sum_{i=1}^n w_i y_i + \beta_0 \sum_{i=1}^n w_i + \sum_{i=1}^n w_i\sum_{j=1}^p \tilde\beta_j x_{ij} \\
+% 		&= - \sum_{i=1}^n w_i y_i + \beta_0 + \sum_{j=1}^p \tilde\beta_j \sum_{i=1}^n w_i x_{ij} \\
+% 		&= - \sum_{i=1}^n w_i y_i + \beta_0
+% 	\end{align*}
+% 	Igualando a cero y despejando $\beta_0$ se obtiene el resultado. Lo interesante es que entonces el intercepto nunca cambia, pues es el mismo para cualquier valor que tomen los dem\'as par\'ametros. Por lo tanto, antes de comenzar la actualizaci\'on de los otros, calculamos el intercepto y lo fijamos; el valor que toma es el promedio ponderado de las $y_i$ (o en el caso $w_i = \frac{1}{n}$, es el promedio usual).
+
+% Ahora probaremos la segunda parte de la proposici\'on, donde enfrentaremos la no-diferenciabilidad del t\'ermino de regularizaci\'on. Para ello, similarmente al caso de $\beta_0$, sean $\tilde\beta_j$ ($j \neq k$) fijas (para utilizar lo que ya probamos, supondremos que $\tilde\beta_0 = \sum_{i=1}^n w_i y_i$) y sea:
+% \begin{equation}
+% 	h(\beta_k) = \frac{1}{2} \sum_{i=1}^n w_i (y_i - \tilde\beta_0 - \sum_{\substack{j=1 \\ j \neq k}}^p \tilde\beta_j x_{ij} - \beta_k x_{ik})^2 + \lambda \sum_{\substack{j=1 \\ j \neq k}}^p |\tilde\beta_j | + \lambda | \beta_k |
+% \end{equation}
+% 	Lo primero que hay que notar es que como funci\'on de $\beta_k$, $h$ es diferenciable en cualquier punto excepto $\beta_k = 0$ y que es continua por ser la suma de funciones continuas. Adem\'as, restringida a los positivos es una par\'abola y restringida a los negativos es otra par\'abola. En la figura \ref{fig4} ilustramos la situaci\'on.
+% \begin{figure}[h!]
+% 	\caption{El modelo cuadr\'atico como funci\'on de $\beta_k$ \label{fig4}}
+% 	\begin{subfigure}{0.5\textwidth}
+% 		\includegraphics[width = \textwidth]{./graficas/fig4a.pdf}
+% 		\caption{$\beta_k^* < 0$ \label{fig4a}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.5\textwidth}
+% 		\includegraphics[width = \textwidth]{./graficas/fig4b.pdf}
+% 		\caption{$\beta_k^* > 0$ \label{fig4b}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.5\textwidth}
+% 		\includegraphics[width = \textwidth]{./graficas/fig4c.pdf}
+% 		\caption{$\beta_k^* = 0$ \label{fig4c}}
+% 	\end{subfigure}
+% \end{figure}
+	
+% M\'as adelante argumentaremos por qu\'e no se puede tener el caso en el que ambas par\'abolas tengan un punto con derivada cero, pero por el momento, nuestra estrategia a seguir ser\'a dividir en tres casos el c\'alculo. Primero trataremos con los casos en los que alguna de las par\'abolas alcanza su m\'inimo (en el sentido de que tenga un punto con derivada cero): Derivando obtenemos que si $\beta_k \neq 0$, entonces como las variables est\'an estandarizadas,
+% 	\begin{align*}
+% 		h'(\beta_k) &= -\sum_{i=1}^n w_i x_{ik} (y_i - \tilde\beta_0 - \sum_{\substack{j=1 \\ j \neq k}}^p \tilde\beta_j x_{ij} - \beta_k x_{ik}) +\lambda \signo(\beta_k) \\
+% 		&= -\sum_{i=1}^n w_i x_{ik} (y_i - \tilde\beta_0 - \sum_{\substack{j=1 \\ j \neq k}}^p \tilde\beta_j x_{ij}) + \beta_k \sum_{i=1}^n w_i x_{ik}^2 +\lambda \signo(\beta_k) \\
+% 		&= -\sum_{i=1}^n w_i x_{ik} (y_i - \tilde\beta_0 - \sum_{\substack{j=1 \\ j \neq k}}^p \tilde\beta_j x_{ij}) + \beta_k +\lambda \signo(\beta_k) \\
+% 		&= -\sum_{i=1}^n w_i x_{ik} (y_i - \tilde{y}_i^{(k)}) + \beta_k +\lambda \signo(\beta_k)
+% 	\end{align*}
+% 	La primera suma es constante con respecto a $\beta_k$, y por practicidad la llamaremos $Z$, de modo que
+% 	\begin{equation}
+% 		h'(\beta_k) = -Z+ \beta_k +\lambda \signo(\beta_k)
+% 	\end{equation}
+% 	Igualando lo anterior a cero, vemos que
+% 	\[
+% 		\beta_k = Z - \lambda \signo(\beta_k)
+% 	\]
+% 	Lleg\'o el momento de separar en los tres casos. Primero, supongamos que $| Z | > \lambda \geq 0$ y que $Z > 0$. Entonces, $Z > \lambda$ y por lo tanto $Z + \lambda \geq Z - \lambda > 0$, por lo que $\beta_k = Z - \lambda \signo(\beta_k) > 0$ y finalmente, $\beta_k^* = Z - \lambda$. Similarmente, si $| Z | > \lambda \geq 0$ y $Z < 0$, entonces $\beta_k = Z - \lambda \signo(\beta_k) < 0$, y tenemos que $\beta_k^* = Z + \lambda$.
+	
+% 	La raz\'on por la que estos puntos son \'optimos es la siguiente: en el primer caso, tenemos que para todo $\beta_k \leq 0$, $h'(\beta_k) = -Z + \beta_k + \lambda < 0$, es decir la funci\'on es decreciente para valores no positivos de $\beta_k$. Por lo tanto, la par\'abola restringida a $\beta_k \leq 0$ alcanza su m\'inimo en $\beta_k = 0$. Pero la otra par\'abola tambi\'en pasa por $(0, h(0))$ y alcanza su m\'inimo en $\beta_k^* = Z - \lambda > 0$, por lo que forzosamente ese valor ser\'a inferior a $h(0)$. El segundo caso es an\'alogo.
+	
+% 	Ahora pasemos al tercer caso, es decir, supongamos que $| Z | \leq \lambda$. En esta situaci\'on tenemos que para $\beta_k \geq 0$, $h'(\beta_k) = -Z + \beta_k + \lambda \geq 0$ y similarmente, para $\beta_k \leq 0$, $h'(\beta_k) = -Z + \beta_k + \lambda \leq 0$. En esta situaci\'on, ambas secciones alcanzan su m\'inimo en $\beta_k^* = 0$, como lo ilustra la figura \ref{fig4c}.
+	
+% 	Como ejercicio de formalidad, notemos que adem\'as de que en cualquier caso $h$ es convexa, en los primeros dos el m\'inimo se alcanza en un punto en donde $\partial h(\beta_k^*) = \{ 0 \}$. Por otra parte, en el tercer caso se tiene que la derivada por la derecha (izquierda) es positiva (negativa). Si definimos $h'(0+) = \lim_{s \to 0^+} h'(s)$, donde $h'$ est\'a definida para valores positivos (an\'alogamente se tiene $h'(0-)$ el l\'imite por la izquierda), entonces el subgradiente de $h$ en cero est\'a dado por
+% 	\[
+% 		\partial h(0) = [h'(0-), h'(0+)]
+% 	\]
+% 	y como $h'(0-) \leq 0 \leq h'(0+)$, entonces concluimos que $0 \in \partial h(0)$. En cualquier caso, se cumplen las condiciones suficientes de optimalidad y unicidad del teorema \ref{cssonodif}, por lo que hemos encontrado el \'unico m\'inimo. Los tres casos juntos dan la soluci\'on dada por el operador $S$ de la proposici\'on, que queda entonces probada.
+% \end{proof}
+
+% La proposici\'on anterior nos proporciona un algoritmo eficiente para resolver un problema de regresi\'on lineal ponderada y regularizada. Antes de presentarlo como tal, hay que notar que si $\tilde{y}_i = x_i^T \tilde\beta$ es la respuesta ajustada para el caso i-\'esimo y $r_i = y_i - \tilde{y}_i$ es el residual del caso i-\'esimo, ambos con los par\'ametros actuales, entonces:
+%  \begin{align*}
+%  	\sum_{i=1}^n w_i x_{ik} (y_i - \tilde{y}_i^{(k)}) &= \sum_{i=1}^n w_i x_{ik} (y_i - \tilde{y}_i + \tilde\beta_k x_{ik}) \\
+% 	&= \sum_{i=1}^n w_i x_{ik} (r_i + \tilde\beta_k x_{ik}) \\
+% 	&= \sum_{i=1}^n w_i x_{ik} r_i + \tilde\beta_k \sum_{i=1}^n w_i x_{ik}^2 \\
+% 	&= \sum_{i=1}^n w_i x_{ik} r_i + \tilde\beta_k
+% \end{align*}
+%  El \'ultimo paso es gracias a que los regresores est\'an estandarizados. Por lo mismo y dado que los residuales tienen media (ponderada por $w_i$) igual a cero, tenemos una interpretaci\'on de esta suma: el nuevo valor de nuestro par\'ametro es el anterior m\'as el coeficiente de la regresi\'on resultante de ajustar los residuales con $X_k$. El operador de umbral se encarga de tomar en cuenta la no-diferenciabilidad. Este tipo de actualizaciones se llaman \emph{naive} o ingenuas, porque no hacen nada especialmente complicado para calcular la suma. Sin embargo, en la pr\'actica tienen un buen desempe\~no y de hecho dominan a otras t\'ecnicas m\'as sofisticadas en algunos tipos de problemas, como se dice en (Friedman, et al., 2010). Presentamos lo anterior condensado en el algoritmo \ref{coordinatedescent}.
+
+% \RestyleAlgo{boxruled}
+% \begin{algorithm}[h]
+% 	\caption{Descenso por coordenadas \label{coordinatedescent}}
+% 	Sea $\beta^{(0)} = (\beta_0^{(0)}, \dots, \beta_p^{(0)}) \in \R^{p+1}$ una aproximaci\'on inicial a los par\'ametros, $\lambda \geq 0$ fija y $tol > 0$\\
+% 	$\beta_0 \gets \sum_{i=1}^n w_i y_i$\\
+% 	$k \gets 0$\\
+% 	\Repeat{convergencia}{
+%   		\For{j = 1, \dots, p}{
+%   			$\beta_j^{(k+1)} \gets S(\sum_{i=1}^n w_i x_{ij} r_i + \beta_j^{(k)}, \lambda)$
+% 		}
+% 		$k \gets k + 1$
+% 	}
+% 	Terminar con resultado $\hat\beta^{lasso} = \beta^{(k)}$
+% \end{algorithm}
+ 
+ 
+%  %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+%  \section{Descenso por coordenadas para regresi\'on log\'istica}
+% Hasta este punto hemos expuesto el algoritmo de descenso por coordenadas para regresi\'on lineal regularizada; es momento de pasar al de regresi\'on log\'istica regularizada. Para ello partiremos de la forma (\ref{lasso2}) de nuestro problema de optimizaci\'on y aplicaremos el m\'etodo de Newton, pero penalizando la aproximaci\'on cuadr\'atica de la devianza, que tiene la forma de la ecuaci\'on (\ref{modcuaddev}). Lo interesante es que dada una aproximaci\'on a los par\'ametros, dicha funci\'on cuadr\'atica regularizada (omitiendo el t\'ermino constante respecto a $\beta$) tiene la siguiente forma:
+% \begin{align} \label{modcuaddev2}
+% 	DP_Q(\beta) = \frac{1}{2n} \sum_{i=1}^n w_i (z_i - x_i^T \beta)^2 + \lambda \sum_{j=1}^p | \beta_j |
+% \end{align}
+% De aqu\'i viene el nombre IRLS o Iteratively Reweighted Least Squares (M\'inimos Cuadrados Iterativamente Reponderados), pues ajustar un modelo de regresi\'on log\'istica equivale a ajustar uno de m\'inimos cuadrados en cada iteraci\'on.
+
+% Antes de presentar nuestra versi\'on de descenso por coordenadas para regresi\'on log\'istica, hay un par de detalles que hay que tener en cuenta al comparar nuestra implementaci\'on con la de \emph{glmnet}. Son puramente t\'ecnicos pero si no se tiene cuidado de incorporarlos se llega a resultados err\'oneos en la optimizaci\'on:
+% \begin{itemize}
+% 	\item En nuestra formulaci\'on de m\'inimos cuadrados ponderados los pesos $w_i$ suman uno.
+% 	\item El problema (\ref{modcuaddev2}) es \emph{equivalente} a unos m\'inimos cuadrados ponderados, pero hay que tomar en cuenta el factor $1/n$.
+% \end{itemize}
+% Para tomar esto en cuenta, simplemente definimos $S_w = \sum_{i=1}^n w_i$ y multiplicamos $DP_Q(\beta)$ por $n/S_w$, de modo que minimizar $DP_Q(\beta)$ es equivalente a minimizar:
+% \begin{align} \label{modcuaddevalg}
+% 	\left (\frac{n}{S_w}\right) DP_Q(\beta) &=
+% 	\frac{1}{2} \sum_{i=1}^n \left (\frac{w_i}{S_w}\right) (z_i - x_i^T \beta)^2 + \left (\frac{n\lambda}{S_w} \right) \sum_{j=1}^p | \beta_j | \nonumber \\
+% 	&= \frac{1}{2} \sum_{i=1}^n \hat{w}_i (z_i - x_i^T \beta)^2 + \hat{\lambda} \sum_{j=1}^p | \beta_j |
+% \end{align}
+% donde $\hat{w}_i = w_i/S_w$ y $\hat{\lambda} = n\lambda/S_w$. Esta expresi\'on es la que metemos a nuestro algoritmo de descenso por coordenadas, pues $\sum_{i=1}^n \hat{w}_i = 1$ y ya no tenemos el factor $1/n$. Ya con estos detalles aclarados, presentamos el algoritmo \ref{IRLS}: IRLS.
+ 
+% \RestyleAlgo{boxruled}
+% \begin{algorithm}[h]
+% 	\caption{IRLS \label{IRLS}}
+% 	Sea $\beta^{(0)} = (\beta_0^{(0)}, \dots, \beta_p^{(0)}) \in \R^{p+1}$ una aproximaci\'on inicial a los par\'ametros, $\lambda \geq 0$ fija y $tol > 0$\\
+% 	$k \gets 0$\\
+% 	\Repeat{convergencia}{
+% 		Calcular la respuesta artificial $z_i^{(k)}$ y los pesos $w_i^{(k)}$ como en (\ref{artificiales})\\
+% 		Correr el algoritmo \ref{coordinatedescent} sobre el problema de m\'inimos cuadrados ponderados penalizados (\ref{modcuaddevalg}) con respuesta $z_i^{(k)}$ y pesos $w_i^{(k)}$ para obtener $\beta^{(k+1)}$\\
+% 		$k \gets k+1$
+% 	}
+% 	Terminar con resultado $\hat\beta = \beta^{(k)}$
+% \end{algorithm}
+ 
+%  La principal ventaja de este algoritmo es que tiene las propiedades del m\'etodo de Newton pero sin la necesidad de calcular expl\'icitamente informaci\'on de segundo orden; los problemas cuadr\'aticos son resueltos con muchas iteraciones econ\'omicas de calcular, de modo que la convergencia del m\'etodo completo es muy r\'apida.
+ 
+% %-------------------------------------------------------------------------------------------------------------------------------------------------------
+% \section{Otros detalles t\'ecnicos}
+
+% \subsection{Criterio de paro}
+% En los algoritmos \ref{coordinatedescent} y \ref{IRLS} utilizamos un criterio de paro propio, pues los autores de \emph{glmnet} no son claros en qu\'e criterio utilizaron para establecer la convergencia del algoritmo.
+
+% El primero que utilizamos es un n\'umero m\'aximo de iteraciones para evitar que el proceso tarde demasiado, en especial si falla num\'ericamente (por ejemplo, si $\lambda$ es demasiado peque\~na y num\'ericamente el algoritmo diverge). En \emph{glmnet} utilizan claramente este criterio y ponen $maxiter = 10,000$ en descenso por coordenadas. Nuestro c\'odigo corre en R, que es m\'as lento que Fortran, por lo que preferimos $maxiter$ entre 500 y 600. En el caso de las iteraciones exteriores (las iteraciones de Newton en regresi\'on log\'istica) optamos por una cantidad m\'as moderada, digamos 50 \'o 60, pues la convergencia es m\'as r\'apida tambi\'en. Usualmente no se utilizan m\'as de 20 iteraciones.
+
+% El segundo criterio tiene que ver con el avance de los coeficientes. La idea es que como la funci\'on objetivo es convexa (tanto en regresi\'on log\'istica como en regresi\'on lineal), si los coeficientes dejan de avanzar lo suficiente con cada iteraci\'on es porque debemos estar cerca del m\'inimo. El criterio de paro que se utiliz\'o en este sentido fue:
+% \[
+% 	\| \beta^{(k)} - \beta^{(k-1)}\| / (1 + \| \beta^{(k-1)}\|) < tol,
+% \]
+% es decir que si el cambio de los coeficientes es peque\~no con respecto al coeficiente anterior, el algoritmo se detiene.
+
+% Para unir los dos simplemente iteramos hasta que se cumpla cualquiera de ellos. Nuestra implementaci\'on da informaci\'on sobre qu\'e criterio ocasion\'o que la optimizaci\'on se detuviera.
+
+% \subsection{Trayectoria y \emph{warm starts}}
+% Hasta ahora nos hemos enfocado en resolver el problema para un solo valor de $\lambda$. Sin embargo, como dec\'iamos al principio, $\lambda$ es un par\'ametro que debe ser elegido. Para ello hay varias t\'ecnicas, pero un buen comienzo es ver c\'omo var\'ian los coeficientes ($\beta$) al ajustar el modelo con diversos par\'ametros de regularizaci\'on. Mientras m\'as regularicemos, m\'as se encoger\'an los coeficientes y se ir\'an haciendo cero hasta que todos se colapsen. Esto se da cuando el t\'ermino de regularizaci\'on pesa tanto en la funci\'on objetivo que ya no vale la pena intentar minimizar la devianza. 
+ 
+%  Si bien podr\'ia parecer que hacer esto ser\'ia muy costoso computacionalmente, en realidad no lo es tanto. Esto se debe al uso de los llamados \emph{warm starts}, que consisten en aprovechar la soluci\'on del problema para un valor de $\lambda$ y tomarla como punto inicial para la siguiente. De este modo las soluciones est\'an muy cerca unas de otras (si las $\lambda$ consecutivas son cercanas) y el algoritmo converge r\'apidamente. De hecho, en (Friedman, et al., 2010) los autores dicen que hay problemas en los cu\'ales es m\'as econ\'omico calcular toda la trayectoria hasta un valor de $\lambda$ que solamente la soluci\'on para ese valor. En la figura \ref{fig5} ilustramos esto para un problema simulado.
+%  \begin{figure}[h]
+% 	\includegraphics[width=0.95\textwidth]{./graficas/fig5.pdf}
+% 	\caption{Los coeficientes se encogen al aumentar el t\'ermino de regularizaci\'on. En el eje $x$ superior se ve el n\'umero de coeficientes distintos de cero para cada valor de $\lambda$. \label{fig5}}
+% \end{figure}
+%  Cabe notar que si bien la norma uno de los coeficientes (ie. la suma de los valores absolutos) disminuye al aumentar $\lambda$, un coeficiente individual $\beta_j$ puede aumentar un poco antes de finalmente descender. Este tipo de comportamiento no es lo m\'as com\'un en problemas en los que $n >> p$, pero tiende a pasar m\'as cuando el n\'umero de observaciones es chico relativo al n\'umero de variables y/o cuando las variables est\'an muy correlacionadas.
+ 
+% \subsection{Validaci\'on cruzada}
+% Lo anterior nos da una noci\'on de lo que sucede, pero no nos da una un criterio real para elegir el valor de $\lambda$. Para ello el m\'etodo m\'as popular se llama \emph{validaci\'on cruzada} y consiste en lo siguiente: partimos aleatoriamente la muestra de entrenamiento en $k$ partes (usualmente 5 \'o 10) y para cada valor de lambda, ajustamos el modelo con $k-1$ de los segmentos. Posteriormente, evaluamos la devianza del modelo sobre el segmento restante. Finalmente, para cada $\lambda$ estimamos la devianza real de nuestro ajuste promediando las $k$ estimaciones que ten\'iamos para ese valor de $\lambda$. El resultado es una curva estimada de la devianza real para cada valor de $\lambda$; procedemos a elegir el que minimice esta curva, como se ve en la figura \ref{fig6}.
+  
+%   \begin{figure}[h!]
+% 	\includegraphics[width=0.95\textwidth]{./graficas/fig6.pdf}
+% 	\caption{Elegimos el valor de $\lambda$ que minimiza esta curva (el que corresponde a la l\'inea punteada de la izquierda). El m\'etodo de validaci\'on cruzada nos permite estimar el error de nuestra estimaci\'on de la devianza. \label{fig6}}
+% \end{figure}
+ 
+%  Este m\'etodo es muy popular porque da buenos resultados y est\'a automatizado. Adem\'as, da una estimaci\'on de la devianza en la que realmente incurre nuestro modelo. De hecho, se puede utilizar criterios alternativos a la devianza para la elecci\'on de $\lambda$, como el error de predicci\'on del modelo. Sin embargo, eso est\'a fuera del alcance de este trabajo. Un tratamiento bastante completo de validaci\'on cruzada y sus ventajas aparece en \emph{The Elements of Statistical Learning}, (Friedman, et al., 2008).
+ 
+%  %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+%  \section{Comentarios adicionales}
+%  Un detalle importante que notan los autores de este m\'etodo es que no incluyen b\'usqueda lineal. Tal parece que en la pr\'actica la devianza regularizada es una funci\'on ``decente'', por lo que optan por ahorrarse el tiempo de c\'omputo en favor de mayor velocidad. Nosotros adoptamos tambi\'en esa estrategia, y si bien el algoritmo converge razonablemente bien, decididamente encontramas dificultades en la pr\'actica, como veremos m\'as adelante.
+ 
+% El paquete \emph{glmnet} se ha vuelto muy popular por estar implementado en R y porque es sumamente estable y veloz. En el siguiente cap\'itulo presentaremos otro algoritmo que est\'a basado en L-BFGS y que fue dise\~nado para resolver problemas de gran escala.
+ 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \chapter{M\'etodos cuasi-Newton}
+
+% Dado el potencial de L-BFGS de resolver problemas de gran escala, surgi\'o la idea de adaptarlo para minimizar funciones suaves regularizadas con la norma uno, como es el caso en regresi\'on lineal y en regresi\'on log\'istica regularizadas. Andrew y Gao (Andrew y Gao, 2007) propusieron una variante de L-BFGS que denominan \emph{OWL-QN} (por Orthant-Wise Limited-memory Quasi-Newton) justamente con este prop\'osito. OWL-QN est\'a basado en el algoritmo \ref{alglbfgs}, pero para describirlo requeriremos primero definir algunos t\'erminos end\'emicos que utilizaremos.
+
+% %------------------------------------------------------------------------------------------------------------------------------------------------------------
+% \section{Conceptos necesarios}
+% El primer concepto es una versi\'on menos general (pero mucho m\'as com\'un) de derivada direccional que el de la definici\'on \ref{derivdirgen}. Por claridad, en este cap\'itulo nos remitiremos \'unicamente a las definiciones que hagamos aqu\'i, salvo que expl\'icitamente digamos lo contrario.
+% \begin{defn}[Derivada direccional y derivadas parciales] \label{derivdir}
+% 	Sea $f: \R^n \to \R$ una funci\'on convexa y $x, h \in \R^n$. Definimos la derivada direccional de $f$ en $x$ en la direcci\'on $h$ como
+% 	\[
+% 		f'(x;h) = \lim_{t \to 0^+} \frac{f(x + th) - f(x)}{t}
+% 	\]
+% 	Definiremos adem\'as la derivada parcial por la derecha de $f$ en $x$ como
+% 	\[
+% 		\partial^+_i f(x) = \lim_{t \to 0^+} \frac{f(x + t e_i) - f(x)}{t} = f'(x; e_i),
+% 	\]
+% 	donde $e_i$ es el i-\'esimo vector can\'onico en $\R^n$. Similarmente, definiremos la derivada parcial por la izquierda de $f$ en x, que est\'a dada por
+% 	\[
+% 		\partial^-_i f(x) = \lim_{t \to 0^-} \frac{f(x + t e_i) - f(x)}{t} = -f'(x; -e_i)
+% 	\]
+% \end{defn}
+% Cabe notar que, a diferencia de la definici\'on \ref{derivdirgen}, en este caso la derivada direccional tiene un l\'imite ordinario y adem\'as $x$ es fija en todo momento. Esto ocasiona que la clase de funciones que tienen derivada bajo este m\'etodo sea un subconjunto del que la tiene bajo la derivada direccional generalizada. Sin embargo, en nuestro contexto lo \'unico que nos interesa son funciones que son relativamente decentes, incluso a pesar de su no-diferenciabilidad, por lo que no tendremos ning\'un inconveniente.
+
+% Bas\'andose en lo anterior, los autores de OWL-QN definieron una versi\'on propia de subgradiente que ellos denominan \emph{pseudo-gradiente}. La definici\'on de pseudo-gradiente abarca a menos funciones que el subgradiente de Clarke. Sin embargo, es m\'as econ\'omico de calcular (es s\'olo un valor, en vez de un conjunto) y tiene la informaci\'on necesaria para elegir direcciones de avance en un contexto no diferenciable pero predecible, como es el caso.
+% \begin{defn}[Pseudo-gradiente] \label{defpseudogradiente}
+% 	Sea $f: \R^n \to \R$ una funci\'on convexa. Definimos el pseudo-gradiente de $f$ en $x$, $\diamond f(x) \in \R^n$, coordenada a coordenada de la siguiente manera:
+% 	\begin{align} \label{eqpseudogradiente}
+% 		\diamond_i f(x) = \left \{
+% 		\begin{array}{ll}
+% 			\partial^-_i f(x) & \text{si } \partial^-_i f(x) > 0\\
+% 			\partial^+_i f(x) & \text{si } \partial^+_i f(x) < 0\\
+% 			0                       & \text{en otro caso}
+% 		\end{array} \right .
+% 	\end{align}
+% \end{defn}
+% Es importante mencionar que el pseudo-gradiente est\'a bien definido por la convexidad de $f$, que garantiza que $\partial^-_i f(x) \leq \partial^+_i f(x)$. Adem\'as, como se menciona en (Andrew y Gao, 2007), se trata de una generalizaci\'on del gradiente usual en el siguiente sentido: si $f$ es diferenciable, entonces el pseudo-gradiente coincide con el gradiente; adem\'as, la direcci\'on de m\'aximo descenso local de $f$ en $x$ es $- \diamond f(x)$ y todo m\'inimo local de $x^*$ de $f$, cumple $\diamond f(x^*) = 0$.
+
+% El pseudo-gradiente es un elemento del subgradiente (\ref{eqsubgradiente}), pues caracteriza un hiperplano que subestima a $f$ cuando \'esta es convexa. De hecho es una elecci\'on muy particular de subgradiente, pues da informaci\'on de pendiente local y adem\'as trivialmente indica cu\'ando $0 \in \partial f(x)$.
+
+% Como su nombre lo dice, un concepto muy importante en OWL-QN es el de \emph{ortante}, que es simplemente un subconjunto de $\R^n$ con un patr\'on de signos dado (que resulta ser un cono convexo). Es decir, si $x$ y $y$ est\'an en un mismo ortante $\Omega \subset \R^n$, entonces el signo de $x_i$ es igual al signo de $y_i$ para toda $i = 1, \dots, n$. A continuaci\'on definiremos dos funciones sencillas que nos ayudar\'an a manejar estos conceptos de manera m\'as natural y concisa.
+% \begin{defn}[Funciones signo y proyecci\'on sobre ortante] \label{signo}
+% 	Definimos la funci\'on signo $\sigma: \R \to \R$ de la siguiente manera:
+% 	\[ \sigma(x) = \left \{
+% 		\begin{array}{ll}
+% 			-1 & \text{si } x < 0\\
+% 			0  & \text{si } x = 0\\
+% 			1  & \text{si } x > 0
+% 		\end{array} \right .
+% 	\]
+% 	Con base en lo anterior, definimos la funci\'on $\pi:\R^n \to \R^n$, que est\'a parametrizada por $y \in \R^n$, como sigue:
+% 	\[ \pi_i(x; y) = \left \{
+% 		\begin{array}{ll}
+% 			x_i & \text{si } \sigma(x_i) = \sigma(y_i)\\
+% 			0    & \text{en otro caso}
+% 		\end{array} \right .
+% 	\]
+% \end{defn}
+% Podemos entender la funci\'on $\pi$ como la proyecci\'on de $x$ sobre un ortante definido por $y$. Esta funci\'on ser\'a una parte muy importante de OWL-QN porque es por medio de ella y el pseudo-gradiente que se maneja la no-diferenciabilidad de la funci\'on objetivo.
+
+
+% %------------------------------------------------------------------------------------------------------------------------------------------------------------
+% \section{El algoritmo}
+
+% \subsection{La intuici\'on detr\'as de OWL-QN}
+% Antes de definir formalmente el algoritmo, veamos la idea que hay detr\'as. La funci\'on que queremos minimizar en regresi\'on log\'istica regularizada es
+% \begin{align} \label{devpen}
+% 	DP(\beta) = D(\beta) + \lambda \sum_{i=1}^p |\beta_j|
+% \end{align}
+% para una constante dada $\lambda > 0$. Como dec\'iamos en secciones anteriores, a pesar de que se trata de una funci\'on no diferenciable, es en realidad muy predecible, pues solamente tiene bordes y/o picos en puntos $\beta$ que tengan algunas coordenadas iguales a cero. Adem\'as, otro detalle positivo sobre $DP$ es que dentro de un ortante dado, el t\'ermino regularizador es lineal. Lo que eso implica es que la informaci\'on de segundo orden de $DP$ proviene \emph{exclusivamente} de la devianza, siempre y cuando nos movamos dentro de un mismo ortante. La estrategia es entonces la siguiente:
+% \begin{enumerate}
+% 	\item Empezando en un ortante dado, construir un modelo cuadr\'atico de $DP$ utilizando la f\'ormula L-BFGS.
+% 	\item Si la direcci\'on de avance nos saca del ortante, la aproximaci\'on ya no es v\'alida, por lo que la b\'usqueda de l\'inea debe garantizar que no nos salgamos del ortante en el que empezamos en cada iteraci\'on.
+% 	\item Estando en la frontera entre dos o m\'as ortantes, el pseudo-gradiente nos sacar\'a de apuros, pues nos permitir\'a utilizar L-BFGS de todos modos.
+% \end{enumerate}
+% A continuaci\'on detallaremos el funcionamiento de OWL-QN.
+
+% \subsection{Descripci\'on}
+% \subsubsection{Direcci\'on de avance}
+% En el art\'iculo original de Andrew y Gao se requiere que la funci\'on de p\'erdida (en este caso la devianza) sea convexa, acotada inferiormente, de clase $\mathcal{C}^1$ y que su gradiente $\nabla D$ sea Lipschitz con constante $L$ en el subnivel $\aleph = \{\beta \in \R^{p+1} | f(\beta) \leq f(\beta^{(0)})\}$, para alg\'un punto inicial $\beta^{(0)}$. Estos detalles son m\'as bien t\'ecnicos y garantizan la existencia de pseudo-gradientes, por ejemplo.
+
+% El algoritmo comienza como sigue: supongamos que estamos en un punto $\tilde\beta$ y queremos buscar la soluci\'on en el conjunto dado por
+% \[
+% 	\Omega_\xi = \{ \beta \in \R^{p+1} \; | \; \pi(\beta;\xi) = \beta \}
+% \]
+% donde $\xi \in \{-1,0,1\}^n$ es un vector dado. Dicho conjunto es un cono convexo que est\'a construido a partir de la intersecci\'on de un ortante con un hiperplano, forzando a ciertas coordenadas a ser cero. Para cualquier $\beta \in \Omega_\xi$ tenemos que la funci\'on
+% \[
+% 	DP_\xi(\beta) = D(\beta) + \lambda \xi^T \beta
+% \]
+% coincide con $DP$ en $\Omega_\xi$. Lo que nos interesa de esta funci\'on es que es diferenciable, por lo que podemos  contruir una aproximaci\'on cuadr\'atica de $DP$ que es v\'alida en $\Omega_\xi$. Para ello, notemos que dentro de $\Omega_\xi$ la informaci\'on de segundo orden de $DP_\xi$ (y por lo tanto la de $DP$) provienen \'unicamente de $D$, por lo que utilizaremos $H_k$ la k-\'esima aproximaci\'on de L-BFGS para la curvatura. En lugar del gradiente utilizaremos $v^{(k)} = \mathbb{P}(-\nabla DP_\xi(\beta^{(k)}))$, donde $\mathbb{P}$ es la proyecci\'on ortogonal sobre
+% \[
+% 	\mathcal{W}_\xi = \text{gen }\Omega_\xi
+% \]
+
+% Lo que esto ocasiona es simplemente que $\nabla_j DP(\beta^{(k)}) = 0$ siempre que $\xi_j = 0$. La raz\'on para proyectar sobre $\mathcal{W}_\xi$ es para que las direcciones de avance se mantengan siempre en $\Omega_\xi$ y no se salgan ``hacia un lado''. Para garantizar eso, se requiere adem\'as que la direcci\'on de avance obtenida en L-BFGS, $H_k v^{(k)}$, est\'e en el mismo subespacio que $v_k$. Es decir, se utilizar\'a la direcci\'on de avance dada por:
+% \begin{align} \label{dirowl}
+% 	p^{(k)} = \pi(H_k v^{(k)}; v^{(k)})
+% \end{align}
+
+% \subsubsection{Elecci\'on de un ortante}
+% Hasta ahora hemos supuesto que sab\'iamos de antemano en qu\'e ortante quer\'iamos buscar la soluci\'on. Si la dimensi\'on es alta puede haber much\'isimas elecciones ($2^p$ y hacemos $\xi_0 = 0$ siempre para no penalizar el intercepto). Una opci\'on razonable para explorar es la que contiene a $\tilde\beta$. Sin embargo, esto podr\'ia limitar demasiado la b\'usqueda, pues las coordenadas para las cuales $\beta_j^{(k)} = 0$ ser\'ian ignoradas (ie. no podr\'iamos ``caer'' de un eje una vez que lleg\'aramos a \'el). La soluci\'on es complementar con la direcci\'on a la que lleva $-\diamond DP(\beta_j^{(k)})$, que es la de m\'aximo descenso local de $DP$, de modo que exploramos el cono con signos dados por:
+% \begin{equation} \label{ortanteaexplorar}
+% 	\xi_j^{(k)} = \left \{
+% 	\begin{array}{ll}
+% 		\sigma(\beta_j^{(k)}) & \text{si } \beta_j^{(k)} \neq 0\\
+% 		\sigma(-\diamond DP(\beta_j^{(k)})) & \text{si } \beta_j^{(k)} = 0
+% 	\end{array} \right.
+% \end{equation}
+% Una ventaja adicional de esta elecci\'on es que ocasiona que el pseudo-gradiente negativo de $DP$ coincida con $v^{(k)}$, de modo que no necesitamos calcular ni $\xi^{(k)}$ ni $\nabla DP_\xi(\beta^{(k)})$, sino que \'unicamente calculamos $-\diamond DP(\beta^{(k)})$ y eso es lo que multiplicamos por $H_k$. Justificamos este hecho a continuaci\'on.
+
+% En primer lugar, es f\'acil ver que las derivadas parciales de $DP$ son:
+% \begin{equation} \label{parcialesdev}
+% 	\partial_j^\pm DP(\beta^{(k)}) = \left \{
+% 	\begin{array}{ll}
+% 		 \frac{\partial D}{\partial \beta_j}(\beta^{(k)}) + \lambda \sigma(\beta_j^{(k)}) & \text{si } \beta_j^{(k)} \neq 0\\
+% 		 \frac{\partial D}{\partial \beta_j}(\beta^{(k)}) + \lambda \partial_j^\pm |\beta_j^{(k)}| = \frac{\partial D}{\partial \beta_j}(\beta^{(k)}) \pm \lambda & \text{si } \beta_j^{(k)} = 0
+% 	\end{array} \right.
+% \end{equation}
+% Por otro lado, tenemos que
+% \begin{equation}
+% 	v_j^{(k)} = \left \{
+% 	\begin{array}{ll}
+% 		-\frac{\partial D}{\partial \beta_j^{(k)}}(\beta) - \lambda \xi_j^{(k)} & \text{si } \xi_j^{(k)} \neq 0\\
+% 		0 & \text{si } \xi_j^{(k)} = 0
+% 	\end{array} \right.
+% \end{equation}
+% Para probar que son iguales analizaremos tres casos. El primero es el caso en el que $\xi_j^{(k)} = 0$, cosa que sucede solamente cuando $\beta_j^{(k)} = 0$ y $-\diamond_j DP(\beta^{(k)}) = 0$. Por definici\'on en este caso $v_j^{(k)} = 0$, por lo que se tiene la coincidencia. Si, por otra parte, $\xi_j^{(k)} \neq 0$ y $\beta_j^{(k)} \neq 0$, entonces
+% \[
+% 	-\diamond_j DP(\beta^{(k)})
+% 	= - \frac{\partial D}{\partial \beta_j}(\beta^{(k)}) - \lambda \sigma(\beta_j^{(k)})
+% 	= - \frac{\partial D}{\partial \beta_j}(\beta^{(k)}) - \lambda \xi_j^{(k)}
+% 	= v_j^{(k)}
+%  \]
+% El tercer caso sucede si $\xi_j^{(k)} \neq 0$ pero $\beta_j^{(k)} = 0$, que se divide a su vez en tres, dependiendo del signo de $\diamond_j DP(\beta^{(k)})$.
+
+% El primero de estos nuevos tres casos es cuando $\partial^+_j DP(\beta^{(k)}) = \frac{\partial D}{\partial \beta_j}(\beta^{(k)}) + \lambda < 0$. El pseudo-gradiente toma entonces ese valor, por lo que $-\diamond DP(\beta^{(k)}) > 0$ y $\xi_j^{(k)} = 1$, de modo que
+% \[
+% 	-\diamond DP(\beta^{(k)}) = -\frac{\partial D}{\partial \beta_j}(\beta^{(k)}) - \lambda = v_j^{(k)}
+% \]
+% La segunda posibilidad se da si $\partial^-_j DP(\beta^{(k)}) = \frac{\partial D}{\partial \beta_j}(\beta^{(k)}) - \lambda > 0$, en cuyo caso el pseudo-gradiente toma ese valor, por lo que $-\diamond DP(\beta^{(k)}) < 0$ y $\xi_j^{(k)} = -1$. Entonces se tiene que
+% \[
+% 	-\diamond DP(\beta^{(k)}) = -\frac{\partial D}{\partial \beta_j}(\beta^{(k)}) + \lambda = v_j^{(k)}
+% \]
+% Finalmente, si $-\diamond DP(\beta^{(k)}) = 0$, entonces $\xi_j^{(k)} = 0$ y por definici\'on $v_j^{(k)} = 0$. En cualquier caso coinciden $v_j^{(k)}$ y $-\diamond DP(\beta_j^{(k)})$ con esta elecci\'on de $\xi^{(k)}$.
+ 
+% \subsubsection{B\'usqueda de l\'inea restringida}
+% La ecuaci\'on (\ref{dirowl}) garantiza que la direcci\'on $p^{(k)}$ no sea fundamentalmente inv\'alida en el sentido de que si la recortamos suficiente no nos saldremos del ortante que queremos explorar. Sin embargo, de definir un paso demasiado largo, podr\'iamos salirnos de la regi\'on deseada, que es donde $DP_{\xi^{(k)}}$ es igual a $DP$. Una soluci\'on a este problema es recortar el paso si es demasiado largo despu\'es de la b\'usqueda de l\'inea: obtenemos $\alpha^{(k)}$ por medio del algoritmo \ref{backtracking} y luego proyectamos sobre el ortante que estamos explorando:
+% \begin{align}
+% 	\beta^{(k+1)} \gets \pi(\beta^{(k)} + \alpha^{(k)} p^{(k)}, \xi^{(k)})
+% \end{align}
+% donde $p^{(k)}$ est\'a dado por (\ref{dirowl}). Finalmente, presentamos el algoritmo \ref{algowlqn}, OWL-QN a continuaci\'on.
+
+% \RestyleAlgo{boxruled}
+% \begin{algorithm}[h]
+% 	\caption{OWL-QN \label{algowlqn}}
+% 	Sea $\beta^{(0)} \in \R^{p+1}$ un punto inicial, $m$ un entero positivo\\
+% 	$k \gets 0$\\
+% 	\For{$k = 1, \dots, maxiters$}{
+% 		Escoger $H_k^0$, por ejemplo mediante (\ref{inilbfgs})\\
+%   		Calcular $v^{(k)}$ usando (\ref{eqpseudogradiente}) y (\ref{parcialesdev})\\
+% 		Calcular $p^{(k)}$ mediante el algoritmo \ref{twolooprecursion} y (\ref{dirowl})\\
+% 		Generar $\alpha^{(k)}$ con el algoritmo \ref{backtracking}\\
+% 		Avanzar: $\beta^{(k+1)} \gets \pi(\beta^{(k)} + \alpha^{(k)} p^{(k)}, \xi^{(k)})$\\
+% 		\If{$k > m$}{
+% 			Descartar de la memoria la pareja $\{s^{(k-m)}, y^{(k-m)}\}$
+% 		}
+% 		Calcular y guardar en memoria:\\
+% 		$s^{(k)} \gets \beta^{(k+1)} - \beta^{(k)}$\\
+% 		$y^{(k)} \gets \nabla D(\beta^{(k+1)}) - \nabla D(\beta^{(k)}) $\\
+% 		$k \gets k + 1$
+% 	}
+% 	Terminar con resultado $\hat\beta = \beta^{(k)}$
+% \end{algorithm}
+ 
+% \subsubsection{Notas}
+% El algoritmo \ref{algowlqn} es pr\'acticamente id\'entico al \ref{alglbfgs}. Las \'unicas diferencias entre ellos son las siguientes:
+% \begin{enumerate}[(i)]
+% 	\item Se usa $v^{(k)} = -\diamond DP(\beta^{(k)})$ en lugar de $-\nabla DP(\beta^{(k)})$, que en muchos puntos ni siquiera existe.
+% 	\item Se obliga a la direcci\'on de avance $p^{(k)}$ a tener el mismo patr\'on de signo que $v^{(k)}$.
+% 	\item Despu\'es de la b\'usqueda de l\'inea, se proyecta el nuevo punto sobre el ortante que se quer\'ia explorar.
+% 	\item Las $y^{(k)}$ se calculan usando el gradiente de $D$ sin regularizar, es decir, no se toma informaci\'on de curvatura del t\'ermino regularizador.
+% \end{enumerate}
+
+
+% %%%%% CHECAR SI SI
+% El c\'odigo de OWL-QN es proporcionado libremente en la p\'agina de sus autores. Est\'a implementado en $C$, por lo que esperamos que ser\'a muy eficiente en las cuentas rutinarias. En el siguiente cap\'itulo haremos experimentos num\'ericos para probar su desempe\~no en comparaci\'on con \emph{glmnet}. Dado que OWL-QN est\'a basado sobre L-BFGS, pensamos que probablemente su desempe\~no ser\'a sobresaliente en problemas de gran escala. Probaremos una gama razonablemente amplia de problemas para investigar bajo qu\'e circunstancias y en qu\'e tipo de problemas se desempe\~na bien cada uno de los dos algoritmos.
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \chapter{Experimentos num\'ericos}
+
+% En esta secci\'on haremos algunos experimentos num\'ericos para ver el desempe\~no de los m\'etodos. Primero veremos c\'omo se comportan en problemas simulados, luego en una base de datos de c\'ancer de mama y finalmente en una de \emph{spam} de correos electr\'onicos. Es claro que en este tipo de contextos tener la garant\'ia de un buen ajuste es crucial, pues la vida o los trabajos de de personas dependen de ello.
+
+% Las pruebas se llevaron a cabo en una MacBook Pro con 4GB de RAM y procesador Intel i7 Quad Core a 2.0GHz.
+
+% \section{Problemas simulados}
+% Primero generamos problemas aleatorios de tama\~nos diversos para ver si en verdad nuestra implementaci\'on era competitiva con el paquete \emph{glmnet}. Los ajustes se hicieron para 20 valores de $\lambda$ en la escala logar\'itmica. Generamos las variables explicativas aleatoriamente y luego construimos la respuesta bas\'andonos en ellas, pero meti\'endoles ruido aleatorio. En la tabla \ref{tab1} podemos ver los resultados que obtuvimos al comparar el desempe\~no en regresi\'on lineal regularizada, utilizando el algoritmo \ref{coordinatedescent}, mientras que en la tabla \ref{tab2} vemos los resultados obtenidos en regresi\'on log\'istica, usando el algoritmo \ref{IRLS}.
+% \begin{table}[h]
+% 	\centering
+% 	\begin{tabular}{|l|l|c|c|c|}
+% 	\hline
+% 	n 		& p 		& glmnet 		& nuestro 				& OWL-QN\\
+% 	\hline
+% 	3000		& 50 		& 0.018$\star$	&	31.270			& 18.217 \\
+% 	100		& 500	& 0.037$\star$	&	38.932			& 9.845	\\
+% 	\hline
+% 	\end{tabular}
+% 	\caption{Tiempos de ejecuci\'on en problemas simulados de diversos tama\~nos: Regresi\'on lineal regularizada \label{tab1}}
+% \end{table}
+% \begin{table}[h]
+% 	\centering
+% 	\begin{tabular}{|l|l|c|c|c|}
+% 	\hline
+% 	n 		& p 		& glmnet 		& nuestro 				& OWL-QN\\
+% 	\hline
+% 	3000		& 50 		& 0.997$\star$	&	68.965			& 28.682	\\
+% 	100		& 200	& 0.022$\star$	&	10.502			& 3.368	\\
+% 	\hline
+% 	\end{tabular}
+% 	\caption{Tiempos de ejecuci\'on en problemas simulados de diversos tama\~nos: Regresi\'on log\'istica regularizada \label{tab2}}
+% \end{table}
+
+% Cabe mencionar que nuestra implementaci\'on result\'o ser bastante estable en problemas de regresi\'on lineal, dando resultados pr\'acticamente indistinguibles a los de \emph{glmnet} para todos los tama\~nos de matriz de entradas. Mostramos un ejemplo de la ruta de encogimiento de los coeficientes que result\'o de \emph{glmnet} contra la nuestra en la figura \ref{figcomparasim3} para ilustrar la situaci\'on. La primera fila tiene los resultados para $n = 3000$, $p = 50$ y la segunda fila lo tiene para $n = 100$, $p = 500$. Para problemas con $p > n$ el desempe\~no fue aceptable, siempre y cuando se tomaran valores razonablemente grandes de $\lambda$. En la figura \ref{figcomparasim4} tenemos ejemplos de regresi\'on log\'istica. De nueva cuenta, en las primeras tres mostramos un problema con $n = 3000$, $p = 50$, pero en la segunda uno con $n = 100$, $p = 200$.
+
+% \begin{figure}[h!]
+% 	%\centering
+% 	\caption{Coeficientes de m\'inimos cuadrados con los tres m\'etodos: $n = 3,000$, $p = 50$ en la primera fila y $n = 100$, $p = 500$ en la segunda fila \label{figcomparasim3}}
+% 	\begin{subfigure}{0.32\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/s3_glmnet.pdf}
+% 		\caption{\emph{glmnet} \label{s3glmnet}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.32\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/s3_my.pdf}
+% 		\caption{nuestro \label{s3my}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.32\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/s3_owl.pdf}
+% 		\caption{OWL-QN \label{s3owl}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.32\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/s4_glmnet.pdf}
+% 		\caption{\emph{glmnet} \label{s4glmnet}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.32\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/s4_my.pdf}
+% 		\caption{nuestro \label{s4my}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.32\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/s4_owl.pdf}
+% 		\caption{OWL-QN \label{s4owl}}
+% 	\end{subfigure}
+% \end{figure}
+
+% \begin{figure}[h!]
+% 	%\centering
+% 	\caption{Coeficientes de regresi\'on log\'istica regularizada con los tres m\'etodos: $n = 3,000$, $p = 50$ en la primera fila y $n = 100$, $p = 200$ en la segunda fila\label{figcomparasim4}}
+% 	\begin{subfigure}{0.32\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/s1_glmnet.pdf}
+% 		\caption{\emph{glmnet} \label{s1glmnet}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.32\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/s1_my.pdf}
+% 		\caption{nuestro \label{s1my}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.32\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/s1_owl.pdf}
+% 		\caption{OWL-QN \label{s1owl}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.32\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/s2_glmnet.pdf}
+% 		\caption{\emph{glmnet} \label{s2glmnet}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.32\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/s2_my.pdf}
+% 		\caption{nuestro \label{s2my}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.32\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/s2_owl.pdf}
+% 		\caption{OWL-QN \label{s2owl}}
+% 	\end{subfigure}
+% \end{figure}
+
+% \section{C\'ancer de mama}
+% En esta secci\'on probaremos los algoritmos sobre un conjunto de datos de c\'ancer de mama utilizado en (Mangasarian, et al., 1995a). Adem\'as de ser sumamente interesante e importante por el tema que maneja, este problema resulta ser relativamente dif\'icil de resolver con regresi\'on log\'istica. Los autores del art\'iculo utilizaron programaci\'on lineal (PL) para obtener varios hiperplanos con los que caracterizaron su soluci\'on (al estilo de \'arboles de clasificaci\'on, pero junto con PL), pero nosotros utilizaremos s\'olo uno y adem\'as obtenido con regresi\'on log\'istica.
+
+% La base cuenta con 569 casos totales, la respuesta y 30 variables explicativas calculadas a trav\'es del an\'alisis de im\'agenes obtenidas con el m\'etodo FNA, es decir, \emph{fine needle aspirate} o biopsia por punci\'on y aspiraci\'on con aguja fina. La ventaja de esta biopsia es que es poco invasiva, barata y r\'apida. Sin embargo, el an\'alisis de las im\'agenes por expertos es lento y costoso y adem\'as la precisi\'on var\'ia mucho seg\'un el especialista. La idea era entonces analizar las im\'agenes con programas de computadora, calcular las variables de entrada del modelo y finalmente dejar que la computadora hiciera las predicciones.
+
+% A continuaci\'on presentamos los tiempos de corrida de los tres algoritmos:
+% \begin{table}[h]
+% 	\centering
+% 	\begin{tabular}{|c|c|}
+% 	\hline
+% 	Algoritmo 		& Tiempo de ejecuci\'on (seg)\\
+% 	\hline
+% 	\emph{glmnet}		& 0.047$\star$ 	\\
+% 	OWL-QN		& 3.86	\\
+% 	nuestro		& 11.152	\\
+% 	\hline
+% 	\end{tabular}
+% 	\caption{Tiempos de ejecuci\'on en base de datos de c\'ancer de mama \label{tabcancer}}
+% \end{table}
+
+% Como dec\'iamos, este problema es separable, por lo que la devianza se vuelve muy plana cuando el t\'ermino regularizador es peque\~no. En la figura \ref{figcomparacancer} mostramos las gr\'aficas de los coeficientes al variar $\lambda$ para cada m\'etodo.
+% \begin{figure}[h]
+% 	%\centering
+% 	\caption{Coeficientes de c\'ancer con los tres m\'etodos \label{figcomparacancer}}
+% 	\begin{subfigure}{0.32\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/cancer_glmnet.pdf}
+% 		\caption{\emph{glmnet} \label{cancerglmnet}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.32\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/cancer_my.pdf}
+% 		\caption{Descenso por coordenadas propio \label{cancermy}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.32\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/cancer_owl.pdf}
+% 		\caption{OWL-QN \label{cancerowl}}
+% 	\end{subfigure}
+% \end{figure}
+% A primera vista las gr\'aficas parecen ser distintas. Sin embargo, con una inspecci\'on m\'as detallada nos damos cuenta que la \ref{cancermy} es similar a la \ref{cancerglmnet}, pero truncada. Esto se debe a que nuestra implementaci\'on no pudo con el problema cuando $\lambda < e^{-9}$. Para $\lambda \geq e^{-9}$ nuestro algoritmo se tard\'o m\'as que OWL-QN y bastante m\'as que \emph{glmnet}, pero dio una aproximaci\'on razonable a los coeficientes.
+
+% En conclusi\'on, la base de c\'ancer de mama puede ser tan bien clasificada que se requiere un algoritmo sumamente robusto para que corra con valores peque\~nos de $\lambda$ sin fallar. Alternativamente, recomendar\'iamos intentar alg\'un m\'etodo que no sufra con la separabilidad, como las M\'aquinas de Soporte Vectorial.
+
+% \section{\emph{Spam}}
+% Un \'ultimo ejemplo de prueba que analizaremos es de \emph{spam} en correos electr\'onicos. Los datos aparecen en diversos ejemplos en (Friedman, et al., 2008) y se pueden conseguir en la siguiente p\'agina: \url{http://statweb.stanford.edu/~tibs/ElemStatLearn/data.html}. Fueron donados por George Forman de \emph{Hewlett-Packard laboratories}, Palo Alto, California. La muestra de entrenamiento consiste de 3,067 casos, 57 variables num\'ericas y las etiquetas que fueron generadas a mano de \emph{spam}/\emph{no spam}. Las variables son frecuencias de palabras (por ejemplo, cu\'antas veces aparece la palabra ``money'') y de caracteres (por ejemplo de ``!''). Fueron elegidas previamente a mano de una forma desconocida para el usuario, salvo por el hecho de que parecen funcionar bien.
+
+% En la siguiente tabla mostramos los tiempos de ejecuci\'on de los tres algoritmos:
+% \begin{table}[h]
+% 	\centering
+% 	\begin{tabular}{|c|c|}
+% 	\hline
+% 	Algoritmo 		& Tiempo de ejecuci\'on (seg)\\
+% 	\hline
+% 	\emph{glmnet}		& 1.654$\star$ 	\\
+% 	OWL-QN		& 19.291	\\
+% 	nuestro		& $\dagger$ (75.563)	\\
+% 	\hline
+% 	\end{tabular}
+% 	\caption{Tiempos de ejecuci\'on en base de datos de spam \label{tabspam}}
+% \end{table}
+% La daga significa que nuestra implementaci\'on fall\'o a tal grado que no vale la pena considerarla, as\'i que solamente analizaremos los resultados de \emph{glmnet} y de OWL-QN. En la figura \ref{figcomparaspam} mostramos los resultados de \emph{glmnet} y OWL-QN.
+% \begin{figure}[h]
+% 	%\centering
+% 	\caption{Coeficientes de spam de \emph{glmnet} y OWL-QN \label{figcomparaspam}}
+% 	\begin{subfigure}{0.49\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/spam_glmnet.pdf}
+% 		\caption{\emph{glmnet} \label{spamglmnet}}
+% 	\end{subfigure}
+% 	\begin{subfigure}{0.49\textwidth}
+% 		\includegraphics[width=\textwidth]{./graficas/spam_owl.pdf}
+% 		\caption{OWL-QN \label{spamowl}}
+% 	\end{subfigure}
+% \end{figure}
+% Afortunadamente, en esta ocasi\'on OWL-QN tuvo un mejor desempe\~no que en el problema de c\'ancer. Vemos que la trayectoria de los coeficientes es mucho m\'as suave en esta ocasi\'on, aunque de ninguna manera supera a \emph{glmnet}, que adem\'as corri\'o mucho m\'as r\'apido.
+
+% \section{Comentarios finales}
+% Como vemos, nuestra implementaci\'on es considerablemente m\'as lenta que la de \emph{glmnet}. Este hecho era de esperarse, en primer lugar porque nuestro c\'odigo est\'a puramente en R, mientras que el de \emph{glmnet} corre los procesos num\'ericos en Fortran. Sin embargo, creemos que la diferencia es demasiado exagerada, por lo que debe haber algunos detalles importantes que faltan en nuestra implementaci\'on. Un ejemplo de esto es el uso de un conjunto activo de coeficientes. Esa estrategia consiste en llevar un \'indice de los coeficientes que han llegado a cero y que no se mover\'an de ah\'i, de modo que se evitan los c\'alculos al iterar sobre ellos. En el art\'iculo no nos qued\'o claro c\'omo se llevaba a cabo ese procedimiento, por lo que no lo incluimos en nuestro c\'odigo.
+
+% OWL-QN funcion\'o razonablemente bien, especialmente en problemas en los que $p$ era relativamente grande. Esto era de esperarse dado que justamente est\'a pensado para problemas de dimensi\'on elevada. Sin embargo, vemos que no es ni tan r\'apido ni tan estable como \emph{glmnet}. Para ser justos, hay que notar que OWL-QN no aprovecha los \emph{warm starts}, sino que empieza desde cero para cada valor de $\lambda$. A pesar de ello, \emph{glmnet} es mucho m\'as r\'apido en general. En la trayectoria de encogimiento de los coeficientes ciertamente va ``por el camino correcto'', pero da resultados m\'as bien ruidosos. Por alguna raz\'on la regularizaci\'on de OWL-QN est\'a en otra escala. Esto probablemente se deba a que no se incluye el factor $1/n$ en la devianza en OWL-QN, lo que resultar\'ia justamente en que se deber\'ia regularizar con $n\lambda$ para obtener el mismo resultado que \emph{glmnet}.
+
+% En nuestros experimentos encontramos dos fallas claras de OWL-QN, que no son graves, pero que creemos que deber\'ian ser tomadas en cuenta. Ambas suceden cuando el t\'ermino regularizador $\lambda$ es grande: en algunos casos el algoritmo se queda corriendo eternamente la b\'usqueda de l\'inea, mientras que en otros dice antes de la primera iteraci\'on que no se consigui\'o una direcci\'on de descenso. El segundo tiene una soluci\'on sencilla, pues lo que sucede es que si se empieza en $\beta^{(0)} = 0$, que es el \'optimo cuando $\lambda$ es suficientemente grande, evidentemente ser\'a imposible encontrar una direcci\'on de descenso.
+
+% En relaci\'on a nuestra implementaci\'on, vemos que es bastante precisa en problemas f\'aciles, como los simulados. Sin embargo, sufre considerablemente cuando los problemas son separables o tienen una estructura m\'as err\'atica. Creemos que nuestra implementaci\'on tiene mucho espacio para mejorar, pero para los prop\'ositos de este trabajo qued\'o claro el desempe\~no del m\'etodo. Tambi\'en qued\'o claro que para que una implementaci\'on de descenso por coordenadas sea realmente r\'apida y robusta se requiere bastante m\'as que una implementaci\'on \emph{na\"ive}. El \'exito est\'a en los detalles y en optimizar el algoritmo al m\'aximo, en usar paquetes especializados de \'algebra lineal y en trucos varios.
+
+
+
+
+
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+%  \newpage
+%  \begin{thebibliography}{9}
+
+% 	\bibitem{owlqn}
+% 	Andrew, Galen y Gao, Jianfeng. (2007). Scalable Training of $L_1$-Regularized Log-Linear Models.  \emph{International Conference on Machine Learning.} pp. 33-40. Disponible en: \url{<http://machinelearning.wustl.edu/mlpapers/paper_files/icml2007_AndrewG07.pdf>}. (Consulta: 29 de marzo de 2014).
+	
+% 	\bibitem{convex}
+%         Boyd, Stephen y Vandenberghe, Lieven. (2009). \emph{Convex Optimization}. New York, NY. USA: Cambridge University Press. Disponible en: \url{<https://www.stanford.edu/~boyd/cvxbook/>}. (Consulta: 29 de marzo de 2014).
+    
+%     	\bibitem{subgradients}
+% 	Boyd, Stephen y Vandenberghe, Lieven. (2011). Subgradients. \emph{Notes for EE364b}, Stanford University.
+	
+% 	\bibitem{clarke}
+%         Clarke, Frank H. (1990). \emph{Optimization and Nonsmooth Analysis}. Philadelphia, PA. USA: SIAM.
+    
+% 	\bibitem{glmnet}
+%         Friedman, Jerome; Hastie, Trevor y Tibshirani, Robert. (2010). Regularization Paths for Generalized Linear Models via Coordinate Descent. \emph{Journal of Statistical Software}. vol. 33, issue 1. Disponible en: \url{<http://www.jstatsoft.org/v33/i01/paper>}. (Consulta: 29 de marzo de 2014).
+        
+%         \bibitem{pathwisecoord}
+%         Friedman, Jerome; Hastie, Trevor; H\"ofling, Holger y Tibshirani, Robert. (2007). Pathwise Coordinate Optimization. \emph{The Annals of Applied Statistics}. vol. 1, no. 2, pp. 302-332. Disponible en: \url{<http://www.jstor.org/stable/4537438>}. (Consulta: 29 de marzo de 2014).
+        
+% 	\bibitem{elements}
+%         Friedman, Jerome, Hastie, Trevor y Tibshirani, Robert. (2008). \emph{The Elements of Statistical Learning: Data Mining, Inference and Prediction. Second Edition}. New York, NY. USA: Springer-Verlag. Disponible en: \url{<http://statweb.stanford.edu/~tibs/ElemStatLearn/>}. (Consulta: 29 de marzo de 2014).
+	
+% 	\bibitem{goldfarb}
+% 	Goldfarb, Donald. (1970). A family of variable-metric methods derived by variational means. \emph{Mathematics of Computation}. issue 24, pp. 23-26. Disponible en: \url{http://www.ams.org/journals/mcom/1970-24-109/S0025-5718-1970-0258249-6/S0025-5718-1970-0258249-6.pdf} (Consulta: 27 de junio de 2014)
+	
+% 	\bibitem{cancer}
+% 	Mangasarian, Olvi L.; Street, W. Nick y Wolberg, William H. (1995a). Breast Cancer Diagnosis and Prognosis via Linear Programming. \emph{Operations Research}. vol. 43, no. 4, pp. 570-577. Disponible en: \url{<http://pubsonline.informs.org/toc/opre/43/4>}. (Consulta: 1 de abril de 2014).
+	
+% 	\bibitem{wdbc}
+% 	Mangasarian, Olvi L.; Street, W. Nick y Wolberg, William H. (1995b). Wisconsin Diagnostic Breast Cancer (base de datos e informaci\'on sobre el c\'ancer de mama). Disponible en: \url{<ftp://ftp.cs.wisc.edu/math-prog/cpo-dataset/machine-learn/cancer/WDBC/>}. (Consulta: 1 de abril de 2014).
+
+% 	\bibitem{peckvining}
+%     	Montgomery, Douglas; Peck, Elizabeth y Vining, Geoffrey. (2002). \emph{Introducci\'on al An\'alisis de Regresi\'on Lineal}, M\'exico DF, M\'exico: Compa\~nia Editorial Continental.
+	
+% 	\bibitem{nocedal}
+% 	    	Nocedal, Jorge y Wright, Stephen J. (2006). \emph{Numerical Optimization. Second Edition}, New York, NY. USA: Springer.
+		
+% 	\bibitem{lasso}
+% 	Tibshirani, Robert. (1994). Regression Shrinkage and Selection Via the Lasso. \emph{Journal of the Royal Statistical Society, Series B.} vol. 58, pp. 267-288. \url{<http://statweb.stanford.edu/~tibs/lasso/lasso.pdf>}. (Consulta: 29 de marzo de 2014).
+	
+% 	\bibitem{lassouniqueness}
+% 	Tibshirani, Ryan J. (2013). The Lasso Problem and Uniqueness. \emph{Electronic Journal of Statistics}, vol. 7, no. 0, pp. 1456-1490. Disponible en: \url{<http://arxiv.org/abs/1206.0313>}. (Consulta: 29 de marzo de 2014).
+	
+% 	\bibitem{tseng}
+% 	Tseng, Paul. (2001). Convergence of a Block Coordinate Descent Method for Nondifferentiable Minimization. \emph{Journal of Optimization Theory and Applications}. vol. 109, no. 3, pp. 475-494. \url{<http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.219.685&rep=rep1&type=pdf>}. (Consulta: 29 de marzo de 2014).
+	
+% 	\bibitem{anoteonlasso}
+% 	Wang, Yizao. (2007). A Note on the Lasso in Model Selection. \emph{\'Ecole Polyth\'echnique}. Disponible en: \url{<http://b.chalmond.free.fr/mini-projets/lasso.pdf>}. (Consulta: 29 de marzo de 2014).
+    
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+%  \end{thebibliography}
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+%  %%%%%%%%%%%%%%% APENDICE %%%%%%%%%%%%%%%%%%%%%
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ \end{document}
