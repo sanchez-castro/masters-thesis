@@ -2,17 +2,18 @@
 \contentsline {chapter}{Pr\'ologo}{IV}{chapter*.4}
 \contentsline {chapter}{\numberline {1}An\IeC {\'a}lisis previo}{2}{chapter.1}
 \contentsline {section}{\numberline {1.1}An\IeC {\'a}lisis de la competencia}{2}{section.1.1}
-\contentsline {section}{\numberline {1.2}An\IeC {\'a}lisis del sistema actual}{2}{section.1.2}
-\contentsline {section}{\numberline {1.3}Wish List}{2}{section.1.3}
-\contentsline {chapter}{\numberline {2}Modelo propuesto}{3}{chapter.2}
-\contentsline {section}{\numberline {2.1}Puntos a resolver}{3}{section.2.1}
-\contentsline {section}{\numberline {2.2}Distancia}{3}{section.2.2}
-\contentsline {section}{\numberline {2.3}Precio}{3}{section.2.3}
-\contentsline {section}{\numberline {2.4}Similitud de hoteles}{3}{section.2.4}
-\contentsline {section}{\numberline {2.5}Distancia revisitada}{3}{section.2.5}
-\contentsline {section}{\numberline {2.6}Integrando todo}{3}{section.2.6}
-\contentsline {chapter}{\numberline {3}Obtenci\IeC {\'o}n de la informaci\IeC {\'o}n}{4}{chapter.3}
-\contentsline {section}{\numberline {3.1}Formato necesario para el modelo}{4}{section.3.1}
-\contentsline {section}{\numberline {3.2}Calidad de la informaci\IeC {\'o}n}{4}{section.3.2}
-\contentsline {section}{\numberline {3.3}Sistema de respaldo}{4}{section.3.3}
-\contentsline {chapter}{\numberline {4}Desempe\IeC {\~n}o}{5}{chapter.4}
+\contentsline {section}{\numberline {1.2}An\IeC {\'a}lisis del sistema actual}{6}{section.1.2}
+\contentsline {section}{\numberline {1.3}Diagn\IeC {\'o}stico}{6}{section.1.3}
+\contentsline {section}{\numberline {1.4}Wish List}{6}{section.1.4}
+\contentsline {chapter}{\numberline {2}Modelo propuesto}{7}{chapter.2}
+\contentsline {section}{\numberline {2.1}Puntos a resolver}{7}{section.2.1}
+\contentsline {section}{\numberline {2.2}Distancia}{7}{section.2.2}
+\contentsline {section}{\numberline {2.3}Precio}{7}{section.2.3}
+\contentsline {section}{\numberline {2.4}Similitud de hoteles}{7}{section.2.4}
+\contentsline {section}{\numberline {2.5}Distancia revisitada}{7}{section.2.5}
+\contentsline {section}{\numberline {2.6}Integrando todo}{7}{section.2.6}
+\contentsline {chapter}{\numberline {3}Obtenci\IeC {\'o}n de la informaci\IeC {\'o}n}{8}{chapter.3}
+\contentsline {section}{\numberline {3.1}Formato necesario para el modelo}{8}{section.3.1}
+\contentsline {section}{\numberline {3.2}Calidad de la informaci\IeC {\'o}n}{8}{section.3.2}
+\contentsline {section}{\numberline {3.3}Sistema de respaldo}{8}{section.3.3}
+\contentsline {chapter}{\numberline {4}Desempe\IeC {\~n}o}{9}{chapter.4}
