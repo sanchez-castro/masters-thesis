@@ -108,11 +108,11 @@ FIRMA
 % ----------------------------------------------------------------------------------------------------
 \chapter{Análisis previo}
 
-Antes de desarrollar el modelo de recomendación de hoteles similares, es conveniente analizar el \emph{status quo}. Comenzaremos con un análisis de la competencia del que trataremos de sacar información valiosa de qué hay o no hay en el mercado y tomar ideas. Posteriormente haremos un análisis del sistema de Best Day que pretendemos mejorar con el fin de entender en dónde hay áreas de oportunidad.
+Antes de desarrollar el modelo de recomendación de hoteles similares, es conveniente analizar el \emph{status quo}. Comenzaremos con un análisis de la competencia del que trataremos de sacar información valiosa de qué hay o no hay en el mercado y tomar ideas, posteriormente haremos un análisis del sistema de Best Day que pretendemos mejorar con el fin de entender en dónde hay áreas de oportunidad y finalmente sacaremos conclusiones de lo aprendido.
 
-\section{Análisis de la competencia}
+\section{Sistemas actuales}
 
-En esta sección analizaremos la manera en que la competencia de Best Day recomienda hoteles. Los ámbitos que nos interesan son
+En esta sección analizaremos la manera en que la competencia de Best Day recomienda hoteles y luego veremos qué se hace en Best Day. Los ámbitos que nos interesan son
 \begin{enumerate}
 	\item La posición dentro de la página de las recomendaciones.
 	\item La forma en la que se eligen las recomendaciones.
@@ -126,14 +126,18 @@ Pusimos a Price Travel en primer lugar en la lista porque no tienen un sistema d
 \subsection*{Booking (booking.com)}
 
 Booking es un competidor muy importante de Best Day, aunque también tiene un mercado más granda y mayor cantidad de opciones en destinos fuera de Latinoamérica. Antes de entrar en los puntos de interés general, cabe mencionar que algo que hace booking que no hacen los demás es que cuando se busca un hotel en la página con la barra inteligente, en lugar de ir directamente a su página, se muestra en el primer lugar de una lista, dando la posibilidad de elegir algún otro hotel. Ahora sí pasemos al tema en cuestión:
-\begin{enumerate}
-	\item Las recomendaciones se encuentran del lado izquierdo, abajo de la barra de búsqueda y fechas. Es una posición de prominencia media-baja, puesto que no es visible inmediatamente sin bajar en la página.
-	\item En esta página hay dos tipos de recomendaciones, según las visitas del cliente:
-	\begin{itemize}
-		\item \textbf{Hoteles populares por destino:} Cuando se entra a la página (no al hotel en particular) por primera vez y se selecciona un hotel, aparece una sección de hoteles populares en el mismo destino del hotel buscado. El tema es que siempre aparece la misma selección para cada destino, independientemente del hotel que se haya elegido, pues la popularidad de los otros hoteles no tiene relación con el hotel elegido.
-		\item \textbf{Búsquedas recientes:} La información de los hoteles visitados se va almacenando en una \emph{cookie}, de modo que para los hoteles subsecuentes, en lugar de los hoteles populares por destino, aparece un listado de unos pocos hoteles recientemente buscadosp or el usuario.
-	\end{itemize}
-\end{enumerate}
+\begin{itemize}
+	\item \textbf{Hoteles populares por destino}
+	\begin{enumerate}
+		\item Se encuentran del lado izquierdo, abajo de la barra de búsqueda y fechas. Es una posición de prominencia media-baja, puesto que no es visible inmediatamente sin bajar en la página.
+		\item Cuando se entra a la página (no al hotel en particular) por primera vez y se selecciona un hotel, aparece una sección de hoteles populares en el mismo destino del hotel buscado. El tema es que siempre aparece la misma selección para cada destino, independientemente del hotel que se haya elegido, pues la popularidad de los otros hoteles no tiene relación con el hotel elegido.
+	\end{enumerate}
+	\item \textbf{Búsquedas recientes}
+	\begin{enumerate}
+		\item Se encuentran en el mismo lugar que los hoteles populares por destino, pero los sustituyen una vez que se ha visitado al menos un hotel anteriormente.
+		\item La información de los hoteles visitados se va almacenando en una \emph{cookie}, de modo que para los hoteles subsecuentes, en lugar de los hoteles populares por destino, aparece un listado de unos pocos hoteles recientemente buscados por el usuario.
+	\end{enumerate}
+\end{itemize}
 Al parecer en Booking sólo están interesados en lo que el cliente ha buscado y utilizan los hoteles populares por destino para no dejar vacía la sección para los clientes nuevos. El problema con los hoteles populares por destino es que no varían según el hotel buscado (siempre y cuando estén en el mismo destino), mientras que el de las búsquedas recientes es que no promueven que el cliente explore la página y encuentre la mejor opción para sus necesidades. Entraremos en detalles más adelante.
 
 \subsection*{Despegar (despegar.com)}
@@ -166,32 +170,64 @@ En Despegar tuvieron muchas ideas para recomendar, pero todos los criterios est�
 \subsection*{Expedia (expedia.com)}
 
 En Expedia se le da una prioridad bajísima a las recomendaciones, puesto que están posicionadas en un lugar casi imposible de ver. Sin embargo, tienen un sistema diferente a los demás y por eso lo pusimos en esta posición en la lista de sistemas competidores.
-\begin{enumerate}
-	\item Todas las recomendaciones se encuentran en el centro, pero casi hasta abajo, después de toda la información del hotel. La prioridad es muy baja.
-	\item Tienen dos tipos de recomendaciones:
-		\begin{itemize}
-			\item \textbf{Búsquedas recientes:} Es igual que en las demás páginas. Aparecen los últimos cuatro hoteles buscados distintos del actual (en caso de repetir una búsqueda).
-			\item \textbf{Hoteles recomendados:} Utilizan un método desconocido para recomendar hoteles similares que permite movilidad progresiva entre categorías. No estamos seguros si tiene alguna restricción de precios.
-		\end{itemize}
-\end{enumerate}
+\begin{itemize}
+	\item \textbf{Búsquedas recientes}
+	\begin{enumerate}
+		\item Se encuentran en el centro, casi hasta abajo, después de toda la información del hotel. La prioridad es muy baja.
+		\item Es igual que en las demás páginas. Aparecen los últimos cuatro hoteles buscados distintos del actual (en caso de repetir una búsqueda).
+	\end{enumerate}
+	\item \textbf{Hoteles recomendados}
+	\begin{enumerate}
+		\item Se encuentran directamente abajo de las búsquedas recientes.
+		\item Utilizan un método desconocido para recomendar hoteles similares que permite movilidad progresiva entre categorías. No estamos seguros si tiene alguna restricción de precios.
+	\end{enumerate}
+\end{itemize}
 El sistema de recomendación de Expedia nos gustó bastante y de hecho creemos que lo están desaprovechando. Permite explorar los hoteles disponibles con hacia arriba y hacia abajo en la escala de precio y categoría y llegar a opciones completamente nuevas. Es probable que esté acotado por destino, aunque eso no es tan grave. Algo que no nos gustó tanto es que tal vez es algo rígido y después de buscar un poco se puede atorar. A diferencia del algoritmo de Booking, esto no necesariamente lleva a los hoteles más caros de la zona.
 
 \subsection*{Trip Advisor (tripadvisor.com)}
 
+Como decíamos arriba, Trip Advisor no es la competencia directa de Best Day, pero es un sitio muy popular de evaluación de hoteles y creemos que podemos aprender de ellos.
+\begin{itemize}
+	\item \textbf{Hoteles similares}
+	\begin{enumerate}
+		\item Se encuentran en la derecha, abajo de la foto principal, pero al lado de otra información importante, por lo que el impacto es medio.
+		\item No sabemos cómo hacen las recomendaciones, pero no son por distancia estricta y sí permiten cierta movilidad de la categoría.
+	\end{enumerate}
+\end{itemize}
+El sistema de TripAdvisor también funciona razonablemente bien, pero parece estar más basado en la calificación de los usuarios que en la categoría del hotel. Si bien ese enfoque tiene sentido en el contexto de su página, Best Day no tiene información tan detallada como ellos en cuanto a lo que opinan los usuarios y además el enfoque es distinto. Algo que tampoco nos gustó es que el sistema es bastante rígido y se puede quedar atorado fácilmente en ciertos grupos de hoteles.
 
+\subsection*{Best Day (bestday.com.mx)}
 
+Finalmente, analizaremos lo que se hace actualmente en Best Day. Del mismo modo que con la competencia, comenzaremos con una breve descripción:
+\begin{itemize}
+	\item \textbf{Hoteles similares}
+	\begin{enumerate}
+		\item Los hoteles similares están abajo de la liga al mapa del lado derecho. Como en la mayoría de los competidores, no se ve inmediatamente al entrar en la página, por lo que tiene prominencia media-baja.
+		\item La manera de recomendar hoteles es por categoría (estrellas) y por destino, es decir, se toman los hoteles de las mismas estrellas y en el mismo destino que el hotel buscado y se presentan en el Sort Order del momento. No se toma en cuenta el precio ni la distancia (salvo por el hecho de encontrarse en el mismo destino) de las opciones.
+	\end{enumerate}
+	\item \textbf{Búsquedas recientes}
+	\begin{enumerate}
+		\item Se encuentran directamente debajo de los hoteles similares.
+		\item Similarmente a la competencia, aparece una lista de los hoteles que el usuario visitó recientemente. Las búsquedas recientes permanecen entre sesiones dentro de una misma computadora.
+	\end{enumerate}
+\end{itemize}
+Al parecer las búsquedas recientes son (casi) un estándar en la industria, por lo que es confortante saber que Best Day es competitiva en este ámbito. Por otro lado, la calidad de las recomendaciones es muy variable. En zonas homogéneas y con mucha oferta para una categoría dada, las recomendaciones pueden ser razonablemente buenas. Sin embargo, en destinos donde hay hoteles muy distintos pero con la misma categoría, como podrían ser un hotel citadino y uno de playa, las recomendaciones dejan mucho que desear. Además, si no hay o casi no hay hoteles bajo este criterio, no se muestra nada, o casi nada. Más adelante expondremos estos temas con más detalle.
 
-
-¿Qué hacen (casi) todos?
-> Hoteles recientes
-> Barra de búsqueda inteligente (la de Best Day tiene fallas)
-¿Qué hacen algunos?
-> Booking presenta muchos hoteles 
-
-\section{Análisis del sistema actual}
 \section{Diagnóstico}
 
-\section{Wish List}
+Antes de describir lo que nos gustaría que hiciera el algoritmo de recomendación, resumiremos lo que aprendimos de analizar las diversas páginas. En primer lugar, nos dimos cuenta de que poner una sección con las búsquedas recientes es algo muy deseable y relativamente fácil de implementar. De hecho, es un estándar en la industria, pues todos los competidores lo tienen, a excepción de Price Travel. Sin embargo, recomendar hoteles que el cliente ya vio no cuenta realmente como recomendaciones y debería manejarse en un plano separado. Posiblemente se podría utilizar información de los hoteles visitados en las recomendaciones, pero por ahora proponemos dejar intacta esta sección.
+
+Quitando las búsquedas recientes de en medio, podemos analizar los diversos sistemas de recomendación. Tal parece que utilizar el destino como punto de partida es una opción razonable. Sin embargo, lo que realmente importa en la vida real es la distancia y similaridad geográfica entre los hoteles; los destinos son particiones más o menos arbitrarias de la geografía que no deberían afectar las recomendaciones. Por ejemplo, se puede recomendar un hotel en Cancún a dado que se buscó un hotel muy cercano al norte de la Riviera Maya o uno en Playa del Carmen a una persona que buscó algo en Cozumel. 
+
+Otro punto que pensamos que es importante es el precio. Hasta donde pudimos ver, ninguna página tiene miramiento alguno con el costo de los hoteles recomendados. El resultado es que pueden recomendar hoteles del doble o incluso triple de precio que el original. Creemos que esto no promueve que el cliente explore más alternativas, ya que la mayoría basa su decisión fuertemente en el precio de los hoteles. Propondremos una forma simple de lidiar con este problema sin perder flexibilidad en las recomendaciones.
+
+Un tercer problema con el que nos encontramos en las recomendaciones es que en la mayoría de los casos eran estáticas. Es decir, son idénticas para ciertos grupos de hoteles. Esto pasa en todas las opciones que vimos que utilizan el destino (Booking, Despegar, Best Day) como criterio, pues no dependen también del hotel. Esto en sí mismo puede ser un problema en destinos amplios, además de que el usuario agota las recomendaciones rápidamente, volviéndolas inútiles. 
+
+En cuarto lugar, nos dimos cuenta que en varias de las páginas se han dado cuenta de que quieren recomendar hoteles vía varios criterios, pero muchas veces no los integran. La estrategia tiende a ser usar un criterio para ordenar a la vez, en lugar de integrarlos. Esto contribuye al tercer punto, pues hay poco cambio en las recomendaciones de hotel a hotel.
+
+En quinto lugar, notamos que en general los sitemas que sí recomendaban de forma más sofisticada resultaban rígidos y/o se podían quedar atorados fácilmente en grupos aislados de hoteles. Esto hace que el sistema se vuelva inútil una vez que se llegó a uno de estos grupos absorbentes. El único que nos pareció decente en este sentido es el de Expedia, aunque sí es algo más rígido de lo que nos gustaría. Otro punto sobre los sistemas en general, pero de los de hoteles similares en particular, es que en ninguna página (salvo tal vez Trip Advisor) aparecen en posiciones de importancia alta. En el mejor de los casos aparecen una página abajo de la principal, al lado, y en los peores casos están hasta abajo. Creemos que están desaprovechando mucho el potencial de dichos sistemas.
+
+\section{Lista de deseos}
 
 % ----------------------------------------------------------------------------------------------------
 \chapter{Modelo propuesto}
@@ -201,6 +237,9 @@ El sistema de recomendación de Expedia nos gustó bastante y de hecho creemos q
 \section{Similitud de hoteles}
 \section{Distancia revisitada}
 \section{Integrando todo}
+\section{Comentarios}
+No es personalizado, sino de hoteles similares.
+[Ver presentación para qué sí/no es o podría ser]
 
 % ----------------------------------------------------------------------------------------------------
 \chapter{Obtención de la información}
@@ -212,6 +251,9 @@ El sistema de recomendación de Expedia nos gustó bastante y de hecho creemos q
 \chapter{Desempeño}
 
 
+% ----------------------------------------------------------------------------------------------------
+\chapter{Trabajo futuro}
+Porcentaje dinámico en forma de u para el tope de precio.
 
 % \addcontentsline{toc}{chapter}{Pr\'ologo}
 % \chapter*{Pr\'ologo}
