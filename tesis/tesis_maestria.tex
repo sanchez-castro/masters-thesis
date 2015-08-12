@@ -68,7 +68,7 @@ MAESTRO EN CIENCIA DE DATOS\\
 \vspace{1cm}
 FELIPE GERARD VALD\'ES\\
 \vspace{2cm}
-{\normalsize ASESOR: }\\
+{\normalsize ASESOR: [Si me dejan] NADIA DEL VILLAR}\\
 \vspace{2cm}
 \end{center}
 \begin{flushleft}
@@ -79,7 +79,7 @@ M\'EXICO, D.F.\hfill 2015%\phantom{20144}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % DISCLAIMER
 \newpage
-\noindent``Con fundamento en el art\'iculo 21 y 27 de la Ley Federal del Derecho de Autor y como titular de los derechos moral y patrimonial de la obra titulada \textbf{``M\'ETODOS NUM\'ERICOS PARA AJUSTAR MODELOS DE REGRESION LOG\'ISTICA REGULARIZADA''}, otorgo de manera gratuita y permanente al Instituto Tecnológico Aut\'onomo de M\'exico y a la Biblioteca Ra\'ul Bailleres Jr., autorizaci\'on para que fijen la obra en cualquier medio, incluido el electr\'onico, y la divulguen entre sus usuarios, profesores, estudiantes o terceras personas, sin que pueda percibir por tal divulgaci\'on una contraprestaci\'on"
+\noindent``Con fundamento en el art\'iculo 21 y 27 de la Ley Federal del Derecho de Autor y como titular de los derechos moral y patrimonial de la obra titulada \textbf{``SISTEMA DE RECOMENDACIÓN DE HOTELES SIMILARES'}, otorgo de manera gratuita y permanente al Instituto Tecnológico Aut\'onomo de M\'exico y a la Biblioteca Ra\'ul Bailleres Jr., autorizaci\'on para que fijen la obra en cualquier medio, incluido el electr\'onico, y la divulguen entre sus usuarios, profesores, estudiantes o terceras personas, sin que pueda percibir por tal divulgaci\'on una contraprestaci\'on"
 \vspace{40pt}
 \begin{center}
 \textbf{Felipe Gerard Vald\'es}\vspace{2cm}\\
@@ -217,26 +217,49 @@ Al parecer las búsquedas recientes son (casi) un estándar en la industria, por
 
 Antes de describir lo que nos gustaría que hiciera el algoritmo de recomendación, resumiremos lo que aprendimos de analizar las diversas páginas. En primer lugar, nos dimos cuenta de que poner una sección con las búsquedas recientes es algo muy deseable y relativamente fácil de implementar. De hecho, es un estándar en la industria, pues todos los competidores lo tienen, a excepción de Price Travel. Sin embargo, recomendar hoteles que el cliente ya vio no cuenta realmente como recomendaciones y debería manejarse en un plano separado. Posiblemente se podría utilizar información de los hoteles visitados en las recomendaciones, pero por ahora proponemos dejar intacta esta sección.
 
-Quitando las búsquedas recientes de en medio, podemos analizar los diversos sistemas de recomendación. Tal parece que utilizar el destino como punto de partida es una opción razonable. Sin embargo, lo que realmente importa en la vida real es la distancia y similaridad geográfica entre los hoteles; los destinos son particiones más o menos arbitrarias de la geografía que no deberían afectar las recomendaciones. Por ejemplo, se puede recomendar un hotel en Cancún a dado que se buscó un hotel muy cercano al norte de la Riviera Maya o uno en Playa del Carmen a una persona que buscó algo en Cozumel. 
+Quitando las búsquedas recientes de en medio, podemos analizar los diversos sistemas de recomendación. Un punto que pensamos que es sumamente importante es el precio. Hasta donde pudimos ver, ninguna página tiene miramiento alguno con el costo de los hoteles recomendados. El resultado es que pueden recomendar hoteles del doble o incluso triple de precio que el original. Creemos que esto no promueve que el cliente explore más alternativas, ya que la mayoría basa su decisión fuertemente en el precio de los hoteles. Propondremos una forma simple de lidiar con este problema sin perder flexibilidad en las recomendaciones.
 
-Otro punto que pensamos que es importante es el precio. Hasta donde pudimos ver, ninguna página tiene miramiento alguno con el costo de los hoteles recomendados. El resultado es que pueden recomendar hoteles del doble o incluso triple de precio que el original. Creemos que esto no promueve que el cliente explore más alternativas, ya que la mayoría basa su decisión fuertemente en el precio de los hoteles. Propondremos una forma simple de lidiar con este problema sin perder flexibilidad en las recomendaciones.
+Otro factor que nos pareció mejorable es el uso de la información geográfica. Parece ser que la opción más popular es únicamente utilizar la información incluida en el destino y, de hecho, parece que sólo Despegar tiene una sección de hoteles más cercanos. Si bien utilizar el destino como punto de partida es una opción razonable, creemos que se podría aprovechar mejor la información si se utilizan las coordenadas geográficas, dado que en la vida real lo que realmente importa es la proximidad de los hoteles; los destinos son particiones más o menos arbitrarias que no deberían afectar las recomendaciones. Por ejemplo, se puede recomendar un hotel en Cancún dado que se buscó un hotel en la zona norte de la Riviera Maya, o uno en Playa del Carmen a una persona que buscó algo en Cozumel. 
 
 Un tercer problema con el que nos encontramos en las recomendaciones es que en la mayoría de los casos eran estáticas. Es decir, son idénticas para ciertos grupos de hoteles. Esto pasa en todas las opciones que vimos que utilizan el destino (Booking, Despegar, Best Day) como criterio, pues no dependen también del hotel. Esto en sí mismo puede ser un problema en destinos amplios, además de que el usuario agota las recomendaciones rápidamente, volviéndolas inútiles. 
 
-En cuarto lugar, nos dimos cuenta que en varias de las páginas se han dado cuenta de que quieren recomendar hoteles vía varios criterios, pero muchas veces no los integran. La estrategia tiende a ser usar un criterio para ordenar a la vez, en lugar de integrarlos. Esto contribuye al tercer punto, pues hay poco cambio en las recomendaciones de hotel a hotel.
+En cuarto lugar, nos dimos cuenta que en varias de las páginas se han dado cuenta de que quieren recomendar hoteles vía varios criterios, pero muchas veces no los integran. La estrategia tiende a ser usar un criterio para ordenar a la vez, en lugar de aprovechar varios simultáneamente. Esto contribuye al tercer punto, pues hay poco cambio en las recomendaciones de hotel a hotel.
 
-En quinto lugar, notamos que en general los sitemas que sí recomendaban de forma más sofisticada resultaban rígidos y/o se podían quedar atorados fácilmente en grupos aislados de hoteles. Esto hace que el sistema se vuelva inútil una vez que se llegó a uno de estos grupos absorbentes. El único que nos pareció decente en este sentido es el de Expedia, aunque sí es algo más rígido de lo que nos gustaría. Otro punto sobre los sistemas en general, pero de los de hoteles similares en particular, es que en ninguna página (salvo tal vez Trip Advisor) aparecen en posiciones de importancia alta. En el mejor de los casos aparecen una página abajo de la principal, al lado, y en los peores casos están hasta abajo. Creemos que están desaprovechando mucho el potencial de dichos sistemas.
+En quinto lugar, notamos que en general los sistemas que sí recomendaban de forma más sofisticada resultaban rígidos y/o se podían quedar atorados fácilmente en grupos aislados de hoteles. Esto hace que el sistema se vuelva inútil una vez que se llegó a uno de estos grupos absorbentes. El único que nos pareció decente en este sentido es el de Expedia, aunque sí es algo más rígido de lo que nos gustaría. Otro punto sobre los sistemas en general, pero de los de hoteles similares en particular, es que en ninguna página (salvo tal vez Trip Advisor) aparecen en posiciones de importancia alta. En el mejor de los casos aparecen una página abajo de la principal, al lado, y en los peores casos están hasta abajo. Creemos que están desaprovechando mucho el potencial de dichos sistemas.
 
-\section{Lista de deseos}
+Finalmente, un problema particular del sistema de Best Day es que no toma en cuenta de ninguna forma el perfil del hotel. Como mencionamos arriba, no es lo mismo un hotel de playa de cuatro estrellas que un hotel de ciudad de cuatro estrellas, y si por alguna razón ambos están en el mismo destino, como puede suceder en ciudades cerca del mar, por ejemplo, el sistema de recomendación por destino y estrellas puede fallar catastróficamente. Tenemos ejemplos de hoteles de negocios en Cancún para los que se recomienda hoteles todo incluido en la zona hotelera. Esto no es viable y claramente es importante que el algoritmo que desarrollemos tome en cuenta el perfil de los hoteles, sobre todo porque busca recomendar hoteles \emph{similares}.
 
 % ----------------------------------------------------------------------------------------------------
-\chapter{Modelo propuesto}
-\section{Puntos a resolver}
+\chapter{Sistema de recomendación de hoteles}
+
+En el capítulo anterior analizamos los sistemas de recomendación que tienen actualmente tanto los competidores como Best Day y expusimos los principales puntos débiles que encontramos. Ahora podemos utilizar el conocimiento obtenido para generar un sistema nuevo que tenga un mejor desempeño y propiedades más deseables que los que vimos. Primero describiremos punto por punto qué nos gustaría que hiciera el sistema y posteriormente dedicaremos una sección para profundizar en cómo resolvimos cada uno de los problemas.
+
+\section{Modelo propuesto}
+
+Para resolver los problemas expuestos en el capítulo anterior propondremos las siguientes medidas:
+\begin{enumerate}
+	\item Poner una cota superior al \textbf{precio} de los hoteles recomendados, como un porcentaje del precio del hotel buscado.
+	\item Recomendar hoteles razonablemente \textbf{cercanos} al buscado, donde el criterio de cercanía varía según la densidad de hoteles en la zona.
+	\item Las recomendaciones deben tener un \textbf{perfil} o filosofía similar al original.
+	\item Las recomendaciones deben ser hoteles no necesariamente de las mismas estrellas, pero sí deben tener una cantidad similar de \textbf{servicios} disponibles.
+\end{enumerate}
+Antes de entrar a una descripción detallada de cada medida, explicaremos brevemente cómo colaborarán a que nuestro sistema de recomendación tenga las propiedades que buscamos.
+
+Siempre y cuando dos hoteles sean genuinamente similares a los ojos de una persona, la vasta mayoría de los clientes siempre preferirá el más económico. Acotando el precio esperamos que rara vez aparezcan hoteles más allá de las posibilidades del cliente en las recomendaciones. En cuanto a la distancia entre hoteles, creemos que utilizar la distancia al hotel en cuestión es mucho más razonable que usar el mismo criterio del destino para todos, puesto que promoverá hoteles cercanos además de parecidos en otros sentidos.
+
+Esperaríamos que las similitudes de perfil y servicios trabajen conjuntamente con el criterio de cercanía para obligar a que las recomendaciones varíen de hotel a hotel, incluso dentro de un mismo destino. La ventaja de esto es que se puede explorar muchas opciones sin tener que buscar nada, puesto que las recomendaciones abren nuevas alternativas. Es importante que demos suficiente flexibilidad al método para que no sea rígido y no se estanque en grupos reducidos de hoteles.
+
+Como último punto, no queremos utilizar estos criterios de forma aislada, pues cada uno tiene diversas faltas. Lo que queremos es integrarlos todos en un sistema poderoso que evite que el cliente tenga que pensar demasiado y que genuinamente le proponga alternativas interesantes.
+
+
 \section{Distancia}
 \section{Precio}
 \section{Similitud de hoteles}
+\subsection*{Similitud de servicios}
+\subsection*{Similitud de perfil}
 \section{Distancia revisitada}
-\section{Integrando todo}
+\section{Precios dinámicos}
+\section{Implementación}
 \section{Comentarios}
 No es personalizado, sino de hoteles similares.
 [Ver presentación para qué sí/no es o podría ser]
@@ -249,11 +272,12 @@ No es personalizado, sino de hoteles similares.
 
 % ----------------------------------------------------------------------------------------------------
 \chapter{Desempeño}
-
+Casos de éxito, incluso en zonas ralas.
+Red de interconexiones, incluyendo PageRank.
 
 % ----------------------------------------------------------------------------------------------------
 \chapter{Trabajo futuro}
-Porcentaje dinámico en forma de u para el tope de precio.
+Porcentaje dinámico en forma de `U' para el tope de precio.
 
 % \addcontentsline{toc}{chapter}{Pr\'ologo}
 % \chapter*{Pr\'ologo}
