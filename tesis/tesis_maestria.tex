@@ -34,6 +34,7 @@
 
 \newtheorem{teo}{Teorema}[chapter]
 \newtheorem{defn}{Definici\'on}[chapter]
+\newtheorem{regla}{R}%[chapter]
 \newtheorem{prop}{Proposici\'on}[chapter]
 \newtheorem{cor}{Corolario}[chapter]
 \newtheorem{lema}{Lema}[chapter]
@@ -236,7 +237,7 @@ En el capítulo anterior analizamos los sistemas de recomendación que tienen ac
 
 \section{Modelo propuesto}
 
-Para resolver los problemas expuestos en el capítulo anterior propondremos las siguientes medidas:
+Para resolver los problemas expuestos en el capítulo anterior proponemos las siguientes medidas:
 \begin{enumerate}
 	\item Poner una cota superior al \textbf{precio} de los hoteles recomendados, como un porcentaje del precio del hotel buscado.
 	\item Recomendar hoteles razonablemente \textbf{cercanos} al buscado, donde el criterio de cercanía varía según la densidad de hoteles en la zona.
@@ -247,17 +248,71 @@ Antes de entrar a una descripción detallada de cada medida, explicaremos brevem
 
 Siempre y cuando dos hoteles sean genuinamente similares a los ojos de una persona, la vasta mayoría de los clientes siempre preferirá el más económico. Acotando el precio esperamos que rara vez aparezcan hoteles más allá de las posibilidades del cliente en las recomendaciones. En cuanto a la distancia entre hoteles, creemos que utilizar la distancia al hotel en cuestión es mucho más razonable que usar el mismo criterio del destino para todos, puesto que promoverá hoteles cercanos además de parecidos en otros sentidos.
 
-Esperaríamos que las similitudes de perfil y servicios trabajen conjuntamente con el criterio de cercanía para obligar a que las recomendaciones varíen de hotel a hotel, incluso dentro de un mismo destino. La ventaja de esto es que se puede explorar muchas opciones sin tener que buscar nada, puesto que las recomendaciones abren nuevas alternativas. Es importante que demos suficiente flexibilidad al método para que no sea rígido y no se estanque en grupos reducidos de hoteles.
+Esperaríamos que las similitudes de perfil y servicios trabajen conjuntamente con el criterio de cercanía para obligar a que las recomendaciones varíen de hotel a hotel, incluso dentro de un mismo destino. La ventaja de esto es que se puede explorar muchas opciones sin tener que buscar nada explícitamente, puesto que las recomendaciones abren nuevas alternativas por sí solas. Es importante que demos suficiente flexibilidad al método para que no sea rígido y no se estanque en grupos reducidos de hoteles.
 
-Como último punto, no queremos utilizar estos criterios de forma aislada, pues cada uno tiene diversas faltas. Lo que queremos es integrarlos todos en un sistema poderoso que evite que el cliente tenga que pensar demasiado y que genuinamente le proponga alternativas interesantes.
+Como último punto, no queremos utilizar estos criterios de forma aislada, pues cada uno tiene diversas faltas. Lo que queremos es integrarlos todos en un sistema poderoso que evite que el cliente tenga que pensar demasiado y que genuinamente le proponga alternativas interesantes. Para ello generaremos una medida de similitud entre los hoteles y mostraremos los más parecidos que estén a una distancia y precio razonables del hotel original. En las siguientes secciones describiremos cada uno de los criterios con mayor nivel de detalle.
 
+Para facilitar la exposición le daremos nombres a los hoteles que van superando cada etapa, hasta llegar a las recomendaciones para cada hotel.
+\begin{defn}
+Denotamos el conjunto de todos los hoteles por $\mathcal{H}$.
+\end{defn}
 
-\section{Distancia}
 \section{Precio}
+
+Dado que el precio es un factor determinante en la elección de un hotel para la mayoría de los clientes, es importante respetar sus posibilidades económicas a la hora de recomendar nuevas opciones. Es razonable pensar que dados dos hoteles idénticos, un cliente siempre elegirá el más barato, salvo tal vez unos pocos clientes de súper lujo. Por esta razón, decidimos no imponer ninguna cota inferior al precio de los hoteles recomendados, siempre y cuando cumplan los criterios de similitud que describiremos más adelante. Por otro lado, como puede ser desalentador que las sugerencias contengan opciones demasiado caras, optamos por poner una cota superior al precio de los hoteles. Como en este paso queremos reflejar los precios ``reales'' de los hoteles, utilizaremos su precio de largo plazo para generar el filtro, como se explica a continuación.
+\begin{regla}
+Sea $\gamma \geq 0$ y sea
+\[
+p^D_i = \frac{\text{Importe total del hotel $i$ en el periodo $D$}}{\text{Total de noches del hotel $i$ en el periodo $D$}}
+\]
+el precio de largo plazo del hotel $i$ en el periodo $D$. Entonces definimos la cota superior de precio para $i$ por 
+\[
+p^{sup}_i = (1 + \gamma)p^D_i,
+\]
+es decir, se exluyen del análisis para $i$ todos los hoteles $j$ con $p^D_j > p^{sup}_i$. Los hoteles restantes están contenidos en el conjunto
+\[
+\mathcal{H}_i^1 = \{j \in \mathcal{H} : p^D_j > p^{sup}_i\}
+\]
+\end{regla}
+El parámetro $\gamma$ es esencialmente el porcentaje por encima del precio de $i$ que se permitirá que tengan las recomendaciones. Por ejemplo, si $\gamma = 0.3$, entonces se ignoran todas las opciones que sean más de 30\% más caras que $i$. El periodo $D$ debe ser suficientemente largo para que refleje los precios promedio de un hotel, pero no tanto como para que se vea demasiado afectado por la inflación y otros factores. Una buena elección es por ejemplo un año o dos años, pues así además se toma en cuenta los cambios de precios en las diversas temporadas del año. Cabe notar que en esta versión del modelo, tanto $\gamma$ como $D$ son los mismos para todo hotel $i$.
+
+En pruebas empíricas nos gustó el desempeño de $\gamma$ alrededor de 0.3, ya que permite suficiente flexibilidad en los precios y las categorías sin proponer opciones excesivamente costosas.
+
+\section{Distancia: filtro estático}
+
+Antes de entrar en criterios dinámicos de distancia y en similitudes de hoteles, es importante pensar si su cálculo es factible. El tema es que si bien en teoría sería suficiente calcular las similitudes de los hoteles y luego quedarnos con los cercanos, en la práctica esto es complicado. Cuando se quiere conocer la distancia entre cualesquiera dos hoteles de entre, supongamos, $N$ opciones, es necesario almacenar $(N^2 - N)/2$ números (una de las porciones triangulares de la matriz de distancias, quitando la diagonal). Para $N$ incluso moderadamente grande, la cantidad de información a guardar se vuelve prohibitiva. Para empeorar las cosas, los criterios de similitud que desarrollaremos más adelante no son simétricos, por lo que tendríamos que almacenar toda la matriz (menos la diagonal), lo que resultaría en $N^2 - N$ números.
+
+El problema con lo anterior es que además la gran mayoría de los cálculos se desperdiciarían, ya que en nuestro contexto no tiene mucha utilidad guardar la similitud entre un hotel en Veracruz y otro en Las Vegas. Una manera de resolver este problema es ignorar hoteles que seguro no recomendaremos. Dado que queremos que el sistema regrese hoteles similares \emph{y} cercanos, es razonable ignorar los que estén más lejos que una cantidad fija suficientemente grande en cualquier destino.
+
+Hay diversas fórmulas para calcular la distancia geodésica entre dos puntos, unas más sofisticadas que otras. Sin embargo, como en este caso estamos interesados en hoteles cercanos, basta con la versión que supone que la Tierra es esférica:
+\begin{defn}
+Definimos la distancia geodésica (en kilómetros) entre dos puntos $x = (x_{long}, x_{lat})$ y $y = (y_{long}, y_{lat})$ por la distancia mínima que hay que recorrer por la superficie terrestre para llegar de uno a otro, suponiendo que la tierra es esférica. Si definimos $R =$ radio promedio de la Tierra $\approx 6371 km$, $\Delta_{long} = y_{long} - x_{long}$ y $\Delta_{lat} = y_{lat} - x_{lat}$, entonces
+\[
+d_{geo}(x,y) = 2 R \arcsin\left\{\sin^2(\Delta_{lat}/2) + \cos(x_{lat}) \cos(y_{lat}) \sin^2(\Delta_{long}/2) \right\}
+\]
+\end{defn}
+
+Ya con una noción de distancia geográfica establecida, podemos proceder con el filtro simple propuesto.
+
+\begin{regla}
+Sea $d_{geo}(i,j)$ la distancia entre los hoteles $i$ y $j$, en kilómetros, y sea $r_{outer} > 0$. Entonces excluimos de las recomendaciones a todos los hoteles más lejanos de $i$ que $r_{outer}$. Los hoteles que pasan a la siguiente etapa están contenidos en el conjunto
+\[
+\mathcal{H}_i^2 = \{j \in \mathcal{H}_i^1 : d_{geo}(i,j) \leq r_{outer}\}
+\]
+El círculo centrado en $i$ de radio $r_{outer}$ define lo que denominamos \textbf{cerca exterior}, fuera de la cuál ignoramos a todos los hoteles; denominamos \textbf{candidatos iniciales} a los hoteles contenidos en $\mathcal{H}_i^2$.
+\end{regla}
+Buscamos que $\mathcal{H}_i^2$ sea mucho más pequeño que $\mathcal{H}_i^1$, ya que como la cantidad de los números a almacenar crece cuadráticamente, entonces el número de comparaciones que deberemos hacer se reducirá masivamente y por lo tanto problema será factible computacionalmente.
+
+Es importante hacer una buena elección de $r_{outer}$ para mantener el cálculo manejable pero sin ignorar hoteles interesantes. Un criterio que en la práctica funcionó bien es $r_{outer} =$ 30 km. En las zonas muy densas este tope nunca se alcanzará, como veremos más adelante, pero en las zonas ralas (y por ende con menos tráfico), difícilmente representará un viaje de más de media hora entre las opciones.
+
+%Usualmente, cuando se quiere conocer las distancias entre cualesquiera dos individuos de una población, basta almacenar la mitad de la matriz de distancias entre ellos. Es decir, para n individuos, basta guardar (n2−n)/2 números. Sin embargo, en este caso las pseudo distancias que se utilizaron no son simétricas, por lo que es necesario almacenar toda la matriz (excepto la diagonal), que resulta en n2−n elementos. Cuando n es grande, es infactible generar todos ellos, pues se vuelve muy grande la matriz de distancias y además el cálculo tomaría demasiado tiempo. Incluso para n moderada (n=100,000, digamos), el proceso podría tomar muchas horas o hasta días.
+
+%El problema con calcular todas las distancias y luego aplicar los filtros es que la gran mayoría de los cálculos se desperdiciarían. Para evitar eso, además del filtro de precio descrito anteriormente se implementó un filtro simple y estático de distancia. La idea es tomar un valor fijo, digamos router=def30km, y únicamente comparar los hoteles dentro de dicho radio. Al círculo definido por este valor lo denominamos la cerca exterior. Los hoteles que cumplen tanto el criterio de precio de largo plazo como el estático de distancia se denominan candidatos iniciales.
+
 \section{Similitud de hoteles}
 \subsection*{Similitud de servicios}
 \subsection*{Similitud de perfil}
-\section{Distancia revisitada}
+\section{Distancia: filtro dinámico}
 \section{Precios dinámicos}
 \section{Implementación}
 \section{Comentarios}
@@ -873,7 +928,7 @@ Porcentaje dinámico en forma de `U' para el tope de precio.
  
 % %---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 % \section{Condiciones de Wolfe y b\'usqueda lineal}
-%  El m\'etodo de Newton no tiene garant\'ia de convergencia desde cualquier punto inicial $x_0$. Sin embargo, podemos imponer restricciones sobre las direcciones de avance del m\'etodo de tal modo que s\'i haya garant\'ia de convergencia. Lo que haremos ser\'a modificar la longitud de la direcci\'on de descenso $d_k$, es decir que tomaremos $x_{k+1} = x_k + \alpha_k d_k$ para alg\'un valor positivo de $\alpha$. Lo que nos gustar\'ia idealmente ser\'ia encontrar el m\'inimo de $\phi(\alpha) = f(x_k + \alpha_k d_k)$, que es simplemente $f$ restringida a una l\'inea, que representa el mayor descenso al que podemos aspirar al movernos en una direcci\'on dada $d_k$. Sin embargo, encontrar un m\'inimo de $\phi$ puede ser demasiado costoso computacionalmente, lo que podr\'ia ralentizar la optimizaci\'on, de modo que resulta mejor utilizar una $\alpha_k$ razonablemente buena pero f\'acil de calcular.
+%  El m\'etodo de Newton no tiene garant\'ia de convergencia desde cualquier punto inicial $x_0$. Sin embargo, podemos imponer restricciones sobre las direcciones de avance del m\'etodo de tal modo que s\'i haya garant\'ia de convergencia. Lo que haremos ser\'a modificar la longitud de la direcci\'on de descenso $d_k$, es decir que tomaremos $x_{k+1} = x_k + \alpha_k d_k$ para alg\'un valor positivo de $\alpha$. Lo que nos gustar\'ia idealmente ser\'ia encontrar el m\'inimo de $\phi(\alpha) = f(x_k + \alpha_k d_k)$, que es simplemente $f$ restringida a una l\'inea, que representa el mayor descenso al que podemos aspirar al movernos en una direcci\'on dada $d_k$. Sin embargo, encontrar un m\'inimo de $\phi$ puede ser demasiado costoso computacionalmene, lo que podr\'ia ralentizar la optimizaci\'on, de modo que resulta mejor utilizar una $\alpha_k$ razonablemente buena pero f\'acil de calcular.
  
 %  A continuaci\'on presentaremos las \emph{condiciones de Wolfe} como aparecen en (Nocedal y Wright, 1999), que dan un criterio que dice precisamente qu\'e valores de $\alpha_k$ son razonables. Alentamos al lector a ir a la referencia antes mencionada para un tratamiento con mayor profundidad del tema y c\'omo es que las condiciones que veremos garantizan convergencia global para una amplia gama de funciones.
  
