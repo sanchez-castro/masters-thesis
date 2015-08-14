@@ -253,14 +253,14 @@ Esperaríamos que las similitudes de perfil y servicios trabajen conjuntamente c
 Como último punto, no queremos utilizar estos criterios de forma aislada, pues cada uno tiene diversas faltas. Lo que queremos es integrarlos todos en un sistema poderoso que evite que el cliente tenga que pensar demasiado y que genuinamente le proponga alternativas interesantes. Para ello generaremos una medida de similitud entre los hoteles y mostraremos los más parecidos que estén a una distancia y precio razonables del hotel original. En las siguientes secciones describiremos cada uno de los criterios con mayor nivel de detalle.
 
 Para facilitar la exposición le daremos nombres a los hoteles que van superando cada etapa, hasta llegar a las recomendaciones para cada hotel.
-\begin{defn}
-Denotamos el conjunto de todos los hoteles por $\mathcal{H}$.
+\begin{defn}[Conjunto de hoteles]
+Denotamos el conjunto de todos los hoteles por $\mathcal{H}$ y al número de hoteles por $N$, es decir $N = \mathcal{H}$.
 \end{defn}
 
 \section{Precio}
 
 Dado que el precio es un factor determinante en la elección de un hotel para la mayoría de los clientes, es importante respetar sus posibilidades económicas a la hora de recomendar nuevas opciones. Es razonable pensar que dados dos hoteles idénticos, un cliente siempre elegirá el más barato, salvo tal vez unos pocos clientes de súper lujo. Por esta razón, decidimos no imponer ninguna cota inferior al precio de los hoteles recomendados, siempre y cuando cumplan los criterios de similitud que describiremos más adelante. Por otro lado, como puede ser desalentador que las sugerencias contengan opciones demasiado caras, optamos por poner una cota superior al precio de los hoteles. Como en este paso queremos reflejar los precios ``reales'' de los hoteles, utilizaremos su precio de largo plazo para generar el filtro, como se explica a continuación.
-\begin{regla}
+\begin{regla}[Filtro de precio de largo plazo]
 Sea $\gamma \geq 0$ y sea
 \[
 p^D_i = \frac{\text{Importe total del hotel $i$ en el periodo $D$}}{\text{Total de noches del hotel $i$ en el periodo $D$}}
@@ -285,7 +285,7 @@ Antes de entrar en criterios dinámicos de distancia y en similitudes de hoteles
 El problema con lo anterior es que además la gran mayoría de los cálculos se desperdiciarían, ya que en nuestro contexto no tiene mucha utilidad guardar la similitud entre un hotel en Veracruz y otro en Las Vegas. Una manera de resolver este problema es ignorar hoteles que seguro no recomendaremos. Dado que queremos que el sistema regrese hoteles similares \emph{y} cercanos, es razonable ignorar los que estén más lejos que una cantidad fija suficientemente grande en cualquier destino.
 
 Hay diversas fórmulas para calcular la distancia geodésica entre dos puntos, unas más sofisticadas que otras. Sin embargo, como en este caso estamos interesados en hoteles cercanos, basta con la versión que supone que la Tierra es esférica:
-\begin{defn}
+\begin{defn}[Distancia geodésica]
 Definimos la distancia geodésica (en kilómetros) entre dos puntos $x = (x_{long}, x_{lat})$ y $y = (y_{long}, y_{lat})$ por la distancia mínima que hay que recorrer por la superficie terrestre para llegar de uno a otro, suponiendo que la tierra es esférica. Si definimos $R =$ radio promedio de la Tierra $\approx 6371 km$, $\Delta_{long} = y_{long} - x_{long}$ y $\Delta_{lat} = y_{lat} - x_{lat}$, entonces
 \[
 d_{geo}(x,y) = 2 R \arcsin\left\{\sin^2(\Delta_{lat}/2) + \cos(x_{lat}) \cos(y_{lat}) \sin^2(\Delta_{long}/2) \right\}
@@ -294,7 +294,7 @@ d_{geo}(x,y) = 2 R \arcsin\left\{\sin^2(\Delta_{lat}/2) + \cos(x_{lat}) \cos(y_{
 
 Ya con una noción de distancia geográfica establecida, podemos proceder con el filtro simple propuesto.
 
-\begin{regla}
+\begin{regla}[Criterio de distancia estática]
 Sea $d_{geo}(i,j)$ la distancia entre los hoteles $i$ y $j$, en kilómetros, y sea $r_{outer} > 0$. Entonces excluimos de las recomendaciones a todos los hoteles más lejanos de $i$ que $r_{outer}$. Los hoteles que pasan a la siguiente etapa están contenidos en el conjunto
 \[
 \mathcal{H}_i^2 = \{j \in \mathcal{H}_i^1 : d_{geo}(i,j) \leq r_{outer}\}
@@ -309,9 +309,9 @@ Es importante hacer una buena elección de $r_{outer}$ para mantener el cálculo
 
 El filtro de cercanía y el límite de precio son esenciales para el algoritmo de recomendación. Sin embargo, no capturan nada sobre la naturaleza misma del hotel. Para ello utilizaremos información sobre los servicios disponibles en cada hotel, puesto que incluyen información más detallada sobre la categoría y el perfil que las estrellas por sí solas. Buscaremos desarrollar una medida de similitud entre hoteles que sea más informativa y utilizarla para ordenar las recomendaciones que estén a una distancia y precio razonables.
 
-Lo primero que tenemos que hacer al diseñar la similitud entre dos hoteles es pensar qué entendemos por ``hoteles similares''. Una idea es utilizar los servicios tal cuál en un vector binario por hotel, $x_i$ y por ejemplo utilizar como medida de similitud la cantidad de servicios en que coinciden dos hoteles $i$ y $j$:
+Lo primero que tenemos que hacer al diseñar la similitud entre dos hoteles es pensar qué entendemos por ``hoteles similares''. Una idea es utilizar los servicios tal cuál en un vector binario $s_j$ para cada hotel $j$, y por ejemplo utilizar como medida de similitud la cantidad de servicios en que coinciden dos hoteles $i$ y $j$:
 \[
-sim(i,j) = \sum_k 1 - |x_{ik} - x_{jk}|
+sim(i,j) = \sum_k 1 - |s_{ik} - s_{jk}|
 \]
 Después de algunas pruebas con distancias de este estilo nos dimos cuenta de tres problemas fundamentales que tiene este enfoque, independientemente de la medida particular que utilicemos:
 \begin{enumerate}
@@ -319,7 +319,7 @@ Después de algunas pruebas con distancias de este estilo nos dimos cuenta de tr
 	\item No se toma en cuenta cuál de los hoteles tiene más servicios.
 	\item No necesariamente se captura la filosofía de los hoteles.
 \end{enumerate}
-Elaboremos más en estos puntos. El primero tiene que ver con el hecho de que los hoteles son más que la suma de sus servicios: son experiencias completas. Es decir, si el hotel A tiene futbol, snorkel y tenis, probablemente se parezca más al hotel B que tiene basquetbol, kayak y squash, que al hotel C, que sólo tiene futbol, puesto que aunque A y B no tienen ningún deporte en común, tienen una selección que será suficientemente buena en la mayoría de los casos. Sin embargo, cualquier similitud basada en los vectores $x_i$ diría que A se parece más a C que a B. La solución a este problema es aglomerar los servicios en categorías dentro de las cuales los servicios sean aproximadamente equivalentes y comparar la cantidad de cada categoría.
+Elaboremos más en estos puntos. El primero tiene que ver con el hecho de que los hoteles son más que la suma de sus servicios: son experiencias completas. Es decir, si el hotel A tiene futbol, snorkel y tenis, probablemente se parezca más al hotel B que tiene basquetbol, kayak y squash, que al hotel C, que sólo tiene futbol, puesto que aunque A y B no tienen ningún deporte en común, tienen una selección que será suficientemente buena en la mayoría de los casos. Sin embargo, cualquier similitud basada en los vectores $s_j$ diría que A se parece más a C que a B. La solución a este problema es aglomerar los servicios en categorías dentro de las cuales los servicios sean aproximadamente equivalentes y comparar la cantidad de cada categoría.
 
 El segundo punto es sumamente importante porque hay un factor fundamentalmente asimétrico a la hora de comparar dos hoteles. Esto se debe a que un cliente que ve un hotel con pocos servicios probablemente no le molestará que una recomendación tenga más servicios, siempre y cuando el precio y el perfil del hotel sean similares. De hecho, probablemente preferirá una mayor cantidad de servicios si se respeta el precio.
 
@@ -331,14 +331,54 @@ A continuación describiremos con más detalle cómo tomamos en cuenta estas obs
 
 \subsection*{Categorización de los servicios}
 
-Dado 
+Dado que el enfoque servicio a servicio tiene problemas independientes de la distancia que elijamos, será el primero que abordaremos. Una forma que en la práctica tuvo buenos resultados fue agrupar los servicios en distintas categorías. Dentro de cada una de ellas suponemos que los servicios son sustitutos perfectos, esto es, son perfectamente intercambiables. Si bien este supuesto podría parecer algo aventurado, tuvo muy buenos resultados en la práctica. Comenzaremos por describir la información disponible y luego la forma en que agrupamos en categorías.
+\begin{defn}[Conjunto de servicios]
+Definimos $\mathcal{S}$ como el conjunto de todos los servicios y $n_s = |\mathcal{S}|$.
+\end{defn}
+Es conveniente tener un solo objeto que contenga la información de todos los hoteles y sus respectivos servicios. Elegimos una matriz para facilitar la notación.
+\begin{defn}[Matriz de servicios]
+Definimos la matriz de servicios $S$ de $n_s \times N$ como sigue:
+\[
+s_{ij} = \left\{
+\begin{array}{ll}
+1 & \text{si el hotel $j$ tiene el servicio $i$}\\
+0 & \text{en otro caso}
+\end{array}
+\right.
+\]
+Las columnas de $S$ corresponden a los vectores de características de los hoteles:
+\[
+S = [s_1 s_2 \dots s_N],
+\]
+es decir, $s_j$ corresponde al vector de características del hotel $j$. Por practicidad, denotamos los renglones de $S$ por $z_i^T = [s_{i1}, s_{i2}, \dots, s_{i3}]$.
+\end{defn}
+Para agrupar los servicios tomamos los renglones de $S$ como individuos y los aglomeramos utilizando un aglomerado jerárquico con el criterio de Ward. Tenemos entonces $n_s$ ``observaciones'' cada una con $N$ ``características''. Como en este caso sí importa tener grupos interpretables, asistimos al método manualmente. El resultado es que el algoritmo dio los grupos básicos, pero utilizamos conocimiento humano para arreglar las inconsistencias. Durante el proceso, se elige un número de categorías y se le da un nombre apropiado a cada una. Con lo que acabamos entonces es con un mapeo de cada servicio a su categoría correspondiente. Formalizamos estos conceptos en la siguiente definición:
+\begin{defn}[Categorías de servicios]
+Denotamos por $\mathcal{C}$ al conjunto de todas las categorías de servicios, de cardinalidad $n_c$. Definimos la categoría a la que pertenece cada servicio vía la función $\kappa: \mathcal{S} \to \mathcal{C}$, es decir si el servicio $s$ pertenece a la categoría $c$, entonces $\kappa(s) = c$.
+\end{defn}
+Ya teniendo el mapeo de los servicios crudos a las categorías, es conveniente generar una nueva versión de $S$. Dado que dentro de cada categoría supondremos que los servicios son intercambiables, basta comparar el número de servicios en cada categoría que tiene cada hotel, de modo que resulta natural la siguiente definición.
+\begin{defn}[Matriz de categorías]
+Definimos la matriz de categorías $C$ de $n_c \times N$ como sigue:
+\[
+c_{ij} = \sum_{\kappa(z) = i} s_{zj}
+\]
+Es decir, $c_{ij}$ resume el número de servicios que tiene el hotel $j$ en la categoría $i$. Similarmente al caso de $S$, denotamos las columnas de $C$ por $c_j$, de modo que
+\[
+C = [c_1 c_2 \dots c_N]
+\]
+\end{defn}
+De este modo, podemos utilizar las columnas de $C$ para comparar los diversos hoteles. En este caso, por ejemplo $\|c_i - c_j\|_1 = \sum_k |c_ki - c_kj|$ resulta en una distancia entre los hoteles $i$ y $j$ que permite intercambiar los servicios en cada categoría. En las siguientes secciones describiremos qué distancia decidimos utilizar.
 
 \subsection*{Similitud de servicios}
+
 \subsection*{Similitud de perfil}
 \subsection*{Similitud completa}
 \section{Distancia: filtro dinámico}
 \section{Precios dinámicos}
 \section{Implementación}
+número de servicios
+número de categorías
+plan de alimentos
 \section{Comentarios}
 Por qué no distancia absoluta?
 No es personalizado, sino de hoteles similares.
