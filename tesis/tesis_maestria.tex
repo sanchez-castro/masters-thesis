@@ -305,17 +305,42 @@ Buscamos que $\mathcal{H}_i^2$ sea mucho más pequeño que $\mathcal{H}_i^1$, ya
 
 Es importante hacer una buena elección de $r_{outer}$ para mantener el cálculo manejable pero sin ignorar hoteles interesantes. Un criterio que en la práctica funcionó bien es $r_{outer} =$ 30 km. En las zonas muy densas este tope nunca se alcanzará, como veremos más adelante, pero en las zonas ralas (y por ende con menos tráfico), difícilmente representará un viaje de más de media hora entre las opciones.
 
-%Usualmente, cuando se quiere conocer las distancias entre cualesquiera dos individuos de una población, basta almacenar la mitad de la matriz de distancias entre ellos. Es decir, para n individuos, basta guardar (n2−n)/2 números. Sin embargo, en este caso las pseudo distancias que se utilizaron no son simétricas, por lo que es necesario almacenar toda la matriz (excepto la diagonal), que resulta en n2−n elementos. Cuando n es grande, es infactible generar todos ellos, pues se vuelve muy grande la matriz de distancias y además el cálculo tomaría demasiado tiempo. Incluso para n moderada (n=100,000, digamos), el proceso podría tomar muchas horas o hasta días.
-
-%El problema con calcular todas las distancias y luego aplicar los filtros es que la gran mayoría de los cálculos se desperdiciarían. Para evitar eso, además del filtro de precio descrito anteriormente se implementó un filtro simple y estático de distancia. La idea es tomar un valor fijo, digamos router=def30km, y únicamente comparar los hoteles dentro de dicho radio. Al círculo definido por este valor lo denominamos la cerca exterior. Los hoteles que cumplen tanto el criterio de precio de largo plazo como el estático de distancia se denominan candidatos iniciales.
-
 \section{Similitud de hoteles}
+
+El filtro de cercanía y el límite de precio son esenciales para el algoritmo de recomendación. Sin embargo, no capturan nada sobre la naturaleza misma del hotel. Para ello utilizaremos información sobre los servicios disponibles en cada hotel, puesto que incluyen información más detallada sobre la categoría y el perfil que las estrellas por sí solas. Buscaremos desarrollar una medida de similitud entre hoteles que sea más informativa y utilizarla para ordenar las recomendaciones que estén a una distancia y precio razonables.
+
+Lo primero que tenemos que hacer al diseñar la similitud entre dos hoteles es pensar qué entendemos por ``hoteles similares''. Una idea es utilizar los servicios tal cuál en un vector binario por hotel, $x_i$ y por ejemplo utilizar como medida de similitud la cantidad de servicios en que coinciden dos hoteles $i$ y $j$:
+\[
+sim(i,j) = \sum_k 1 - |x_{ik} - x_{jk}|
+\]
+Después de algunas pruebas con distancias de este estilo nos dimos cuenta de tres problemas fundamentales que tiene este enfoque, independientemente de la medida particular que utilicemos:
+\begin{enumerate}
+	\item Es una técnica muy ruidosa y no permite que servicios (casi) sustitutos contribuyan a la similitud entre los hoteles.
+	\item No se toma en cuenta cuál de los hoteles tiene más servicios.
+	\item No necesariamente se captura la filosofía de los hoteles.
+\end{enumerate}
+Elaboremos más en estos puntos. El primero tiene que ver con el hecho de que los hoteles son más que la suma de sus servicios: son experiencias completas. Es decir, si el hotel A tiene futbol, snorkel y tenis, probablemente se parezca más al hotel B que tiene basquetbol, kayak y squash, que al hotel C, que sólo tiene futbol, puesto que aunque A y B no tienen ningún deporte en común, tienen una selección que será suficientemente buena en la mayoría de los casos. Sin embargo, cualquier similitud basada en los vectores $x_i$ diría que A se parece más a C que a B. La solución a este problema es aglomerar los servicios en categorías dentro de las cuales los servicios sean aproximadamente equivalentes y comparar la cantidad de cada categoría.
+
+El segundo punto es sumamente importante porque hay un factor fundamentalmente asimétrico a la hora de comparar dos hoteles. Esto se debe a que un cliente que ve un hotel con pocos servicios probablemente no le molestará que una recomendación tenga más servicios, siempre y cuando el precio y el perfil del hotel sean similares. De hecho, probablemente preferirá una mayor cantidad de servicios si se respeta el precio.
+
+El tercer punto surge de que este tipo de medidas no capturan explícitamente la similitud entre los perfiles de dos hoteles. Si bien, mientras más servicios coincidan, probablemente haya una mayor coincidencia, una similitud más o menos chica no necesariamente implica que dos hoteles sean fundamentalmente distintos. Consideremos dos hoteles de playa, pero uno de tres y otro de cinco estrellas. Es razonable pensar que sus perfiles no son tan lejanos entre sí como lo serían con un hotel citadino, incluso a pesar de que sus servicios probablemente diferirán más entre sí que entre el de cinco estrellas y el citadino.
+
+Una última observación es que aunque es más fácil pensar en similitudes entre los hoteles, matemáticamente es más práctico trabajar con distancias. La razón es que ya hay una noción formal de lo que es una distancia, lo que nos permitirá utilizar matemáticas bien difundidas en lugar de inventar nociones propias. Una ventaja inmediata aparte de la facilidad de comprensión es que si decidimos violar algunas de las propiedades de las distancias sabremos exactamente qué estamos haciendo. Aparte de eso, este enfoque no tiene ningún inconveniente si se construye una distancia acotada, pues se puede invertir al final para generar una medida de similitud.
+
+A continuación describiremos con más detalle cómo tomamos en cuenta estas observaciones y cómo las integramos para construir nuestra medida de similitud
+
+\subsection*{Categorización de los servicios}
+
+Dado 
+
 \subsection*{Similitud de servicios}
 \subsection*{Similitud de perfil}
+\subsection*{Similitud completa}
 \section{Distancia: filtro dinámico}
 \section{Precios dinámicos}
 \section{Implementación}
 \section{Comentarios}
+Por qué no distancia absoluta?
 No es personalizado, sino de hoteles similares.
 [Ver presentación para qué sí/no es o podría ser]
 
