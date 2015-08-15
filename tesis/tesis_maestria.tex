@@ -325,7 +325,17 @@ El segundo punto es sumamente importante porque hay un factor fundamentalmente a
 
 El tercer punto surge de que este tipo de medidas no capturan explícitamente la similitud entre los perfiles de dos hoteles. Si bien, mientras más servicios coincidan, probablemente haya una mayor coincidencia, una similitud más o menos chica no necesariamente implica que dos hoteles sean fundamentalmente distintos. Consideremos dos hoteles de playa, pero uno de tres y otro de cinco estrellas. Es razonable pensar que sus perfiles no son tan lejanos entre sí como lo serían con un hotel citadino, incluso a pesar de que sus servicios probablemente diferirán más entre sí que entre el de cinco estrellas y el citadino.
 
-Una última observación es que aunque es más fácil pensar en similitudes entre los hoteles, matemáticamente es más práctico trabajar con distancias. La razón es que ya hay una noción formal de lo que es una distancia, lo que nos permitirá utilizar matemáticas bien difundidas en lugar de inventar nociones propias. Una ventaja inmediata aparte de la facilidad de comprensión es que si decidimos violar algunas de las propiedades de las distancias sabremos exactamente qué estamos haciendo. Aparte de eso, este enfoque no tiene ningún inconveniente si se construye una distancia acotada, pues se puede invertir al final para generar una medida de similitud.
+Una última observación es que aunque es más fácil pensar en similitudes entre los hoteles, matemáticamente es más práctico trabajar con distancias. La razón es que ya hay una noción formal de lo que es una distancia, lo que nos permitirá utilizar matemáticas bien difundidas en lugar de inventar nociones propias:
+\begin{defn}[Distancia]
+Sea $A$ un conjunto no vacío. La función $d: A \to \mathbb{R}^+ \cup \{0\}$ es una distancia si y sólo si tiene las siguientes propiedades para cualesquiera $a, b, c \in A$:
+\begin{align}
+	d(a,b) &\geq 0 \text{ (positividad)}\label{dpos}\\
+	d(a,b) &= 0 \text{ si y sólo si } a = b \text{ (distancia mínima)}\label{dmin}\\
+	d(a,b) &= d(b,a) \text{ (simetría)}\label{dsim}\\
+	d(a,b) &\leq d(a,c) + d(c,b) \text{ (desigualdad del triángulo)}\label{dtri}
+\end{align}
+\end{defn}
+Una ventaja inmediata aparte de facilitar la comprensión es que si decidimos violar algunas de las propiedades de las distancias sabremos exactamente qué estamos haciendo. Aparte de eso, este enfoque no tiene ningún inconveniente si se construye una distancia acotada, pues se puede invertir al final para generar una medida de similitud. 
 
 A continuación describiremos con más detalle cómo tomamos en cuenta estas observaciones y cómo las integramos para construir nuestra medida de similitud
 
@@ -370,6 +380,37 @@ C = [c_1 c_2 \dots c_N]
 De este modo, podemos utilizar las columnas de $C$ para comparar los diversos hoteles. En este caso, por ejemplo $\|c_i - c_j\|_1 = \sum_k |c_ki - c_kj|$ resulta en una distancia entre los hoteles $i$ y $j$ que permite intercambiar los servicios en cada categoría. En las siguientes secciones describiremos qué distancia decidimos utilizar.
 
 \subsection*{Similitud de servicios}
+
+Dado que el problema principal ha sido tratado, podemos proceder a definir una distancia entre los hoteles vía sus vectores característicos $c_j$. Inicialmente no es tan descabellado utilizar algo como la norma 1, $\| \cdot \|_1$, pero no nos da la asimetría que queremos. Retomando los tres problemas fundamentales, sí es importante tomar en cuenta que es distinto que el hotel buscado tenga más servicios que el recomendado (y por lo tanto la recomendación no es buena), a que lo inverso suceda (en cuyo caso la recomendación es de mejor calidad). En el gráfico (\ref*{simserv}) ilustramos lo que sucede.
+\begin{figure}[ht]
+\centering
+%%% Mejorar esta gráfica (checar título)
+\includegraphics[width=\textwidth]{imagenes/simserv.png}
+\caption{\label{simserv} Ejemplos de similitud de servicios para 4 categorías distintas. El hotel verde se parece al negro porque no le faltan muchos servicios que el negro sí tiene. En contraste, al hotel rojo le faltan muchos servicios.}
+\end{figure}
+Lo que buscaremos entonces es penalizar los servicios que le falten a un hotel a la hora de buscar candidatos. Para ello definimos la siguiente función:
+\begin{defn}[Pseudodistancia \emph{hinge}]
+Sean $x, y \in \mathbb{R}^n$. Definimos la pseudodistancia \emph{hinge} de $x$ a $y$ como sigue:
+\[
+d_h(x,y) = \sum_{k=1}^n \max\{x_k - y_k, 0\}
+\]
+\end{defn}
+Esta función de pérdida no cumple la propiedad (\ref{dsim}) porque no es simétrica, como es evidente en la figura (\ref{fig:hingeloss}). Por lo tanto, se trata de una \emph{pseudodistancia}. Esta propiedad de $d_h(\cdot, \cdot)$ es algo positivo porque refleja justamente la asimetría de la relación entre los servicios del hotel buscado y los recomendados.
+\shorthandoff{<>}
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[xscale=3.5, yscale = 3.5]
+		\draw[->] (-1.2,0) -- (1.2,0);
+		\draw[->] (0,-0.5) -- (0,1.2);
+		\node at (1,-0.1) {$x - y$};
+		\node at (-0.8,0.1) {$\max\{x - y, 0\}$};
+		\node at (-0.6,1) {$|x - y|$};
+		\draw[ultra thick, domain=-1:1] plot (\x, {max(\x,0)});
+		\draw[red, dashed, ultra thick, domain=-1:1] plot (\x, {abs(\x)});
+	\end{tikzpicture}
+	\caption{Ejemplo univariado. Distancia entre $x$ y $y$ usando valor absoluto (- - -) y pérdida \emph{hinge} (---). La pérdida \emph{hinge} no penaliza el caso en que $y > x$. \label{fig:hingeloss}}
+\end{figure}
+\shorthandon{<>}
 
 \subsection*{Similitud de perfil}
 \subsection*{Similitud completa}
