@@ -454,9 +454,27 @@ Dado que los vectores normalizados suman 1 y los estamos restando, es fácil ver
 
 \subsection*{Similitud completa}
 
-En las secciones anteriores resolvimos parcialmente los tres puntos críticos. Los criterios de similitud de servicios y de perfil se basan en el agrupamiento de los servicios para capturar parte de las similitudes entre los hoteles. Sin embargo, como explicamos en cada sección, ambas tienen fallas. La idea es entonces integrar ambas medidas en un criterio que sí tome en cuenta todo. El problema es cómo hacerlo sin perder información y dándole un peso apropiado a cada una.
+En las secciones anteriores resolvimos parcialmente los tres puntos críticos. Los criterios de similitud de servicios y de perfil se basan en el agrupamiento de los servicios para capturar parte de las similitudes entre los hoteles. Sin embargo, como explicamos en cada sección, ambas tienen fallas. La idea es entonces integrar las dos medidas en un criterio que sí tome en cuenta todo. El problema es cómo hacerlo sin perder información y dándole un peso apropiado a cada una.
 
-De este punto en adelante trabajaremos nuevamente con similitudes, porque son más cómodas para razonar y porque además son equivalentes a sus distancias asociadas. Dado que tanto la similitud de servicios como la de perfil están en escalas equiparables, una manera razonable de combinarlas es promediándolas. Sin embargo, podrían tener diferentes niveles de variabilidad, por lo que es prudente permitir la posibilidad de utilizar una ponderación distinta de $1/2$ y que de preferencia sea óptima con respecto a algún criterio. 
+De este punto en adelante trabajaremos nuevamente con similitudes, porque son más cómodas para razonar y porque además son equivalentes a sus distancias asociadas. Dado que tanto la similitud de servicios como la de perfil están en escalas equiparables, una manera razonable de combinarlas es promediándolas. Sin embargo, podrían tener diferentes niveles de variabilidad, por lo que es prudente permitir la posibilidad de utilizar una ponderación distinta de $1/2$.
+\begin{defn}[Similitud entre hoteles]
+Sea $\alpha \in (0,1)$ y sean $i, j$ hoteles en $\mathcal{H}$. Definimos la similitud con parámetro $\alpha$ entre $i$ y $j$ como sigue:
+\[
+sim_\alpha(c_i, c_j) = \alpha sim_h(c_i, c_j) + (1 - \alpha) sim_{div}(c_i, c_j)
+\]
+\end{defn}
+Cabe mencionar que como la similitud entre hoteles no es simétrica porque está basada en parte en la similitud de servicios. Es decir, no necesariamente se cumple que $sim_\alpha(c_i, c_j) = sim_\alpha(c_j, c_i)$.
+
+Ya habiendo establecido la forma de combinar las dos medidas de similitud, el siguiente paso es elegir un valor apropiado de $\alpha$, que de preferencia sea óptima con respecto a algún criterio. Para ello, hay que notar que aunque ambas similitudes están entre 0 y 1, podrían tener niveles de variación y medias distintos, por lo que utilizar $\alpha = 1/2$ podría no ser una buena idea. Ilustramos este hecho en la figura (\ref{alpha}).
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.7\textwidth]{imagenes/alpha.pdf}
+	\caption{\label{alpha} La elección de $\alpha$ determina la dirección en la que avanza la similitud total al variar la de servicios y la de perfil.}
+\end{figure}
+Dado que lo que queremos es identificar hoteles similares, una buena manera de decidir el valor de $\alpha$ es utilizando la que maximice la varianza explicada por la similitud completa. En el ejemplo, $\alpha = 1/2$ probablemente sería similar a avanzar en la flecha pequeña de la derecha, pero es claro que avanzando en la dirección de la de en medio estaríamos tratando ambas similitudes de manera más equitativa. Proponemos utilizar un Análisis de Componentes principales para calcular la $\alpha$ óptima.
+
+Con la alpha buena se llama score
+
 
 \section{Distancia: filtro dinámico}
 \section{Precios dinámicos}

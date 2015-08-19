@@ -1,4 +1,6 @@
 library(ggplot2)
+library(grid)
+library(dplyr)
 
 ## Similitud
 aux <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
@@ -98,3 +100,41 @@ ggplot(aux) +
   facet_grid(div ~ hinge) +
   labs(title='Características combinadas: perfil + servicios', x='', y='Número de servicios por categoría') +
   theme(axis.text.x=element_text(angle=30, hjust=1))
+
+## Elección de alpha
+set.seed(1234)
+n <- 50
+x <- rbeta(n, shape1 = 8, shape2 = 2)
+qplot(x)
+y <- 3*x - 2 + rnorm(n, 0, 0.1)
+d <- data.frame(x,y) %>%
+  filter(x > 0, x < 1, y > 0, y < 1)
+mx <- mean(x)
+my <- mean(y)
+arr <- data.frame(x = rep(mx, 3),
+                  y = rep(my, 3),
+                  xend = c(0.75, 1, 1),
+                  yend = c(0.9, 1, my + (1-mx)),
+                  col = c('blue','red','black'))
+plot_alpha <- ggplot(d) +
+  geom_point(aes(x,y)) +
+  geom_segment(data=arr,
+               mapping=aes(x=x, xend=xend, y=y, yend=yend),
+               arrow = arrow(length = unit(0.5,'cm'))) +
+  geom_point(aes(x=mx, y=my), color = 'red', size = 3) +
+  geom_text(aes(x=mx, y=my, label='(mean(x), mean(y))'), hjust=1.1) +
+  xlim(0,1) +
+  ylim(0,1) +
+  coord_equal() +
+  labs(title = 'Dirección de avance de la similitud\npara distintos valores de alpha',
+       x = 'Similitud de servicios',
+       y = 'Similitud de perfil')
+plot_alpha
+
+ggsave(filename = 'tesis/imagenes/alpha.pdf',
+       plot = plot_alpha,
+       width = 8, height = 8)
+
+
+
+
