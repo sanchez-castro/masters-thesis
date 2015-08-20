@@ -19,7 +19,7 @@ source('codigo/funciones.R')
 
 # En paréntesis rango y valor recomendado
 price_range <- Inf  # (0-1, 0.3) Rango de precio de hoteles a tomar en cuenta para cerca interior
-num_recom <- 20     # (1+, 20) Número de recomendaciones en precio a dar por hotel
+#num_recom <- 20     # (1+, 20) Número de recomendaciones en precio a dar por hotel
 min_num_recom <- 10 # (1+, 10) Número mínimo de recomendaciones (para hoteles en despoblado)
 outer_fence <- 30   # (1+, 30) Radio de la cerca exterior, en kilómetros
 nbatch <- 1         # (1+, 1) Número de bloques para partir el cálculo. Disminuye la cantidad de memoria utilizada. Se recomienda para muchos hoteles.
