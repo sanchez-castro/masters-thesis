@@ -546,45 +546,72 @@ para calcular los precios en lugar del período histórico largo $\mathcal{D}$.
 \begin{regla}[Precio dinámico] \label{r:preciodinamico}
 Dadas $\alpha$ y $r_{inner}$ obtenidas en R\ref{r:preciolargo}, R\ref{r:distanciaestatica} y R\ref{r:distanciadinamica}, denotamos las \textbf{recomendaciones finales} por
 \[
-\RR = \{j \in \HH : p^{D^*}_j > p^{sup}_i \text{,  } d_{geo}(i,j) \leq r_{inner}\},
+\RR_i = \{j \in \HH : p^{D^*}_j > p^{sup}_i \text{,  } d_{geo}(i,j) \leq r_{inner}\},
 \]
 y los hoteles se presentarán ordenados por \emph{score}, de mayor a menor.
 \end{regla}
 
-\section{Casos extremos}
+\section{Consideraciones prácticas}
 
-Una última consideración que hay que tener son los casos extremos. Un caso es que la zona del hotel buscado tenga muy poca población y el otro es cuando el hotel es muy barato para la zona, por lo que el filtro de precio le impide ver suficientes de los demás hoteles. Para aliviar el primer problema el procedimiento es simple: como no queremos que se queden vacías las recomendacio
+Una última consideración que hay que tener son los casos extremos. Un caso es que la zona del hotel buscado tenga muy pocas opciones dentro de la cerca exterior y el otro es cuando el hotel es muy barato para la zona, por lo que el filtro de precio le impide ver suficientes de los demás hoteles.
 
-Si en el cálculo de $r_{inner}$ resulta que hay muy poco hoteles porque
-
+Para aliviar el primer problema el procedimiento es simple: como no queremos que se queden vacías las recomendaciones, ignoramos todo lo anterior y regresamos un número pequeño predefinido de hoteles cercanos, ordenados por distancia, dado que hay muy pocas opciones. Si por otro lado sí hay suficientes hoteles dentro de la cerca exterior pero el filtro de precio es demasiado estricto, entonces se ignora por completo este filtro.
+\begin{regla}[Casos extremos] \label{r:casosextremos}
+Sea $rec_{min}$ el mínimo número de recomendaciones que se desea.
+\begin{enumerate}[(I)]
+	\item Si $|\HH_i^2| < rec_{min}$, entonces redefinimos
+		\[
+			\HH_i^1 = \HH
+		\]
+	\item Si aún después del paso anterior $|\HH_i^2| < rec_{min}$, entonces ignoramos todas las reglas y recomendamos los hoteles en
+	\[
+		\RR_i^{ex} = \{j \in \HH : j \text{ es uno de los } rec_{min} \text{ hoteles más cercanos a } i\}
+	\]
+	Además, ignoramos el score y los presentamos ordenados por distancia al hotel $i$.
+	\item Las dos reglas anteriores aplican de manera análoga para $\HH_i^{1*}$ y $\HH_i^{2*}$.
+\end{enumerate}
+\end{regla}
 
 \section{Juntando todo}
 
-\section{Implementación}
+El procedimiento descrito anteriormente es largo y puede ser difícil de asimilar en su conjunto, de modo que presentamos aquí una versión resumida:
+\begin{enumerate}
+	\item Sean $i$ un hotel, $D$ un periodo largo y $D^*$ el periodo en el que se desea reservar.
+	\item Calculamos $\alpha$ y $r_{inner}$ como está descrito en R\ref{r:preciolargo}, R\ref{r:distanciaestatica} y R\ref{r:distanciadinamica}.
+	\item Checamos los casos extremos descritos en R\ref{r:casosextremos}. Si ninguno aplica, continuamos; si resulta el caso (II), entonces recalculamos el paso anterior y continuamos; si resulta el caso (I), recomendamos con $\RR_i^{ex}$ y terminamos.
+	\item Generamos las recomendaciones finales como está descrito en R\ref{r:preciodinamico} y las presentamos ordenadas por \emph{score}.
+\end{enumerate}
+
+\section{Comentarios}
+
+Antes de terminar el capítulo, hay un punto que nos gustaría resaltar y es por qué no decidimos simplemente basar la distancia en la norma 1. La respuesta corta es que es muy exigente. Aunado a ello, no nos permite ponderar fácilmente las contribuciones del perfil y de los servicios. Es posible que haya alguna manera de alterar esta distancia para capturar la asimetría de la disponibilidad de servicios. De ninguna forma afirmamos que no haya alternativas al menos tan buenas como la nuestra, pero dado que obtuvimos resultados satisfactorios, nos quedamos con el método presentado anteriormente. Investigar nuevas medidas de distancia sería un buen tema de trabajo futuro.
+
+
+
+
+% ----------------------------------------------------------------------------------------------------
+\chapter{Implementación}
+\section{Obtención de la información}
+\section{Formato necesario para el modelo}
 número de servicios
 número de categorías
 plan de alimentos
-\section{Comentarios}
-Por qué no distancia absoluta?
-No es personalizado, sino de hoteles similares.
-[Ver presentación para qué sí/no es o podría ser]
-
-% ----------------------------------------------------------------------------------------------------
-\chapter{Obtención de la información}
-\section{Formato necesario para el modelo}
 \section{Calidad de la información}
 \section{Sistema de respaldo}
-
 % ----------------------------------------------------------------------------------------------------
 \chapter{Desempeño}
 Casos de éxito, incluso en zonas ralas.
 Red de interconexiones, incluyendo PageRank.
 
 % ----------------------------------------------------------------------------------------------------
-\chapter{Trabajo futuro}
+\chapter{Conclusión}
+\section{Trabajo futuro}
 Porcentaje dinámico en forma de `U' para el tope de precio.
-
-
+Otras métricas
+\section{Comentarios finales}
+Por qué no distancia absoluta?
+No es personalizado, sino de hoteles similares.
+[Ver presentación para qué sí/no es o podría ser]
 
 
 
