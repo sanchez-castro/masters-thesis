@@ -9,12 +9,12 @@
 \contentsline {section}{\numberline {2.3}Distancia: filtro est\IeC {\'a}tico}{13}{section.2.3}
 \contentsline {section}{\numberline {2.4}Similitud de hoteles}{14}{section.2.4}
 \contentsline {section}{\numberline {2.5}Distancia: filtro din\IeC {\'a}mico}{25}{section.2.5}
-\contentsline {section}{\numberline {2.6}Precios din\IeC {\'a}micos}{26}{section.2.6}
-\contentsline {section}{\numberline {2.7}Implementaci\IeC {\'o}n}{26}{section.2.7}
-\contentsline {section}{\numberline {2.8}Comentarios}{26}{section.2.8}
-\contentsline {chapter}{\numberline {3}Obtenci\IeC {\'o}n de la informaci\IeC {\'o}n}{27}{chapter.3}
-\contentsline {section}{\numberline {3.1}Formato necesario para el modelo}{27}{section.3.1}
-\contentsline {section}{\numberline {3.2}Calidad de la informaci\IeC {\'o}n}{27}{section.3.2}
-\contentsline {section}{\numberline {3.3}Sistema de respaldo}{27}{section.3.3}
-\contentsline {chapter}{\numberline {4}Desempe\IeC {\~n}o}{28}{chapter.4}
-\contentsline {chapter}{\numberline {5}Trabajo futuro}{29}{chapter.5}
+\contentsline {section}{\numberline {2.6}Precios din\IeC {\'a}micos}{27}{section.2.6}
+\contentsline {section}{\numberline {2.7}Implementaci\IeC {\'o}n}{27}{section.2.7}
+\contentsline {section}{\numberline {2.8}Comentarios}{27}{section.2.8}
+\contentsline {chapter}{\numberline {3}Obtenci\IeC {\'o}n de la informaci\IeC {\'o}n}{28}{chapter.3}
+\contentsline {section}{\numberline {3.1}Formato necesario para el modelo}{28}{section.3.1}
+\contentsline {section}{\numberline {3.2}Calidad de la informaci\IeC {\'o}n}{28}{section.3.2}
+\contentsline {section}{\numberline {3.3}Sistema de respaldo}{28}{section.3.3}
+\contentsline {chapter}{\numberline {4}Desempe\IeC {\~n}o}{29}{chapter.4}
+\contentsline {chapter}{\numberline {5}Trabajo futuro}{30}{chapter.5}

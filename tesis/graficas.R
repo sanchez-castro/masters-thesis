@@ -1,6 +1,17 @@
 library(ggplot2)
 library(grid)
+library(ggthemes)
 library(dplyr)
+
+# Auxiliares --------------------------------------------------------------
+
+circleFun <- function(center = c(0,0),diameter = 1, npoints = 100){
+  r = diameter / 2
+  tt <- seq(0,2*pi,length.out = npoints)
+  xx <- center[1] + r * cos(tt)
+  yy <- center[2] + r * sin(tt)
+  return(data.frame(x = xx, y = yy))
+}
 
 ## Similitud
 aux <- data.frame(x = c('BEACH','BUSINESS','ENTERTAINMENT','CONVENIENCE'),
@@ -136,5 +147,40 @@ ggsave(filename = 'tesis/imagenes/alpha.pdf',
        width = 8, height = 8)
 
 
+# Distancia: criterio dinámico --------------------------------------------
 
+set.seed(1234)
+x1 <- data.frame(x=c(0,rnorm(29),1.5,-1),
+                 y=c(0,rnorm(29),1.2,-1.3),
+                 s=c(5,2*runif(29),4,4),
+                 col=c('original', rep('opciones malas',29),
+                       'opciones buenas', 'opciones buenas'),
+                 id='Pocos hoteles similares cercanos')
+
+x2 <- data.frame(x=c(0,rnorm(30)),
+                 y=c(0,rnorm(30)),
+                 s=c(5,2*runif(10), 3 + 2*runif(20)),
+                 col=c('original', rep('opciones malas',10),
+                       rep('opciones buenas', 20)),
+                 id='Muchos hoteles similares cercanos')
+x3 <- rbind(x1,x2)
+c1 <- circleFun(center = c(0,0), diameter = 2, npoints = 100)
+c2 <- circleFun(center = c(0,0), diameter = 4, npoints = 100)
+c3 <- rbind(cbind(c1, id='Muchos hoteles similares cercanos'),
+            cbind(c2, id='Pocos hoteles similares cercanos'))
+
+plot_distdin <- ggplot(x3) +
+  geom_point(aes(x,y,size=s,color=col)) +
+  geom_point(aes(x,y,size=s,alpha=(s>2)), shape=1, color='black') +
+  geom_path(data=c3, aes(x,y), linetype='dashed') +
+  scale_size_continuous(guide=FALSE) +
+  scale_alpha_discrete(guide=FALSE) +
+  guides(color=guide_legend(title=NULL)) +
+  labs(x='Longitud', y='Latitud') +
+  coord_equal() +
+  facet_wrap(~ id)
+
+ggsave(filename = 'tesis/imagenes/distdin.pdf',
+       plot = plot_distdin,
+       width = 8, height = 4)
 
