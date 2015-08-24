@@ -29,6 +29,7 @@
 
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\HH}{\mathcal{H}}
+\newcommand{\RR}{\mathcal{R}}
 \newcommand{\signo}{\text{ signo}}
 \newcommand\eq{=}
 \newcommand{\minimizar}[1]{\underset{#1}{\text{minimizar}} \;}
@@ -261,7 +262,7 @@ Denotamos el conjunto de todos los hoteles por $\HH$ y al número de hoteles por
 \section{Precio}
 
 Dado que el precio es un factor determinante en la elección de un hotel para la mayoría de los clientes, es importante respetar sus posibilidades económicas a la hora de recomendar nuevas opciones. Es razonable pensar que dados dos hoteles idénticos, un cliente siempre elegirá el más barato, salvo tal vez unos pocos clientes de súper lujo. Por esta razón, decidimos no imponer ninguna cota inferior al precio de los hoteles recomendados, siempre y cuando cumplan los criterios de similitud que describiremos más adelante. Por otro lado, como puede ser desalentador que las sugerencias contengan opciones demasiado caras, optamos por poner una cota superior al precio de los hoteles. Como en este paso queremos reflejar los precios ``reales'' de los hoteles, utilizaremos su precio de largo plazo para generar el filtro, como se explica a continuación.
-\begin{regla}[Filtro de precio de largo plazo]
+\begin{regla}[Filtro de precio de largo plazo] \label{r:preciolargo}
 Sea $\gamma \geq 0$ y sea
 \[
 p^D_i = \frac{\text{Importe total del hotel $i$ en el periodo $D$}}{\text{Total de noches del hotel $i$ en el periodo $D$}}
@@ -295,7 +296,7 @@ d_{geo}(x,y) = 2 R \arcsin\left\{\sin^2(\Delta_{lat}/2) + \cos(x_{lat}) \cos(y_{
 
 Ya con una noción de distancia geográfica establecida, podemos proceder con el filtro simple propuesto.
 
-\begin{regla}[Criterio de distancia estática]
+\begin{regla}[Criterio de distancia estática] \label{r:distanciaestatica}
 Sea $d_{geo}(i,j)$ la distancia entre los hoteles $i$ y $j$, en kilómetros, y sea $r_{outer} > 0$. Entonces excluimos de las recomendaciones a todos los hoteles más lejanos de $i$ que $r_{outer}$. Los hoteles que pasan a la siguiente etapa están contenidos en el conjunto
 \[
 \HH_i^2 = \{j \in \HH_i^1 : d_{geo}(i,j) \leq r_{outer}\}
@@ -520,7 +521,7 @@ El paso crítico para este método es la definición de cercanía. Una primera i
 	\includegraphics[width=\textwidth]{imagenes/distdin.pdf}
 	\caption{\label{fig:distdin} El filtro debe ser más laxo cuando hay pocos hoteles similares cercanos (izquierda) y más estricto cuando hay más (derecha).}
 \end{figure}
-\begin{regla}[Distancia: filtro dinámico]
+\begin{regla}[Distancia: filtro dinámico] \label{r:distanciadinamica}
 La función de acumulación de score al alejarse del hotel $i$ está dada por $F_i: \R \to \R$, es decir:
 \[
 F_i(d) = \sum_{j | d_{geo}(i,j) < d} score(i,j)
@@ -536,6 +537,29 @@ es decir, la mínima distancia que garantice que se acumula al menos $w_{inner}$
 \end{regla}
 
 \section{Precios dinámicos}
+
+Un punto que hasta el momento no hemos tratado son las posibles promociones que los hoteles puedan ofrecer. Si bien el objetivo principal de este sistema es recomendar hoteles similares y no necesariamente descuentos, es deseable que éstos tuvieran algún impacto. Para ello notemos que el filtro estático de precio toma en cuenta el promedio de los precios en el largo plazo. Eso quiere decir que si un hotel baja sus precios temporalmente, podría ser un candidato para otros hoteles más baratos, pero el promedio impide que esto suceda. Una forma de suavizar este problema es filtrar con los precios en la fecha de la búsqueda en lugar de los promedios. Es decir que, si bien debemos calcular $\alpha$ y $r_{inner}$ con $\HH_i^2$ tal como lo hemos descrito hasta el momento, conviene utilizar
+\begin{align}
+	\mathcal{D^*} = \text{ período para el cual se busca reservar}
+\end{align}
+para calcular los precios en lugar del período histórico largo $\mathcal{D}$.
+\begin{regla}[Precio dinámico] \label{r:preciodinamico}
+Dadas $\alpha$ y $r_{inner}$ obtenidas en R\ref{r:preciolargo}, R\ref{r:distanciaestatica} y R\ref{r:distanciadinamica}, denotamos las \textbf{recomendaciones finales} por
+\[
+\RR = \{j \in \HH : p^{D^*}_j > p^{sup}_i \text{,  } d_{geo}(i,j) \leq r_{inner}\},
+\]
+y los hoteles se presentarán ordenados por \emph{score}, de mayor a menor.
+\end{regla}
+
+\section{Casos extremos}
+
+Una última consideración que hay que tener son los casos extremos. Un caso es que la zona del hotel buscado tenga muy poca población y el otro es cuando el hotel es muy barato para la zona, por lo que el filtro de precio le impide ver suficientes de los demás hoteles. Para aliviar el primer problema el procedimiento es simple: como no queremos que se queden vacías las recomendacio
+
+Si en el cálculo de $r_{inner}$ resulta que hay muy poco hoteles porque
+
+
+\section{Juntando todo}
+
 \section{Implementación}
 número de servicios
 número de categorías

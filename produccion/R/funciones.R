@@ -91,10 +91,10 @@ filtra_cand <- function(clav,
   outer_fence_idx <- (aux1$km <= outer_fence)
   
   # Diversos casos del filtro (paracaídas en caso de que haya pocos hoteles)
-  if(sum(precio_idx & outer_fence_idx) >= 10){ # Hay suficientes hoteles cerca en el rango de precios
+  if(sum(precio_idx & outer_fence_idx) >= min_num_recom){ # Hay suficientes hoteles cerca en el rango de precios
     out_idx <- (precio_idx & outer_fence_idx)
     flag <- 'dist & price'
-  } else if(sum(outer_fence_idx) >= 10){       # No hay suficientes --> Relajamos el precio
+  } else if(sum(outer_fence_idx) >= min_num_recom){       # No hay suficientes --> Relajamos el precio
     out_idx <- outer_fence_idx
     flag <- 'dist'
   } else {                                     # Aún no hay suficientes --> Tomamos los más cercanos
@@ -244,7 +244,7 @@ recomendar <- function(
           arrange(km)
       } else if(cand_info$type == 'dist'){
         selected <- selected %>%
-          arrange(desc(score))
+          arrange(desc(score)) # Tal vez convendría generar también la cerca interior
       } else if(cand_info$type == 'dist & price') {
         selected <- selected %>%
           arrange(km) %>%
