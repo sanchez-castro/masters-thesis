@@ -1,24 +1,24 @@
 \select@language {spanish}
 \contentsline {chapter}{Pr\'ologo}{IV}{chapter*.4}
-\contentsline {chapter}{\numberline {1}An\IeC {\'a}lisis previo}{2}{chapter.1}
-\contentsline {section}{\numberline {1.1}Sistemas actuales}{2}{section.1.1}
-\contentsline {section}{\numberline {1.2}Diagn\IeC {\'o}stico}{8}{section.1.2}
-\contentsline {chapter}{\numberline {2}Sistema de recomendaci\IeC {\'o}n de hoteles}{10}{chapter.2}
-\contentsline {section}{\numberline {2.1}Modelo propuesto}{10}{section.2.1}
-\contentsline {section}{\numberline {2.2}Precio}{11}{section.2.2}
-\contentsline {section}{\numberline {2.3}Distancia: filtro est\IeC {\'a}tico}{13}{section.2.3}
-\contentsline {section}{\numberline {2.4}Similitud de hoteles}{14}{section.2.4}
-\contentsline {section}{\numberline {2.5}Distancia: filtro din\IeC {\'a}mico}{25}{section.2.5}
-\contentsline {section}{\numberline {2.6}Precios din\IeC {\'a}micos}{27}{section.2.6}
-\contentsline {section}{\numberline {2.7}Consideraciones pr\IeC {\'a}cticas}{28}{section.2.7}
-\contentsline {section}{\numberline {2.8}Juntando todo}{28}{section.2.8}
-\contentsline {section}{\numberline {2.9}Comentarios}{29}{section.2.9}
-\contentsline {chapter}{\numberline {3}Implementaci\IeC {\'o}n}{30}{chapter.3}
-\contentsline {section}{\numberline {3.1}Obtenci\IeC {\'o}n de la informaci\IeC {\'o}n}{30}{section.3.1}
-\contentsline {section}{\numberline {3.2}Formato necesario para el modelo}{30}{section.3.2}
-\contentsline {section}{\numberline {3.3}Calidad de la informaci\IeC {\'o}n}{30}{section.3.3}
-\contentsline {section}{\numberline {3.4}Sistema de respaldo}{30}{section.3.4}
-\contentsline {chapter}{\numberline {4}Desempe\IeC {\~n}o}{31}{chapter.4}
-\contentsline {chapter}{\numberline {5}Conclusi\IeC {\'o}n}{32}{chapter.5}
-\contentsline {section}{\numberline {5.1}Trabajo futuro}{32}{section.5.1}
-\contentsline {section}{\numberline {5.2}Comentarios finales}{32}{section.5.2}
+\contentsline {chapter}{\numberline {1}An\IeC {\'a}lisis previo}{5}{chapter.1}
+\contentsline {section}{\numberline {1.1}Sistemas actuales}{5}{section.1.1}
+\contentsline {section}{\numberline {1.2}Diagn\IeC {\'o}stico}{11}{section.1.2}
+\contentsline {chapter}{\numberline {2}Sistema de recomendaci\IeC {\'o}n de hoteles}{13}{chapter.2}
+\contentsline {section}{\numberline {2.1}Modelo propuesto}{13}{section.2.1}
+\contentsline {section}{\numberline {2.2}Precio}{14}{section.2.2}
+\contentsline {section}{\numberline {2.3}Distancia: filtro est\IeC {\'a}tico}{16}{section.2.3}
+\contentsline {section}{\numberline {2.4}Similitud de hoteles}{17}{section.2.4}
+\contentsline {section}{\numberline {2.5}Distancia: filtro din\IeC {\'a}mico}{28}{section.2.5}
+\contentsline {section}{\numberline {2.6}Precios din\IeC {\'a}micos}{30}{section.2.6}
+\contentsline {section}{\numberline {2.7}Consideraciones pr\IeC {\'a}cticas}{31}{section.2.7}
+\contentsline {section}{\numberline {2.8}Juntando todo}{31}{section.2.8}
+\contentsline {section}{\numberline {2.9}Comentarios}{32}{section.2.9}
+\contentsline {chapter}{\numberline {3}Implementaci\IeC {\'o}n}{33}{chapter.3}
+\contentsline {section}{\numberline {3.1}Obtenci\IeC {\'o}n de la informaci\IeC {\'o}n}{33}{section.3.1}
+\contentsline {section}{\numberline {3.2}Formato necesario para el modelo}{33}{section.3.2}
+\contentsline {section}{\numberline {3.3}Calidad de la informaci\IeC {\'o}n}{33}{section.3.3}
+\contentsline {section}{\numberline {3.4}Sistema de respaldo}{33}{section.3.4}
+\contentsline {chapter}{\numberline {4}Desempe\IeC {\~n}o}{34}{chapter.4}
+\contentsline {chapter}{\numberline {5}Conclusi\IeC {\'o}n}{35}{chapter.5}
+\contentsline {section}{\numberline {5.1}Trabajo futuro}{35}{section.5.1}
+\contentsline {section}{\numberline {5.2}Comentarios finales}{35}{section.5.2}

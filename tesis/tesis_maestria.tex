@@ -108,6 +108,35 @@ FIRMA
 \chapter*{Pr\'ologo}
 \pagenumbering{arabic}
 
+Las agencias de viajes han migrado la mayor parte de su negocio a las ventas en línea. Eso implica que junto con sus precios y la calidad de su servicio, la experiencia de usuario en sus páginas web es una parte crucial si quieren conseguir una ventaja competitiva. Dado que la mayor parte de las agencias empezaron antes de la era del Internet, el cambio al mundo digital ha sido paulatino y por necesidad, más que rápido y por gusto. Dado que el negocio consiste en \emph{vender} viajes, la primera prioridad que se tiene al hacer una página es que sea operativa. La segunda prioridad normalmente es que sea agradable a la vista y aceptablemente fácil de usar. Estos dos principios tienen mucho sentido y de hecho los portales web actuales de las agencias de viajes los siguen razonablemente bien. Sin embargo, la era del Internet es mucho más que un punto de venta en cada casa.
+
+Sería imprudente pensar que la experiencia de comprar en casa vía electrónica es exactamente igual que comprar en un quiosco de una agencia. La diferencia clave es el conocimiento que tienen los vendedores, que está ausente en una página web. La razón por la que esto es importante es que los clientes muchas veces no saben bien lo que quieren, y mucho menos lo que hay disponible. Entonces, suponiendo que se tiene resuelta la parte estática de la página (i.e. que sea funcional, utilizable y agradable), la tercera prioridad debería ser sustituir de algún modo al vendedor. Para ello es necesario hacer que la página sea dinámica y que tome ciertas decisiones automáticamente, de modo que pueda ayudarle al cliente a encontrar (y por lo tanto a comprar) la mejor opción disponible.
+
+Usualmente, el primer componente de las páginas web que se busca que sea inteligente es el orden en el que aparecen los hoteles cuando se busca un destino en particular, también llamado \emph{Sort Order}. La razón de esto es simple: dado que se sabe a dónde quiere ir el cliente, hay que darle las mejores opciones. Aquí el término ``mejores'' es, desde luego, desde el punto de vista del cliente, pero en última instancia lo que se busca es aumentar las ventas y la rentabilidad de la empresa. Es común que en esta parte haya filtros adicionales, como el rango de precio y la categoría del hotel (es decir, sus estrellas) que permitan al cliente refinar su búsqueda. Si bien esto funciona bastante bien, también es cierto que en un destino con muchas opciones puede seguir siendo demasiado vago y, además, obliga al cliente a ser su propio asesor. La pregunta ahora es qué más se puede hacer para incorporar información y así ayudar a cerrar ventas.
+
+Conocer el destino del viaje del cliente es cercano a lo mínimo que se puede saber sobre él. Sin embargo, cuando se mete a la página de un hotel en particular nos proporciona bastante más información. En particular, nos da una idea de su presupuesto, de la categoría que espera que tenga su hotel y también algo de información geográfica más detallada que sólo una ciudad o zona. A menos que apliquemos un cuestionario, no tenemos otra manera de obtener más datos sobre lo que el cliente quiere, así que a lo más que podemos aspirar es a recomendar hoteles similares al que el cliente vio en primera instancia. La esperanza aquí es que si el cliente casi encontró lo que quería en la primera opción, probablemente le guste algún hotel similar cercano. Si aún así no compra, queremos que siga y siga viendo alternativas hasta que encuentre una lo suficientemente bueno. Un sistema con estas características podría jugar el papel de asesor y, de hecho, los vendedores humanos hacen algo muy similar: escuchan al cliente y proponen una opción, reciben retroalimentación y vuelven a proponer hasta que se cierra una venta o el cliente se retira.
+
+Ahora bien, para que el sistema que hemos delineado tenga éxito, es necesario que tenga varias características. Entraremos en detalles a lo largo de la tesis, pero a hay ciertas propiedades básicas que deberá tener si planea sustituir a un vendedor:
+\begin{itemize}
+	\item Deberá \emph{pensar lo más parecido a un humano}, es decir, tener un concepto de similitud y cercanía entre dos hoteles lo más parecido posible al de una persona.
+	\item Deberá ser \emph{inteligente y flexible} al recomendar. Es importante que proponga alternativas viables sin caer en repeticiones. Imagine el lector que un vendedor insiste en una opción que el cliente no aprueba.
+	\item Deberá \emph{ser empático y atento}, o también, tomar en cuenta el presupuesto y los cambios que el cliente proponga (por ejemplo, si el cliente repentinamente está más interesado en hoteles más económicos que antes, se deberán ajustar las recomendaciones).
+	\item Deberá ser \emph{ingenioso} cuando las circunstancias sean difíciles y recomendar siempre algo, aún cuando haya poco de dónde escoger.
+\end{itemize}
+Aunque el lector podría pensar que los adjetivos utilizados en los puntos anteriores son ambiciosos, en realidad corresponden a funciones muy básicas y perfectamente evaluables en el contexto que nos interesa. Esperamos que al final de esta lectura lo habremos convencido de que nuestro sistema en efecto es capaz de sustituir razonablemente bien a un vendedor.
+
+En el presente trabajo desarrollaremos paso a paso un \emph{modelo de recomendación de hoteles similares} con la filosofía descrita anteriormente, hecha a la medida especialmente para las necesidades de la empresa Best Day Travel (de aquí en adelante sólo ``Best Day''). La inquietud que tuvo Best Day por mejorar la sección de ``Hoteles Similares'' en su página fue la que llevó a la concepción de este proyecto, por lo que el objetivo siempre fue no sólo mejorar con respecto a lo que se tenía, sino también con respecto a la competencia. Debido a la naturaleza tan aplicada del proyecto, incluimos un capítulo entero dedicado a temas técnicos relacionados con la implementación particular en el sistema actual de Best Day. A continuación describimos brevemente la estructura de la tesis.
+
+En el primer capítulo describiremos el \emph{status quo} tanto de la competencia como de Best Day con el fin de aprender de lo que ya hay y así poder mejorarlo. Buena parte del proceso de aprendizaje provino de esta parte.
+
+En el segundo capítulo describiremos a detalle el modelo que construimos, incluyendo las propiedades que deberá tener para que se comporte como deseamos y tembién qué medidas tomamos para solucionar cada una de las dificultades.
+
+El tercer capítulo tiene información técnica necesaria para la implementación del modelo en el escenario real de Best Day. Incluye el tratamiento de la información y las acciones a tomar en presencia de datos de mala calidad o faltantes. En pocas palabras, es la liga entre el capítulo 2 y el mundo real.
+
+En el capítulo cuatro hablaremos del desempeño del modelo, desde dos puntos de vista. El primero es desde el punto de vista del negocio, es decir cómo se comporta la página antes y después de implementar el modelo propuesto. El segundo es desde el punto de vista del cliente, es decir si las recomendaciones tienen sentido y por lo tanto si hemos logrado hacer el trabajo un asesor humano. En esta segunda parte también incluiremos un análisis de importancia de los hoteles, que resulta naturalmente del modelo que elegimos.
+
+Finalmente, concluiremos en el quinto capítulo, donde discutiremos algunos puntos importantes sobre el sistema y sus implicaciones y algunas ideas para trabajo futuro.
+
 % ----------------------------------------------------------------------------------------------------
 \chapter{Análisis previo}
 
@@ -128,7 +157,7 @@ Pusimos a Price Travel en primer lugar en la lista porque no tienen un sistema d
 
 \subsection*{Booking (booking.com)}
 
-Booking es un competidor muy importante de Best Day, aunque también tiene un mercado más granda y mayor cantidad de opciones en destinos fuera de Latinoamérica. Antes de entrar en los puntos de interés general, cabe mencionar que algo que hace booking que no hacen los demás es que cuando se busca un hotel en la página con la barra inteligente, en lugar de ir directamente a su página, se muestra en el primer lugar de una lista, dando la posibilidad de elegir algún otro hotel. Ahora sí pasemos al tema en cuestión:
+Booking es un competidor muy importante de Best Day, aunque también tiene un mercado más grande y mayor cantidad de opciones en destinos fuera de Latinoamérica. Antes de entrar en los puntos de interés general, cabe mencionar que algo que hace booking que no hacen los demás es que cuando se busca un hotel en la página con la barra inteligente, en lugar de ir directamente a su página, se muestra en el primer lugar de una lista, dando la posibilidad de elegir algún otro hotel. Ahora sí pasemos al tema en cuestión:
 \begin{itemize}
 	\item \textbf{Hoteles populares por destino}
 	\begin{enumerate}
@@ -185,7 +214,7 @@ En Expedia se le da una prioridad bajísima a las recomendaciones, puesto que es
 		\item Utilizan un método desconocido para recomendar hoteles similares que permite movilidad progresiva entre categorías. No estamos seguros si tiene alguna restricción de precios.
 	\end{enumerate}
 \end{itemize}
-El sistema de recomendación de Expedia nos gustó bastante y de hecho creemos que lo están desaprovechando. Permite explorar los hoteles disponibles con hacia arriba y hacia abajo en la escala de precio y categoría y llegar a opciones completamente nuevas. Es probable que esté acotado por destino, aunque eso no es tan grave. Algo que no nos gustó tanto es que tal vez es algo rígido y después de buscar un poco se puede atorar. A diferencia del algoritmo de Booking, esto no necesariamente lleva a los hoteles más caros de la zona.
+El sistema de recomendación de Expedia nos gustó bastante y de hecho creemos que está siendo desaprovechado. Permite explorar los hoteles disponibles hacia arriba y hacia abajo en la escala de precio y categoría y llegar a opciones completamente nuevas. Es probable que esté acotado por destino, aunque eso no es tan grave. Algo que no nos gustó tanto es que tal vez es algo rígido y después de buscar un poco se puede atorar. A diferencia del algoritmo de Booking, esto no necesariamente lleva a los hoteles más caros de la zona.
 
 \subsection*{Trip Advisor (tripadvisor.com)}
 
@@ -218,7 +247,7 @@ Al parecer las búsquedas recientes son (casi) un estándar en la industria, por
 
 \section{Diagnóstico}
 
-Antes de describir lo que nos gustaría que hiciera el algoritmo de recomendación, resumiremos lo que aprendimos de analizar las diversas páginas. En primer lugar, nos dimos cuenta de que poner una sección con las búsquedas recientes es algo muy deseable y relativamente fácil de implementar. De hecho, es un estándar en la industria, pues todos los competidores lo tienen, a excepción de Price Travel. Sin embargo, recomendar hoteles que el cliente ya vio no cuenta realmente como recomendaciones y debería manejarse en un plano separado. Posiblemente se podría utilizar información de los hoteles visitados en las recomendaciones, pero por ahora proponemos dejar intacta esta sección.
+En los siguientes párrafos resumiremos lo que aprendimos del análisis de la competencia y del estado actual de Best Day. En primer lugar, nos dimos cuenta de que poner una sección con las búsquedas recientes es algo muy deseable y relativamente fácil de implementar. De hecho, es un estándar en la industria, pues todos los competidores lo tienen, a excepción de Price Travel. Sin embargo, recomendar hoteles que el cliente ya vio no cuenta realmente como recomendaciones y debería manejarse en un plano separado. Posiblemente se podría utilizar información de los hoteles visitados en las recomendaciones, pero por ahora proponemos dejar intacta esta sección.
 
 Quitando las búsquedas recientes de en medio, podemos analizar los diversos sistemas de recomendación. Un punto que pensamos que es sumamente importante es el precio. Hasta donde pudimos ver, ninguna página tiene miramiento alguno con el costo de los hoteles recomendados. El resultado es que pueden recomendar hoteles del doble o incluso triple de precio que el original. Creemos que esto no promueve que el cliente explore más alternativas, ya que la mayoría basa su decisión fuertemente en el precio de los hoteles. Propondremos una forma simple de lidiar con este problema sin perder flexibilidad en las recomendaciones.
 
@@ -601,16 +630,22 @@ plan de alimentos
 % ----------------------------------------------------------------------------------------------------
 \chapter{Desempeño}
 Casos de éxito, incluso en zonas ralas.
+
+Google Analytics
+
 Red de interconexiones, incluyendo PageRank.
 
 % ----------------------------------------------------------------------------------------------------
 \chapter{Conclusión}
 \section{Trabajo futuro}
 Porcentaje dinámico en forma de `U' para el tope de precio.
+
 Otras métricas
 \section{Comentarios finales}
 Por qué no distancia absoluta?
+
 No es personalizado, sino de hoteles similares.
+
 [Ver presentación para qué sí/no es o podría ser]
 
 

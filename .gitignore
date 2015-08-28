@@ -8,3 +8,4 @@ packrat/lib*/
 .httr-oauth
 .Rdata
 temp
+.DS_Store
