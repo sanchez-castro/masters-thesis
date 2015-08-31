@@ -14,11 +14,9 @@
 \contentsline {section}{\numberline {2.8}Juntando todo}{31}{section.2.8}
 \contentsline {section}{\numberline {2.9}Comentarios}{32}{section.2.9}
 \contentsline {chapter}{\numberline {3}Implementaci\IeC {\'o}n}{33}{chapter.3}
-\contentsline {section}{\numberline {3.1}Obtenci\IeC {\'o}n de la informaci\IeC {\'o}n}{33}{section.3.1}
-\contentsline {section}{\numberline {3.2}Formato necesario para el modelo}{33}{section.3.2}
-\contentsline {section}{\numberline {3.3}Calidad de la informaci\IeC {\'o}n}{33}{section.3.3}
-\contentsline {section}{\numberline {3.4}Sistema de respaldo}{33}{section.3.4}
-\contentsline {chapter}{\numberline {4}Desempe\IeC {\~n}o}{34}{chapter.4}
-\contentsline {chapter}{\numberline {5}Conclusi\IeC {\'o}n}{35}{chapter.5}
-\contentsline {section}{\numberline {5.1}Trabajo futuro}{35}{section.5.1}
-\contentsline {section}{\numberline {5.2}Comentarios finales}{35}{section.5.2}
+\contentsline {section}{\numberline {3.1}Informaci\IeC {\'o}n}{33}{section.3.1}
+\contentsline {section}{\numberline {3.2}Sistema de respaldo}{35}{section.3.2}
+\contentsline {chapter}{\numberline {4}Desempe\IeC {\~n}o}{37}{chapter.4}
+\contentsline {chapter}{\numberline {5}Conclusi\IeC {\'o}n}{38}{chapter.5}
+\contentsline {section}{\numberline {5.1}Trabajo futuro}{38}{section.5.1}
+\contentsline {section}{\numberline {5.2}Comentarios finales}{38}{section.5.2}
