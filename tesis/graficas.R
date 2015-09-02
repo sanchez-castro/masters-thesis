@@ -184,3 +184,54 @@ ggsave(filename = 'tesis/imagenes/distdin.pdf',
        plot = plot_distdin,
        width = 8, height = 4)
 
+
+# Preparar información para Gephi -----------------------------------------
+
+library(dplyr)
+library(igraph)
+
+load('tesis/datos/datos_gephi.Rdata')
+hoteles <- read.csv('tesis/datos/Hoteles.csv', header = T, quote = '"',
+                    stringsAsFactors = F) %>%
+  dplyr::select(-X) %>%
+  arrange(Clav_Hotel)
+
+dim(recomendados)
+head(recomendados)
+
+h1 <- hoteles %>%
+  rename(cl1=Clav_Hotel, n1=Nombre_Hotel, d1=Clav_Destino, cld1=Nombre_Destino)
+h2 <- hoteles %>%
+  rename(cl2=Clav_Hotel, n2=Nombre_Hotel, d2=Clav_Destino, cld2=Nombre_Destino)
+
+red_df <- recomendados %>%
+  filter(rank <= 5) %>%
+  left_join(h1) %>%
+  left_join(h2) %>%
+  dplyr::select(from=cl1, to=cl2, km, score)
+dim(red_df)
+head(red_df)
+
+red <- graph.data.frame(red_df, directed = T)
+vert <- data.frame(Clav_Hotel = as.numeric(get.vertex.attribute(red, name = 'name')))
+vert <- vert %>%
+  left_join(hoteles, by=c('Clav_Hotel'))
+red <- set.vertex.attribute(red, name = 'Nombre_Hotel', value = vert$Nombre_Hotel)
+red <- set.vertex.attribute(red, name = 'Clav_Destino', value = vert$Clav_Destino)
+red <- set.vertex.attribute(red, name = 'Nombre_Destino', value = vert$Nombre_Destino)
+get.vertex.attribute(red, name = 'name')
+get.vertex.attribute(red, name = 'Nombre_Hotel')
+get.vertex.attribute(red, name = 'Clav_Destino')
+get.vertex.attribute(red, name = 'Nombre_Destino')
+
+write.graph(red, file="tesis/datos/red2.graphml", format="graphml")
+
+
+
+
+
+
+
+
+
+

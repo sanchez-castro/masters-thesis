@@ -669,13 +669,51 @@ La primera dificultad no es tan grave porque podemos utilizar el modelo sin prob
 
 Los otros dos puntos son más complicados de resolver porque implican que de plano no podemos utilizar el sistema de recomendación. Una forma de mitigar esto es utilizar el sistema de recomendación antiguo de Best Day que está descrito en el capítulo 1, es decir, tomar los hoteles en el mismo destino y de las mismas estrellas y recomendarlos en el \emph{Sort Order} del momento. La ventaja de esto es que únicamente requiere el destino y las estrellas del hotel para funcionar, por lo que en la mayoría de los casos podremos evitar no recomendar nada.
 
-Si también falla el sistema de recomendación antiguo no hay mucho que podamos hacer, pues o bien ni siquiera tenemos el destino o estrellas del hotel, o no hay ninguna alternativa en el mismo destino. Si detectamos una zona o algún hotel con esta clase de problemas lo que sí podríamos hacer en estos casos es detectar la información faltante o de mala calidad y completarla o limpiarla a mano, según la nacesidad.
+Si también falla el sistema de recomendación antiguo no hay mucho que podamos hacer, pues o bien ni siquiera tenemos el destino o estrellas del hotel, o no hay ninguna alternativa en el mismo destino. Si detectamos una zona o algún hotel con esta clase de problemas lo que sí podríamos hacer en estos casos es detectar la información faltante o de mala calidad y completarla o limpiarla a mano, según la necesidad.
 
 % ----------------------------------------------------------------------------------------------------
 \chapter{Desempeño}
-Casos de éxito, incluso en zonas ralas.
+
+Hasta este punto hemos descrito tanto el modelo matemático detrás del sistema de recomendación como las consideraciones prácticas que se debe tener para implementarlo exitosamente. Si bien hemos argumentado todas las decisiones que tomamos en la construcción del sistema, en este capítulo analizaremos su comportamiento en la práctica desde dos enfoques: un análisis de redes y un análisis de la página web de Best Day. En las siguientes dos secciones hablaremos de cada uno de ellos 
+
+\section{Análisis de redes}
+
+\subsubsection*{Algo de teoría}
+
+Las redes son construcciones matemáticas muy versátiles que permiten modelar muchos tipos de fenómenos. En general, cualquier tema de interés que tenga elementos que estén conectados de alguna forma se puede modelar con una red. Los elementos a conectar usualmente se conocen como \emph{nodos} o \emph{vértices}, mientras que sus conexiones son llamadas \emph{arcos}. Hay dos principales tipos de redes y sus diferencias radican en si sus arcos son \emph{dirigidos} o \emph{no dirigidos}. Los arcos dirigidos se utilizan para representar relaciones simétricas, como la amistad: ``Juan es amigo de Pedro si y sólo si Pedro es amigo de Juan''. Si bien no en todos los casos la reciprocidad es total, cuando en general la conexión es bilateral se recurre a las redes no dirigidas. Por otro lado, se utilizan arcos dirigidos cuando las relaciones no necesariamente son bilaterales. Por ejemplo, si se toman los cruces de calles como nodos y los arcos como las calles mismas, cada arco debe tener la dirección de la calle que representa. Cuando en este caso la relación es bilateral, se puede poner dos arcos, uno en cada dirección. Otras características interesantes de las redes son:
+\begin{itemize}
+	\item \emph{Otras características de nodos y arcos:} Los nodos y los arcos pueden tener otro tipo de características. Por ejemplo, si la red representa una red de tuberías, los arcos podrían tener un flujo máximo asociado.
+	\item \emph{Distancia entre nodos:} La distancia entre dos nodos es la mínima cantidad de arcos que se debe atravesar para llegar de uno de los nodos al otro. Si la red es dirigida sólo está permitido ir en la dirección de los arcos.
+	\item \emph{Conectividad:} Una gráfica es conexa cuando se puede llegar a cualquier nodo desde cualquier otro nodo. En el caso de las gráficas dirigidas sólo se permite transitar en el sentido de los arcos.
+	\item \emph{Grados:}
+	\begin{itemize}
+		\item \emph{Grado de entrada (in-degree):} En redes dirigidas, el número de arcos que le apuntan a un nodo.
+		\item \emph{Grado de salida (out-degree):} En redes dirigidas, el número de arcos que salen de un nodo.
+		\item \emph{Grado (degree):} En redes dirigidas, corresponde al grado de salida más el grado de entrada. En redes no dirigidas, es el número total de arcos de un nodo.
+	\end{itemize}
+	\item \emph{PageRank:} Es una medida de importancia que fue diseñada para ver la relevancia de las páginas web. A grandes rasgos, coincide con la probabilidad de que un navegador que da \emph{click} al azar en las ligas que ve llegue a una cierta página (nodo). Utilizaremos el PageRank para medir la importancia de los hoteles dentro del sistema, pues representará la probabilidad de que un usuario llegue a un hotel dado si le da \emph{click} a recomendaciones al azar. Al lector interesado lo referimos a \cite{mmds} para mayor información sobre el PageRank y sobre redes en general.
+\end{itemize}
+
+\subsection*{Modelando el sistema con una red}
+
+Los hoteles y sus recomendaciones se pueden modelar de manera muy natural como una red dirigida tomando los hoteles como nodos y el que un hotel recomiende a otro como los arcos. Con un análisis de redes podremos ver si realmente el sistema recomendación cumple con algunas de las propiedades que buscábamos.
+
+Uno de los primeros problemas que le encontramos al sistema actual es que dentro de una zona y una categoría las recomendaciones eran siempre iguales, lo que además de resultar aburrido y poco útil después de poco tiempo, le da un peso excesivo a los hoteles que aparecen hasta arriba de la lista de un destino y ciertas estrellas: todos los clientes que busquen un hotel en ese grupo verán lo mismo. En el mundo de las redes, esto es equivalente a nodos con un grado de entrada muy elevado o con PageRank alto.
+
+Por otro lado, independientemente de lo anterior, las recomendaciones eran cerradas, esto es, no podíamos salir de un cierto grupo de hoteles únicamente por medio de las recomendaciones. Esto equivale a que la red del modelo sea \emph{disconexa} (i.e. no conexa) en lugares en donde no debería. No es problemático que, por ejemplo, la recomendaciones de hoteles en Ciudad Juárez no nos pudieran llevar eventualmente a opciones en Mérida. Lo que sí es poco deseable es que secciones geográficamente cercanas sean disconexas, como por ejemplo si empezamos con un hotel de negocios en Cancún, que no haya forma de llegar a uno en la zona hotelera.
+
+A continuación describiremos con mayor precisión la red con la que analizaremos el comportamiento del sistema de recomendación:
+
+
+primeros 5 
+
+
+
+\section{Desempeño de la página}
 
 Google Analytics
+
+
 
 Red de interconexiones, incluyendo PageRank.
 
@@ -702,7 +740,8 @@ No es personalizado, sino de hoteles similares.
 
 
 
-
+\bibliography{bibliografia}
+\bibliographystyle{plain}
 
 
 \end{document}
