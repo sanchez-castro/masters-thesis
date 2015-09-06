@@ -2,6 +2,7 @@ library(ggplot2)
 library(grid)
 library(ggthemes)
 library(dplyr)
+library(igraph)
 
 # Auxiliares --------------------------------------------------------------
 
@@ -226,6 +227,20 @@ get.vertex.attribute(red, name = 'Nombre_Destino')
 
 write.graph(red, file="tesis/datos/red2.graphml", format="graphml")
 
+
+
+# Ejemplos Gephi ----------------------------------------------------------
+
+df1 <- expand.grid(1:10, 1:4)
+df2 <- expand.grid(11:20, 11:14)            
+df3 <- expand.grid(21:30, 21:34)            
+df_net <- rbind(df1, df2, df3) %>%
+  as.data.frame
+names(df_net) <- c('from','to')
+
+red <- graph.data.frame(df_net, directed = T)
+plot(red)
+write.graph(red, file='tesis/datos/red_ejemplos.graphml', format = 'graphml')
 
 
 

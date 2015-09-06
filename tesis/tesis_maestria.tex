@@ -700,12 +700,31 @@ Los hoteles y sus recomendaciones se pueden modelar de manera muy natural como u
 
 Uno de los primeros problemas que le encontramos al sistema actual es que dentro de una zona y una categoría las recomendaciones eran siempre iguales, lo que además de resultar aburrido y poco útil después de poco tiempo, le da un peso excesivo a los hoteles que aparecen hasta arriba de la lista de un destino y ciertas estrellas: todos los clientes que busquen un hotel en ese grupo verán lo mismo. En el mundo de las redes, esto es equivalente a nodos con un grado de entrada muy elevado o con PageRank alto.
 
-Por otro lado, independientemente de lo anterior, las recomendaciones eran cerradas, esto es, no podíamos salir de un cierto grupo de hoteles únicamente por medio de las recomendaciones. Esto equivale a que la red del modelo sea \emph{disconexa} (i.e. no conexa) en lugares en donde no debería. No es problemático que, por ejemplo, la recomendaciones de hoteles en Ciudad Juárez no nos pudieran llevar eventualmente a opciones en Mérida. Lo que sí es poco deseable es que secciones geográficamente cercanas sean disconexas, como por ejemplo si empezamos con un hotel de negocios en Cancún, que no haya forma de llegar a uno en la zona hotelera.
+Por otro lado, independientemente de lo anterior, las recomendaciones eran cerradas, esto es, no podíamos salir de un cierto grupo de hoteles únicamente por medio de las recomendaciones. Esto equivale a que la red del modelo sea \emph{disconexa} (i.e. no conexa) en lugares en donde no debería. No es problemático que, por ejemplo, la recomendaciones de hoteles en Ciudad Juárez no nos pudieran llevar eventualmente a opciones en Mérida. Lo que sí es poco deseable es que secciones geográficamente cercanas sean disconexas, como por ejemplo si empezamos con un hotel de negocios en Cancún, que no haya forma de llegar a uno en la zona hotelera. Ilustramos estos puntos en la gráfica (\ref{fig:disconexo}).
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth,
+		trim = 0 220 0 220, clip
+		]{imagenes/disconexo.pdf}
+	\caption{\label{fig:disconexo} El sistema actual le da mucho peso a pocos hoteles y además no permite llegar de un grupo a otro.}
+\end{figure}
+Para modelar las recomendaciones del sistema con una red hay que tener algunas consideraciones. Por un lado, a cada hotel le asignamos un ordenamiento de los demás hoteles dentro de un cierto radio vía el \emph{score}. Sin embargo, utilizar esto como peso para los arcos no es muy realista, puesto que el \emph{score} está en una escala sin ninguna interpretación. Una mejor alternativa es poner como arcos únicamente las 5 mejores recomendaciones de cada hotel, dado que serán los que los clientes verán directamente, sin tener que bajar la lista. Dado que no tenemos información sobre la importancia de cada posición en la lista, supondremos que son iguales, esto es, todos los arcos tendrán el mismo peso.
 
-A continuación describiremos con mayor precisión la red con la que analizaremos el comportamiento del sistema de recomendación:
+Utilizaremos el PageRank como la importancia de los nodos en lugar del grado de entrada. La razón de esto es que el grado de entrada da información puramente local. Es decir, si conocemos el grado de entrada, podemos saber cuántos hoteles le apuntan directamente a uno dado, pero no sabemos si hay una tendencia de la gráfica como conjunto a tender a esos nodos. Por eso utilizaremos mejor el PageRank para evaluar la importancia de los nodos, puesto que sí nos da información global.
 
+\subsection*{Análisis}
 
-primeros 5 
+Dado que la gráfica resultante de las recomendaciones de los miles de hoteles de Best Day sería poco informativa en un entorno no interactivo, optamos por presentar los resultados del análisis en algunas zonas de interés. Primero haremos un análisis a una escala de varios destinos y posteriormente nos acercaremos a ver con más detalle uno solo.
+
+Analizamos varios destinos importantes de México en la gráfica (\ref{fig:destinos}). En este caso, el tamaño de los nodos está dado por su PageRank, por lo que los nodos son más importantes mientras más grandes son, mientras que los colores representan el destino de cada hotel. Podemos ver que 
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=\textwidth,
+		trim = 0 70 0 70, clip]{imagenes/destinos2.png}
+	\caption{\label{fig:destinos} Red para diversos destinos: Ciudad de México (azul-morado), Cancún (turquesa), Playa del Carmen (verde), Riviera Maya (fucsia), Isla Mujeres (azul), Cozumel (naranja), Tulum (rojo) y Cuernavaca (verde-amarillo). El tamaño de los nodos está dado por el PageRank.}
+\end{figure}
+
 
 
 

@@ -18,7 +18,7 @@
 \contentsline {section}{\numberline {3.2}Sistema de respaldo}{35}{section.3.2}
 \contentsline {chapter}{\numberline {4}Desempe\IeC {\~n}o}{37}{chapter.4}
 \contentsline {section}{\numberline {4.1}An\IeC {\'a}lisis de redes}{37}{section.4.1}
-\contentsline {section}{\numberline {4.2}Desempe\IeC {\~n}o de la p\IeC {\'a}gina}{39}{section.4.2}
-\contentsline {chapter}{\numberline {5}Conclusi\IeC {\'o}n}{40}{chapter.5}
-\contentsline {section}{\numberline {5.1}Trabajo futuro}{40}{section.5.1}
-\contentsline {section}{\numberline {5.2}Comentarios finales}{40}{section.5.2}
+\contentsline {section}{\numberline {4.2}Desempe\IeC {\~n}o de la p\IeC {\'a}gina}{40}{section.4.2}
+\contentsline {chapter}{\numberline {5}Conclusi\IeC {\'o}n}{43}{chapter.5}
+\contentsline {section}{\numberline {5.1}Trabajo futuro}{43}{section.5.1}
+\contentsline {section}{\numberline {5.2}Comentarios finales}{43}{section.5.2}
