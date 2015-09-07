@@ -225,15 +225,22 @@ get.vertex.attribute(red, name = 'Nombre_Hotel')
 get.vertex.attribute(red, name = 'Clav_Destino')
 get.vertex.attribute(red, name = 'Nombre_Destino')
 
-write.graph(red, file="tesis/datos/red2.graphml", format="graphml")
+#write.graph(red, file="tesis/datos/red2.graphml", format="graphml")
 
+# Estadísticas de Cancún
+
+red_cun <- induced_subgraph(red, V(red)[get.vertex.attribute(red, name = 'Clav_Destino') == 2])
+average.path.length(red, directed = T, unconnected = T)
+average.path.length(red, directed = F, unconnected = T)
+diameter(red_cun, directed = T, unconnected = T)
+plot(degree_distribution(red))
 
 
 # Ejemplos Gephi ----------------------------------------------------------
 
 df1 <- expand.grid(1:10, 1:4)
-df2 <- expand.grid(11:20, 11:14)            
-df3 <- expand.grid(21:30, 21:34)            
+df2 <- expand.grid(11:25, 11:14)            
+df3 <- expand.grid(31:50, 31:34)            
 df_net <- rbind(df1, df2, df3) %>%
   as.data.frame
 names(df_net) <- c('from','to')
