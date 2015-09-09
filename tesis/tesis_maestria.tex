@@ -687,38 +687,27 @@ Los otros dos puntos son más complicados de resolver porque implican que de pla
 
 Si también falla el sistema de recomendación antiguo no hay mucho que podamos hacer, pues o bien ni siquiera tenemos el destino o estrellas del hotel, o no hay ninguna alternativa en el mismo destino. Si detectamos una zona o algún hotel con esta clase de problemas, lo único podríamos hacer es detectar la información faltante o de mala calidad y completarla o limpiarla a mano, según lo requiera el caso.
 
-\section{Diagrama de flujo}
 
-En la figura (\ref{fig:flujo}) mostramos el diagrama de flujo del sistema ideal. Desafortunadamente, en la vida real hubo algunas restricciones para la implementación
+\section{Otras consideraciones}
+
+Hay algunas otros detalles técnicos que no entran naturalmente en ningún otro lado, pero que sí son importantes. En esta sección los describiremos brevemente con el fin de aclarar por completo la forma en que se debe implementar este sistema de recomendación:
+\begin{itemize}
+	\item \emph{Software:} Como hemos comentado, el acceso a la base de datos, tanto para el análisis como para producción, se realizó a través de código SQL. En particular, utilizamos Stored Procedures de SQL Server 2008, optimizadas para evitar sobrecargar la base. En \cite{sql} hay información de las últimas versiones de este software. Toda la analítica se llevó a cabo en $R$ (sitio del proyecto en \cite{R}), desde el aglomerado jerárquico hasta la generación de las recomendaciones. En el diagrama (\ref{fig:flujo}) de la siguiente sección será más evidente qué partes del sistema se hicieron en qué lenguaje.
+	\item \emph{Almacenamiento de las recomendaciones:} En la práctica no es conveniente calcular los conjuntos $\RR_i$ al vuelo por su elevado costo computacional. Por ello los precalculamos para cada hotel y los metimos en una tabla $R$ con tuplas de la forma (hotel buscado, hotel recomendado, \emph{score}). Si se quiere utilizar los precios estáticos, se puede tomar, digamos, los 20 hoteles recomendados con mayor score para cada hotel buscado. Esto disminuye aún bastante el tamaño de $R$ y, por lo tanto, el costo de consultar las recomendaciones de un hotel. Si, por otro lado, se utilizan los precios estáticos, se debe almacenar todos los hoteles en la cerca interior y filtrarlos dinámicamente con los precios de la fecha consultada.
+	\item \emph{Actualización de las recomendaciones:} Dado que los hoteles son entidades más o menos estáticas, no tiene mucho sentido actualizarlas demasiado seguido. Basta correr el algoritmo que genera las recomendaciones una vez al mes, cuando mucho, para ir capturando los pequeños cambios que puedan haber ocurrido.
+\end{itemize}
 
 
-NO ALMACENAMOS TODAS LAS RECOMENDACIONES, SINO SOLO UNAS POCAS.
+\section{Arquitectura final del sistema}
 
-\usetikzlibrary{calc,positioning,shapes.geometric}
-\shorthandoff{<>}
+En la figura (\ref{fig:flujo}) mostramos la arquitectura que el sistema debería tener idealmente. Por un lado, la base de datos analítica alimenta los Stored Procedures y el aglomerado jerárquico en \emph{R} de los servicios en categorías. Estos procesos se encargan de generar la matriz $C$ y la tabla $H$ con la información de los hoteles, completa con coordenadas y precios. El algoritmo de recomendación corre completamente en \emph{R} y genera una tabla con las recomendaciones. Esta tabla se debe cargar a la base de datos operativa para entrar a producción. Idealmente, la carga se debería realizar automáticamente, pero dada la baja frecuencia de las actualizaciones, si por alguna razón no es viable hacerlo así, basta con que se pueda hacer manualmente. Una vez que la tabla $R$ está en la base de datos operativa, la página (i.e. nuestro ``vendedor'' electrónico) puede aprovecharla para recomendar de manera más inteligente.
+
 \begin{figure}[ht]
-  \begin{tikzpicture}[
-    >=stealth,
-    node distance=3cm,
-    database/.style={
-      cylinder,
-      cylinder uses custom fill,
-      cylinder body fill=yellow!50,
-      cylinder end fill=yellow!50,
-      shape border rotate=90,
-      aspect=0.25,
-      draw
-    }
-  ]
-    \node[database] (db1) at (0,0) {DB1};
-    \node[database,right of=db1] (db2) {DB2};
-    \node[database,below of=db1] (db3) {DB3};
-
-    \draw[->,blue!50] (db1) --  node[black,midway,above,sloped,font=\scriptsize]{Link: Name} node[black,midway,below,sloped,font=\scriptsize]{Owner: Name} (db3);
-    \draw[->,blue!50] (db1) -- ++(0,1) -- ($(db2)+(0,1)$) node[black,midway,above,font=\scriptsize]{Link: Name} node[black, midway,below,font=\scriptsize]{Owner: Name} -- (db2) ;
-  \end{tikzpicture}
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/flowchart.pdf}
+	\caption{\label{fig:flujo} Diagrama de flujo del sistema de recomendación. Amarillo: bases de datos. Rojo: Interacción humana. Verde: Procesos en \emph{R}. Azul: Procesos en SQL.}
 \end{figure}
-\shorthandon{<>}
+
 
 % ----------------------------------------------------------------------------------------------------
 \chapter{Desempeño} \label{cap:4}

@@ -1,10 +1,16 @@
 \begin{thebibliography}{1}
 
+\bibitem{R}
+The R~Project for Statistical~Computing, 2015.
+
 \bibitem{elements}
 Trevor Hastie, Robert Tibshirani, and Jerome Friedman.
 \newblock {\em The Elements of Statistical Learning}.
 \newblock Springer Series in Statistics. Springer New York Inc., New York, NY,
   USA, 2001.
+
+\bibitem{sql}
+Microsoft, 2015.
 
 \bibitem{ward}
 Fionn Murtagh and Pierre Legendre.

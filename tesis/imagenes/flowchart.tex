@@ -1,9 +1,9 @@
-\documentclass[11pt]{article}
+\documentclass[11pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[spanish]{babel}
 \usepackage{tikz}
-\usepackage{fullpage}
+%\usepackage{fullpage}
 \usetikzlibrary{calc,positioning,shapes.geometric, shapes.symbols, arrows}
 
 \begin{document}
@@ -11,11 +11,12 @@
 \tikzstyle{rprocess} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=green!30]
 \tikzstyle{sqlprocess} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
 \tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=green!30]
-\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
+\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=purple!30]
+
+\tikzstyle{server} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=gray!30]
 
 
 \shorthandoff{<>}
-\begin{figure}
   \begin{tikzpicture}[
     >=stealth,
     %node distance=5cm,
@@ -32,37 +33,39 @@
     }
   ]
     \node[database, text width=3cm, align=center] (db) at (0,0) {\textbf{Base de datos\\analítica}\\Hoteles\\Servicios\\Reservas};
+    \coordinate[right = 1.5cm of db] (c1);
     \node[rprocess, above right = -0.5cm and 3cm of db] (clust) {R: \textbf{Aglomerado} de servicios};
     \node[io, above = 1 cm of clust] (clust_man) {\textbf{Criterio humano}};
-    \node[sqlprocess, below = 1cm of clust] (sph) {\textbf{SP Hoteles}};
-    \node[sqlprocess, right = 2cm of clust] (spc) {\textbf{SP Categorías}};
-    \node[rprocess, below left = 5cm and -2cm of spc, text width=5cm, align=center] (rec) {R: Algoritmo de\\\textbf{recomendaciones}};
+    \node[sqlprocess, below = 2cm of clust] (sph) {\textbf{SP Hoteles}};
+    \node[sqlprocess, right = 3cm of clust] (spc) {\textbf{SP Categorías}};
+    \coordinate[right = 2.5cm of sph] (c2);
+    \coordinate[right = 9cm of db] (c3);
+    \node[rprocess, below = 2.45cm of c2, text width=5cm, align=center] (rec) {R: Algoritmo de\\\textbf{recomendaciones}};
     \node[database, below = 1cm of db, text width=3.2cm, align=center] (dbop) {\textbf{Base de datos\\operativa}\\Recomendaciones\\Precios reales};
+    \node[server, below = 2cm of dbop] (server) {Servidor de Best Day};
+    \node[draw, cloud, cloud puffs = 10, right = 2cm of server] (internet) {\textbf{Internet}};
+    \node[io, right = 3 cm of internet] (user) {\textbf{Usuario}};
 
-    \node[draw, cloud, cloud puffs = 10, below right = 2cm and 2cm of dbop] (internet) {\textbf{Internet}};
-    \node[io, right = 5 cm of internet] (user) {\textbf{Usuario}};
-    % \draw[->, ultra thick] (db) -- (clust);
-    % \draw[->,blue!50] (db) --  node[black,midway,above,sloped]{Link: Name} node[black,midway,below,sloped,font=\scriptsize]{Owner: Name} (clust);
-    %\draw[->, ultra thick] (db) -| (clust);
-
-    \coordinate[right = 1.5cm of db] (c1);
-    \coordinate[right = 2.43cm of sph] (c2);
-    \coordinate[left = 2.9cm of internet] (c3);
-
-    \draw[->, ultra thick] (db.east) -- (c1) |- (clust);
-    \draw[->, ultra thick] (db) -- (c1) |- (sph);
-    \draw[->, ultra thick] (clust_man) -- (clust);
-    \draw[->, ultra thick] (clust) -- (spc);
-    \draw[->, ultra thick] (sph) -| (c2) -- (rec);
-    \draw[->, ultra thick] (spc) |- (c2) -- (rec);
-    \draw[->, ultra thick] (rec) -- (dbop);
-    \draw[<->, ultra thick] (db) -- (dbop);
-    \draw[->, ultra thick] (dbop) -- (c3) -- (internet);
-    \draw[<->, ultra thick] (internet) -- (user);
-    % \draw[->,blue!50] (db1) --  node[black,midway,above,sloped,font=\scriptsize]{Link: Name} node[black,midway,below,sloped,font=\scriptsize]{Owner: Name} (db3);
-    % \draw[->,blue!50] (db1) -- ++(0,1) -- ($(db2)+(0,1)$) node[black,midway,above,font=\scriptsize]{Link: Name} node[black, midway,below,font=\scriptsize]{Owner: Name} -- (db2) ;
+    \draw[o->, ultra thick] (db.east) -- (c1) |- (clust);
+    \draw[o->, ultra thick] (db) -- (c1) |- (sph);
+    \path (c1) |- node[above right] {Hoteles} node[below right] {Reservas} (sph);
+    \path (c1) |- node[above] {Servicios} (clust);
+    \draw[o->, ultra thick] (db) -- (c3) |- (spc);
+    \path[text width=3cm] (clust) -- node[align=center,above] {Mapeo\\Servicios -\\Categorías} (spc);
+    \path (db) -- node[above] {Servicios} (c3);
+    \draw[o->, ultra thick] (clust_man) -- (clust);
+    \draw[o->, ultra thick] (clust) -- (spc);
+    \draw[o->, ultra thick] (sph) -| (c2) -- (rec);
+    \path (sph) -- node[above] {Hoteles} node[below,text width=2cm,align=center] {Precios\\Coordenadas} (c2);
+    \draw[o->, ultra thick] (spc) |- (c2) -- (rec);
+    \path (spc) |- node[above left] {Matriz $C$} (c2);
+    % \draw[o->, ultra thick] (rec) --  (dbop);
+    \path[o->, ultra thick] (rec) edge node[sloped, midway, above] {Tabla de recomendaciones $R$} (dbop);
+    \path[<->, ultra thick] (db) -- (dbop);
+    \draw[<->, ultra thick] (dbop) -- (server);
+    \draw[<->, ultra thick] (server) -- (internet);
+    \draw[<->, ultra thick] (internet) --++ (user);
   \end{tikzpicture}
-\end{figure}
 \shorthandon{<>}
 \end{document}
 
