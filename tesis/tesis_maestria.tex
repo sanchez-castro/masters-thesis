@@ -634,7 +634,7 @@ Antes de terminar el capítulo, hay un punto que nos gustaría resaltar y es por
 % ----------------------------------------------------------------------------------------------------
 \chapter{Implementación} \label{cap:3}
 
-En este capítulo describiremos algunos detalles adicionales al modelo matemático que son necesarios para la implementación del sistema de recomendación en el mundo real. Hablaremos de qué fuentes obtendremos los datos necesarios para el modelo y de qué haremos en los casos en los que la calidad no sea la necesaria para correr el modelo.
+En este capítulo describiremos algunos detalles adicionales al modelo matemático que son necesarios para la implementación del sistema de recomendación en el mundo real. Hablaremos de qué fuentes obtendremos los datos necesarios para el modelo y de qué haremos en los casos en los que la calidad de los mismos no sea la necesaria para correr el modelo.
 
 \section{Información}
 
@@ -666,7 +666,7 @@ A continuación describiremos un tema sobre los servicios que es importante en e
 
 \subsubsection*{Plan de alimentos}
 
-La decisión de exactamente qué características del hotel cuentan como servicios es subjetiva hasta cierto punto. Hay algunos que no se incluyeron por ejemplo por razones administrativas. Entre ellos están los planes de alimentos, es decir, la cantidad de comidas que incluyen los hoteles. El plan de alimentos puede ser muy importante en algunas regiones vacacionales en donde haya hoteles de tipo ``todo incluido'' mezclados con hoteles que sólo incluyen desayuno, o incluso nada. La razón es que los precios de dos hoteles del mismo nivel de lujo podrían diferir bastante si uno es todo incluido y el otro no. Por ello es importante incorporar esta información de algún modo en el modelo.
+La decisión de exactamente qué características del hotel cuentan como servicios es subjetiva hasta cierto punto. Hay algunos que no se incluyeron por razones administrativas o de alguna otra índole. Entre ellos están los planes de alimentos, es decir, la cantidad de comidas que incluyen los hoteles. El plan de alimentos puede ser muy importante en algunas regiones vacacionales en donde haya hoteles de tipo ``todo incluido'' mezclados con hoteles que sólo incluyen desayuno, o incluso nada. La razón es que los precios de dos hoteles de las mismas estrellas podrían diferir bastante si uno es todo incluido y el otro no. Por ello es importante incorporar esta información de algún modo en el modelo.
 
 Si bien hay diversas formas en que se podría tomar en cuenta el plan de alimentos en el sistema de recomendación, uno que nos pareció razonable, fácil de implementar y que además funciona bien, es generar una categoría de alimentos en la matriz $C$. La idea es que si dos hoteles tienen el mismo plan de alimentos, tendrán más servicios en común y por lo tanto favoreceremos que se recomienden entre sí, mientras que si difieren, se tendrán que parecer mucho para que salgan en las recomendaciones del otro. Cada hotel puede tener muchos contratos con Best Day y puede vender cuartos con y sin todo incluido, pero en general, es razonable pensar que si un hotel tiene la opción de todo incluido, es parte de la filosofía del hotel. Por ello, para cada hotel elegimos el plan de alimentos que más comidas incluidas tuviera. El resultado es que podemos agregar hasta cuatro servicios por hotel, uno si incluye desayuno, uno si comida, uno si cena y otro si incluye las bebidas. En la matriz $C$ esto se refleja en una nueva categoría que puede tomar cualquier valor entre cero y cuatro.
 
@@ -674,15 +674,51 @@ Si bien hay diversas formas en que se podría tomar en cuenta el plan de aliment
 
 Uno de los grandes temas que surgen en cualquier modelo matemático que surja del análisis de datos es la calidad de la información. El modelo descrito en el capítulo anterior presupone no sólo que se tiene la información ya en el formato adecuado, sino que además está limpia. La norma en el mundo real es que esto no es así, por lo que será necesario agregar componentes al sistema de recomendación para que funcione incluso cuando la información no sea perfecta. A continuación enlistaremos algunos de los principales problemas que pueden aparecer en este contexto y las posibles soluciones que les podemos dar:
 \begin{itemize}
-	\item El hotel no tiene ninguna reservación en el periodo analizado para obtener los precios: Utilizamos el modelo pero ignoramos los precios por completo.
-	\item El hotel tiene mal la información de servicios: Tendremos que utilizar un sistema de recomendación alternativo, como por ejemplo el antiguo.
-	\item El hotel no tiene coordenadas o las coordenadas son incorrectas: No hay nada que podamos hacer salvo conseguirlas de alguna fuente.
+	\item[P1:] El hotel no tiene ninguna reservación en el periodo analizado para obtener los precios.
+	\item[S1:] Utilizamos el modelo pero ignoramos los precios por completo.
+	\item[P2:] El hotel tiene mal la información de servicios.
+	\item[S2:] Tendremos que utilizar un sistema de recomendación alternativo, como por ejemplo el antiguo.
+	\item[P3:] El hotel no tiene coordenadas o las coordenadas son incorrectas.
+	\item[S3:] No hay nada que podamos hacer salvo conseguirlas de alguna fuente.
 \end{itemize}
 La primera dificultad no es tan grave porque podemos utilizar el modelo sin problemas, sólo que ignorando los precios. En realidad es lo mejor que podemos hacer y dado que de cualquier forma tiene que ser un hotel muy poco popular, no importa mucho que las recomendaciones no sean óptimas en estos casos.
 
 Los otros dos puntos son más complicados de resolver porque implican que de plano no podemos utilizar el sistema de recomendación. Una forma de mitigar esto es utilizar el sistema de recomendación antiguo de Best Day que está descrito en el capítulo \ref{cap:1}, es decir, tomar los hoteles en el mismo destino y de las mismas estrellas y recomendarlos en el \emph{Sort Order} del momento. La ventaja de esto es que únicamente requiere el destino y las estrellas del hotel para funcionar, por lo que en la mayoría de los casos podremos evitar no recomendar nada.
 
-Si también falla el sistema de recomendación antiguo no hay mucho que podamos hacer, pues o bien ni siquiera tenemos el destino o estrellas del hotel, o no hay ninguna alternativa en el mismo destino. Si detectamos una zona o algún hotel con esta clase de problemas lo que sí podríamos hacer en estos casos es detectar la información faltante o de mala calidad y completarla o limpiarla a mano, según la necesidad.
+Si también falla el sistema de recomendación antiguo no hay mucho que podamos hacer, pues o bien ni siquiera tenemos el destino o estrellas del hotel, o no hay ninguna alternativa en el mismo destino. Si detectamos una zona o algún hotel con esta clase de problemas, lo único podríamos hacer es detectar la información faltante o de mala calidad y completarla o limpiarla a mano, según lo requiera el caso.
+
+\section{Diagrama de flujo}
+
+En la figura (\ref{fig:flujo}) mostramos el diagrama de flujo del sistema ideal. Desafortunadamente, en la vida real hubo algunas restricciones para la implementación
+
+
+NO ALMACENAMOS TODAS LAS RECOMENDACIONES, SINO SOLO UNAS POCAS.
+
+\usetikzlibrary{calc,positioning,shapes.geometric}
+\shorthandoff{<>}
+\begin{figure}[ht]
+  \begin{tikzpicture}[
+    >=stealth,
+    node distance=3cm,
+    database/.style={
+      cylinder,
+      cylinder uses custom fill,
+      cylinder body fill=yellow!50,
+      cylinder end fill=yellow!50,
+      shape border rotate=90,
+      aspect=0.25,
+      draw
+    }
+  ]
+    \node[database] (db1) at (0,0) {DB1};
+    \node[database,right of=db1] (db2) {DB2};
+    \node[database,below of=db1] (db3) {DB3};
+
+    \draw[->,blue!50] (db1) --  node[black,midway,above,sloped,font=\scriptsize]{Link: Name} node[black,midway,below,sloped,font=\scriptsize]{Owner: Name} (db3);
+    \draw[->,blue!50] (db1) -- ++(0,1) -- ($(db2)+(0,1)$) node[black,midway,above,font=\scriptsize]{Link: Name} node[black, midway,below,font=\scriptsize]{Owner: Name} -- (db2) ;
+  \end{tikzpicture}
+\end{figure}
+\shorthandon{<>}
 
 % ----------------------------------------------------------------------------------------------------
 \chapter{Desempeño} \label{cap:4}

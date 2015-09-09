@@ -1,8 +1,26 @@
 \begin{thebibliography}{1}
 
+\bibitem{elements}
+Trevor Hastie, Robert Tibshirani, and Jerome Friedman.
+\newblock {\em The Elements of Statistical Learning}.
+\newblock Springer Series in Statistics. Springer New York Inc., New York, NY,
+  USA, 2001.
+
+\bibitem{ward}
+Fionn Murtagh and Pierre Legendre.
+\newblock Ward’s hierarchical clustering method: Clustering criterion and
+  agglomerative algorithm.
+\newblock 2011.
+
 \bibitem{mmds}
 Anand Rajaraman and Jeffrey~David Ullman.
 \newblock {\em Mining of Massive Datasets}.
 \newblock Cambridge University Press, New York, NY, USA, 2011.
+
+\bibitem{ward-notes}
+Cosma Shalizi.
+\newblock Distances between clustering, hierarchical clustering. notes from
+  ``statistics 36-350: Data mining''.
+\newblock 2009.
 
 \end{thebibliography}

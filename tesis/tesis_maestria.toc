@@ -1,5 +1,5 @@
 \select@language {spanish}
-\contentsline {chapter}{Pr\'ologo}{V}{chapter*.4}
+\contentsline {chapter}{Pr\'ologo}{VI}{chapter*.4}
 \contentsline {chapter}{\numberline {1}An\IeC {\'a}lisis previo}{5}{chapter.1}
 \contentsline {section}{\numberline {1.1}Sistemas actuales}{5}{section.1.1}
 \contentsline {section}{\numberline {1.2}Diagn\IeC {\'o}stico}{11}{section.1.2}
@@ -16,9 +16,10 @@
 \contentsline {chapter}{\numberline {3}Implementaci\IeC {\'o}n}{35}{chapter.3}
 \contentsline {section}{\numberline {3.1}Informaci\IeC {\'o}n}{35}{section.3.1}
 \contentsline {section}{\numberline {3.2}Sistema de respaldo}{37}{section.3.2}
-\contentsline {chapter}{\numberline {4}Desempe\IeC {\~n}o}{39}{chapter.4}
-\contentsline {section}{\numberline {4.1}An\IeC {\'a}lisis de redes}{39}{section.4.1}
-\contentsline {section}{\numberline {4.2}Desempe\IeC {\~n}o de la p\IeC {\'a}gina}{45}{section.4.2}
-\contentsline {chapter}{\numberline {5}Conclusiones}{50}{chapter.5}
-\contentsline {section}{\numberline {5.1}Trabajo futuro}{50}{section.5.1}
-\contentsline {section}{\numberline {5.2}Comentarios finales}{50}{section.5.2}
+\contentsline {section}{\numberline {3.3}Diagrama de flujo}{39}{section.3.3}
+\contentsline {chapter}{\numberline {4}Desempe\IeC {\~n}o}{40}{chapter.4}
+\contentsline {section}{\numberline {4.1}An\IeC {\'a}lisis de redes}{40}{section.4.1}
+\contentsline {section}{\numberline {4.2}Desempe\IeC {\~n}o de la p\IeC {\'a}gina}{46}{section.4.2}
+\contentsline {chapter}{\numberline {5}Conclusiones}{51}{chapter.5}
+\contentsline {section}{\numberline {5.1}Trabajo futuro}{51}{section.5.1}
+\contentsline {section}{\numberline {5.2}Comentarios finales}{51}{section.5.2}
