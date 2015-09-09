@@ -1,7 +1,8 @@
 \begin{thebibliography}{1}
 
 \bibitem{R}
-The R~Project for Statistical~Computing, 2015.
+The R~Project for Statistical~Computing.
+\newblock \url{https://www.r-project.org/}, 2015.
 
 \bibitem{elements}
 Trevor Hastie, Robert Tibshirani, and Jerome Friedman.
@@ -9,14 +10,28 @@ Trevor Hastie, Robert Tibshirani, and Jerome Friedman.
 \newblock Springer Series in Statistics. Springer New York Inc., New York, NY,
   USA, 2001.
 
+\bibitem{analytics}
+Google Inc.
+\newblock Google {A}nalytics.
+\newblock \url{https://www.google.com/analytics/}, 2015.
+
 \bibitem{sql}
-Microsoft, 2015.
+Microsoft.
+\newblock {S}{Q}{L} {S}erver.
+\newblock
+  \url{http://www.microsoft.com/en-us/server-cloud/products/sql-server/}, 2015.
 
 \bibitem{ward}
 Fionn Murtagh and Pierre Legendre.
 \newblock Ward’s hierarchical clustering method: Clustering criterion and
   agglomerative algorithm.
 \newblock 2011.
+
+\bibitem{pagerank}
+Lawrence Page, Sergey Brin, Rajeev Motwani, and Terry Winograd.
+\newblock The {P}age{R}ank {C}itation ranking: Bringing order to the web.
+\newblock Technical Report 1999-66, Stanford InfoLab, November 1999.
+\newblock Previous number = SIDL-WP-1999-0120.
 
 \bibitem{mmds}
 Anand Rajaraman and Jeffrey~David Ullman.
@@ -25,7 +40,7 @@ Anand Rajaraman and Jeffrey~David Ullman.
 
 \bibitem{ward-notes}
 Cosma Shalizi.
-\newblock Distances between clustering, hierarchical clustering. notes from
+\newblock Distances between {C}lustering, {H}ierarchical clustering. notes from
   ``statistics 36-350: Data mining''.
 \newblock 2009.
 
