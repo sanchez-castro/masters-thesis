@@ -308,13 +308,9 @@ Sea $\gamma \geq 0$ y sea
 \[
 p^D_i = \frac{\text{Importe total del hotel $i$ en el periodo $D$}}{\text{Total de noches del hotel $i$ en el periodo $D$}}
 \]
-el precio de largo plazo del hotel $i$ en el periodo $D$. Entonces definimos la cota superior de precio para $i$ por 
+el precio de largo plazo del hotel $i$ en el periodo $D$. Entonces definimos la cota superior de precio para $i$ por $(1 + \gamma)p^D_i$, es decir, excluimos del análisis para $i$ todos los hoteles $j$ con $p^D_j > (1 + \gamma)p^D_i$. Los hoteles restantes están contenidos en el conjunto
 \[
-p^{sup}_i = (1 + \gamma)p^D_i,
-\]
-es decir, se exluyen del análisis para $i$ todos los hoteles $j$ con $p^D_j > p^{sup}_i$. Los hoteles restantes están contenidos en el conjunto
-\[
-\HH_i^1 = \{j \in \HH : p^D_j > p^{sup}_i\}
+\HH_i^1 = \{j \in \HH : p^D_j \leq (1 + \gamma)p^D_i\}
 \]
 \end{regla}
 El parámetro $\gamma$ es esencialmente el porcentaje por encima del precio de $i$ que se permitirá que tengan las recomendaciones. Por ejemplo, si $\gamma = 0.3$, entonces se ignoran todas las opciones que sean más de 30\% más caras que $i$. El periodo $D$ debe ser suficientemente largo para que refleje los precios promedio de un hotel, pero no tanto como para que se vea demasiado afectado por la inflación y otros factores. Una buena elección es por ejemplo un año o dos años, pues así además se toma en cuenta los cambios de precios en las diversas temporadas del año. Cabe notar que en esta versión del modelo, tanto $\gamma$ como $D$ son los mismos para todo hotel $i$.
@@ -405,7 +401,7 @@ S = [s_1 s_2 \dots s_N],
 \]
 es decir, $s_j$ corresponde al vector de características del hotel $j$. Por practicidad, denotamos los renglones de $S$ por $z_i^T = [s_{i1}, s_{i2}, \dots, s_{i3}]$.
 \end{defn}
-Para agrupar los servicios tomamos los renglones de $S$ como individuos y los aglomeramos utilizando un aglomerado jerárquico con el criterio de Ward. Tenemos entonces $n_s$ ``observaciones'' cada una con $N$ ``características''. Como en este caso sí importa tener grupos interpretables, asistimos al método manualmente. El resultado es que el algoritmo dio los grupos básicos, pero utilizamos conocimiento humano para arreglar las inconsistencias. Durante el proceso, elegimos un número de categorías y le dimos un nombre apropiado a cada una. Con lo que acabamos entonces es con un mapeo de cada servicio a su categoría correspondiente. Formalizamos estos conceptos en la siguiente definición:
+Para agrupar los servicios tomamos los renglones de $S$ como individuos y los aglomeramos utilizando un aglomerado jerárquico con el criterio de Ward, que está descrito con detalle en \cite{ward} y en \cite{ward-notes}. Tenemos entonces $n_s$ ``observaciones'' cada una con $N$ ``características''. Como en este caso sí importa tener grupos interpretables, asistimos al método manualmente. El resultado es que el algoritmo dio los grupos básicos, pero utilizamos conocimiento humano para arreglar las inconsistencias. Durante el proceso, elegimos un número de categorías y le dimos un nombre apropiado a cada una. Con lo que acabamos entonces es con un mapeo de cada servicio a su categoría correspondiente. Formalizamos estos conceptos en la siguiente definición:
 \begin{defn}[Categorías de servicios]
 Denotamos por $\mathcal{C}$ al conjunto de todas las categorías de servicios, de cardinalidad $n_c$. Definimos la categoría a la que pertenece cada servicio vía la función $\kappa: \mathcal{S} \to \mathcal{C}$, es decir si el servicio $s$ pertenece a la categoría $c$, entonces $\kappa(s) = c$.
 \end{defn}
@@ -424,12 +420,13 @@ De este modo, podemos utilizar las columnas de $C$ para comparar los diversos ho
 
 \subsection*{Similitud de servicios}
 
-Dado que el problema principal ha sido tratado, podemos proceder a definir una distancia entre los hoteles vía sus vectores característicos $c_j$. Inicialmente no es tan descabellado utilizar algo como la norma 1, $\| \cdot \|_1$, pero no nos da la asimetría que queremos. Retomando los tres problemas fundamentales, sí es importante tomar en cuenta que es distinto que el hotel buscado tenga más servicios que el recomendado (y por lo tanto la recomendación no es buena), a que lo inverso suceda (en cuyo caso la recomendación es de mejor calidad). En el gráfico (\ref*{simserv}) ilustramos lo que sucede.
+Dado que el problema principal ha sido tratado, podemos proceder a definir una distancia entre los hoteles vía sus vectores característicos $c_j$. Una idea simple sería utilizar algo como la norma 1, $\| \cdot \|_1$. Sin embargo, cualquier distancia de este tipo que elijamos será simétrica, y ya establecimos la necesidad de una medida de similitud que sea asimétrica. Recordando el segundo problema fundamental de la lista veremos que es importante tomar en cuenta la diferencia entre los dos escenarios posibles, a saber, que el hotel buscado tenga más servicios que el recomendado (y por lo tanto la recomendación no es buena), o por el contrario, que el hotel recomendado tenga más servicios (en cuyo caso la recomendación es de mejor calidad). En el gráfico (\ref{simserv}) ilustramos lo que sucede.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/simserv.pdf}
 	\caption{\label{simserv} Ejemplos de similitud de servicios para 4 categorías distintas. El hotel verde se parece al negro porque no le faltan muchos servicios que el negro sí tiene. En contraste, al hotel morado le faltan muchos servicios.}
 \end{figure}
+
 Lo que buscaremos entonces es penalizar los servicios que le falten a un hotel a la hora de buscar candidatos. Para ello definimos la siguiente función:
 \begin{defn}[Pseudodistancia \emph{hinge}]
 Sean $x, y \in \R^n$. Definimos la pseudodistancia \emph{hinge} de $x$ a $y$ como sigue:
@@ -437,7 +434,7 @@ Sean $x, y \in \R^n$. Definimos la pseudodistancia \emph{hinge} de $x$ a $y$ com
 d_h(x,y) = \sum_{k=1}^n \max\{x_k - y_k, 0\}
 \]
 \end{defn}
-Esta función de pérdida no cumple la propiedad (\ref{dsim}) porque no es simétrica, como es evidente en la figura (\ref{fig:hingeloss}). Por lo tanto, se trata de una \emph{pseudodistancia}. Esta propiedad de $d_h(\cdot, \cdot)$ es algo positivo porque refleja justamente la asimetría de la relación entre los servicios del hotel buscado y los recomendados.
+Esta función de pérdida no cumple la propiedad (\ref{dsim}) porque no es simétrica, como es evidente en la figura (\ref{fig:hingeloss}). Por lo tanto, se trata de una \emph{pseudodistancia}. Esta propiedad de $d_h(\cdot, \cdot)$ es algo positivo en el contexto de nuestro problema porque refleja justamente la asimetría de la relación entre los servicios del hotel buscado y los recomendados. Aplicando esta pseudodistancia a los vectores característicos de dos hoteles $c_i$ y $c_j$ obtenemos:
 \shorthandoff{<>}
 \begin{figure}
 	\centering
@@ -453,11 +450,10 @@ Esta función de pérdida no cumple la propiedad (\ref{dsim}) porque no es simé
 	\caption{Ejemplo univariado. Distancia entre $x$ y $y$ usando valor absoluto (- - -) y pérdida \emph{hinge} (---). La pérdida \emph{hinge} no penaliza el caso en que $y > x$. \label{fig:hingeloss}}
 \end{figure}
 \shorthandon{<>}
-Aplicando esta pseudodistancia a los vectores característicos de dos hoteles $c_i$ y $c_j$ obtenemos
 \[
 d_h(c_i, c_j) = \sum_{k=1}^{n_c} \max\{c_{ki} - c_{kj}, 0\}
 \]
-La lógica detrás de esta cantidad es la siguiente: la resta $c_{ki} - c_{kj}$ representa la diferencia en número de servicios que el hotel $i$ tiene sobre el $j$ en la categoría $k$. Dado nuestro supuesto de que los servicios son perfectamente intercambiables, tenemos que $c_{ki} \geq c_{kj}$ si y sólo si el hotel $i$ es ``mejor'' en la categoría k, y por lo tanto $j$ incurrirá en una penalización de ese número por su falta de servicios. En el caso en que sea peor, es decir, cuando $c_{ki} \leq c_{kj}$, no se penaliza a $j$ y el máximo hace que se sume 0 a la distancia. En conclusión, $d_h(c_i, c_j) =$ cantidad de servicios que $j$ no tiene pero $i$ sí, tomando en cuenta los servicios en cada categoría como sustitutos perfectos.
+La lógica detrás de esta cantidad es la siguiente: la resta $c_{ki} - c_{kj}$ representa la diferencia en número de servicios que el hotel $i$ tiene sobre el $j$ en la categoría $k$. Dado nuestro supuesto de que los servicios son perfectamente intercambiables, tenemos que $c_{ki} \geq c_{kj}$ si y sólo si el hotel $i$ es ``mejor'' que el $j$ en la categoría k, y por lo tanto $j$ incurrirá en una penalización de ese número por su falta de servicios. En el caso en que $i$ sea peor que $j$, es decir, cuando $c_{ki} \leq c_{kj}$, no se penaliza a $j$ y el máximo hace que se sume 0 a la distancia. En conclusión, $d_h(c_i, c_j) =$ \emph{cantidad de servicios que $j$ no tiene pero $i$ sí, tomando en cuenta los servicios en cada categoría como sustitutos perfectos}.
 
 Para etapas posteriores, cabe mencionar que dado que el número de servicios y de categorías es finito, hay una cota máxima a la distancia \emph{hinge} entre dos hoteles, digamos $M_h$, que además coincide con el número total de servicios $n_s$ (el caso se da cuando un hotel no tiene servicios y el otro tiene todos los servicios disponibles). Si bien $d_h(\cdot, \cdot)$ tiene una interpretación muy conveniente, cambiarla de escala es más útil para el modelo y hace que sea casi inmediato ver si una distancia es grande o chica, independientemente de la cantidad de servicios en el sistema. Para ello simplemente la dividimos entre $M_h$, de modo que queda entre 0 y 1, lo que también permite definir una similitud asociada:
 \begin{defn}[Pseudodistancia \emph{hinge} normalizada y similitud de servicios]
@@ -479,6 +475,7 @@ Si bien la pseudodistancia \emph{hinge} captura muy bien la falta de servicios d
 	\includegraphics[width=\textwidth]{imagenes/simperf.pdf}
 	\caption{\label{simperf} Ejemplos de similitud de perfil para 4 categorías distintas. El hotel verde se parece al negro porque aunque le faltan servicios, tiene aproximadamente la misma proporción de sus servicios en cada categoría. El hotel azul tiene muchos servicios, pero tiene un enfoque distinto (en este caso es un hotel de súper lujo muy enfocado a playa, mientras que el negro no tiene playa).}
 \end{figure}
+
 Una manera de modelar el perfil de un hotel es interpretando el número de servicios en cada categoría no como un número absoluto, sino como una \emph{proporción} de los servicios disponibles. Es decir, tener $m$ servicios en la categoría $k$ es mucho o poco dependiendo del número total de servicios que tiene el hotel. Como en este caso cualquier diferencia de perfil afecta, necesitamos una distancia simétrica, que definimos a continuación.
 \begin{defn}[Divergencia y similitud de perfil]
 Sean $x, y \in \R$. Defnimos la divergencia entre $x$ e $y$ como sigue:
@@ -491,22 +488,22 @@ sim_{div}(x,y) = 1 - d_{div}(x,y)
 \]
 \end{defn}
 Como $d_{div}(\cdot, \cdot)$ siempre está entre 0 y 1, 
-La ventaja de esta distancia (se deja como ejercicio al lector probar que en efecto cumple todas las propiedades) es que primero quita la escala y luego compara los vectores en un espacio equitativo. Cabe mencionar que bajo este criterio, el hotel verde de la gráfica (\ref{simperf}) es prácticamente idéntico al negro, incluso a pesar de que es un hotel de mucho menor categoría. El punto es que gastan sus recursos de manera similar.
+La ventaja de esta distancia (se deja como ejercicio al lector probar que en efecto cumple todas las propiedades) es que primero quita la escala y luego compara los vectores en un espacio equitativo. Regresando a la gráfica (\ref{simperf}), notamos que bajo este criterio, el hotel verde es prácticamente idéntico al negro, incluso a pesar de que es un hotel de mucho menor categoría, debido a que tienen una distribución similar de servicios en cada una de las categorías. Por otra parte, aunque el azul tiene más servicios en cada categoría, tiene una distribución más uniforme que el negro y, por lo tanto, su distancia basada en divergencia será grande.
 
-Dado que los vectores normalizados suman 1 y los estamos restando, es fácil ver que por el factor de $1/2$ que incluimos en la definición, la divergencia nunca puede pasar de 1 y por lo tanto la similitud que definimos en efecto tiene sentido.
+Finalmente, dado que los vectores normalizados suman 1 y los estamos restando, es fácil ver que por el factor de $1/2$ que incluimos en la definición, la divergencia nunca puede pasar de 1 y por lo tanto la similitud que definimos en efecto tiene sentido.
 
 \subsection*{Similitud completa}
 
-En las secciones anteriores resolvimos parcialmente los tres puntos críticos. Los criterios de similitud de servicios y de perfil se basan en el agrupamiento de los servicios para capturar parte de las similitudes entre los hoteles. Sin embargo, como explicamos en cada sección, ambas tienen fallas. La idea es entonces integrar las dos medidas en un criterio que sí tome en cuenta todo. El problema es cómo hacerlo sin perder información y dándole un peso apropiado a cada una.
+En las secciones anteriores resolvimos parcialmente los tres puntos críticos. Por un lado, al mudar el análisis a la escala de categorías resolvimos el problema del ruido y, por otro, cada uno de los criterios de similitud de servicios y de perfil resuelve uno de los otros dos problemas. Sin embargo, como explicamos en cada sección, ambas tienen fallas. Lo que buscamos entonces es integrar las dos medidas en un criterio que sí tome en cuenta todo. La dificultad radica en cómo hacerlo sin perder información y dándole un peso apropiado a cada uno.
 
-De este punto en adelante trabajaremos nuevamente con similitudes, porque son más cómodas para razonar y porque además son equivalentes a sus distancias asociadas. Dado que tanto la similitud de servicios como la de perfil están en escalas equiparables, una manera razonable de combinarlas es promediándolas. Sin embargo, podrían tener diferentes niveles de variabilidad, por lo que es prudente permitir la posibilidad de utilizar una ponderación distinta de $1/2$.
+De este punto en adelante trabajaremos nuevamente con similitudes, porque es más cómodo hablar de similitudes y porque además son equivalentes a sus distancias asociadas. Dado que tanto la similitud de servicios como la de perfil están en escalas equiparables, una manera razonable de combinarlas sería promediarlas. Sin embargo, podrían tener diferentes niveles de variabilidad, por lo que es prudente permitir la posibilidad de utilizar una ponderación distinta de $1/2$.
 \begin{defn}[Similitud entre hoteles]
 Sea $\alpha \in (0,1)$ y sean $i, j$ hoteles en $\HH$. Definimos la similitud con parámetro $\alpha$ entre $i$ y $j$ como sigue:
 \[
 sim_\alpha(c_i, c_j) = \alpha sim_h(c_i, c_j) + (1 - \alpha) sim_{div}(c_i, c_j)
 \]
 \end{defn}
-Cabe mencionar que como la similitud entre hoteles no es simétrica porque está basada en parte en la similitud de servicios. Es decir, no necesariamente se cumple que $sim_\alpha(c_i, c_j) = sim_\alpha(c_j, c_i)$.
+Cabe mencionar que la similitud entre hoteles no es simétrica porque está basada en parte en la similitud de servicios. Es decir, no necesariamente se cumple que $sim_\alpha(c_i, c_j) = sim_\alpha(c_j, c_i)$.
 
 Ya habiendo establecido la forma de combinar las dos medidas de similitud, el siguiente paso es elegir un valor apropiado de $\alpha$, que de preferencia sea óptima con respecto a algún criterio. Para ello, hay que notar que aunque ambas similitudes están entre 0 y 1, podrían tener niveles de variación y medias distintos, por lo que utilizar $\alpha = 1/2$ podría no ser una buena idea. Ilustramos este hecho en la figura (\ref{alpha}).
 \begin{figure}[ht]
@@ -514,7 +511,7 @@ Ya habiendo establecido la forma de combinar las dos medidas de similitud, el si
 	\includegraphics[width=0.7\textwidth]{imagenes/alpha.pdf}
 	\caption{\label{alpha} La elección de $\alpha$ determina la dirección en la que avanza la similitud total al variar la de servicios y la de perfil.}
 \end{figure}
-En el ejemplo, $\alpha = 1/2$ probablemente sería similar a avanzar en la flecha pequeña de la derecha, pero es claro que avanzando en la dirección de la de en medio estaríamos tratando ambas similitudes de manera más equitativa. Dado que lo que queremos es identificar hoteles similares, una buena manera de decidir el valor de $\alpha$ es utilizando la que maximice la varianza explicada por la similitud completa. Proponemos utilizar un Análisis de Componentes principales para calcular la $\alpha$ óptima.
+En el ejemplo, $\alpha = 1/2$ probablemente sería similar a avanzar en la flecha pequeña de la derecha, pero es claro que avanzando en la dirección de la de en medio estaríamos tratando ambas similitudes de manera más equitativa. Dado que lo que queremos es identificar hoteles similares, una buena manera de decidir el valor de $\alpha$ es utilizando la que maximice la varianza explicada por la similitud completa. Proponemos utilizar un Análisis de Componentes principales para calcular la $\alpha$ óptima. Al lector interesado en esta técnica lo remitimos a \cite{elements}, en donde encontrará además diversas variantes del mismo.
 
 Como queremos calcular el valor óptimo de $\alpha$ para las recomendaciones que haremos, tenemos que hacer el análisis con todas (o una muestra suficiente de) las recomendaciones de todos los hoteles. La forma de hacerlo es como sigue:
 \begin{enumerate}
@@ -543,27 +540,27 @@ La similitud completa que resulta de utilizar $\alpha^*$ se denomina \emph{score
 score(i,j) := sim_{\alpha^*}(c_i, c_j)
 \]
 \end{defn}
-El \emph{score} condensa todas las propiedades que buscábamos en una medida de similitud y que no tenga los tres problemas expuestos al principio de esta sección. Claramente no presentará la volatilidad de las medidas basadas en servicios crudos porque está basada en categorías. Sin embargo, este mismo hecho genera potencial de enmascaramiento si las categorías no están bien elegidas. Esto se debe a que si son heterogéneas y no consisten de servicios que sean sustitutos más o menos cercanos, puede haber falsos positivos y falsos negativos al calcular cualquier medida basada en ellos. En cuanto al punto (2), suponiendo que las categorías en efecto son apropiadas, la parte de \emph{hinge} del \emph{score} garantizará hasta cierto punto que no se recomiende hoteles con demasiado pocos de los servicios de interés. Finalmente, el hecho de que hay una colaboración de la similitud basada en la divergencia evita que se recomiende hoteles con un perfil muy distinto al original.
+El \emph{score} condensa todas las propiedades que buscábamos en una medida de similitud y que no tenga los tres problemas expuestos al principio de esta sección. Claramente no presentará la volatilidad de las medidas basadas en servicios crudos porque está basada en categorías. Sin embargo, este mismo hecho genera potencial de enmascaramiento si las categorías no están bien elegidas. Esto se debe a que si son heterogéneas y no consisten de servicios que sean sustitutos más o menos cercanos, puede haber falsos positivos y falsos negativos al calcular cualquier medida basada en ellos. En cuanto al segundo punto, suponiendo que las categorías en efecto son apropiadas, la parte de \emph{hinge} del \emph{score} garantizará hasta cierto punto que no se recomiende hoteles con demasiado pocos de los servicios de interés. Finalmente, el hecho de que haya una colaboración de la similitud basada en la divergencia evita que se recomiende hoteles con un perfil muy distinto al original.
 
 Suponiendo que el \emph{score} es una medida satisfactoria de similitud, podemos proseguir a los siguientes componentes del sistema de recomendación, que tomarán en cuenta aspectos físicos y temporales que son imposibles de capturar utilizando únicamente información de los servicios de los hoteles.
 
 \section{Distancia: filtro dinámico}
 
-El concepto de ``hotel similar'' que buscamos en este caso tiene que ver no sólo con que los hoteles sean en sí mismos similares, sino que además estén cerca. La dificultad es que la noción de lo que significa la palabra ``cerca'' varía de lugar a lugar. Por ejemplo, en una zona con una alta densidad de hoteles, como Reforma Centro en la Ciudad de México, un hotel es considerado cercano si está a, digamos, no más de 1 ó 2 kilómetros. Una opción en el Aeropuerto Benito Juárez no es aceptable y difícilmente alguien diría que dicha opción está cerca de Reforma Centro (aunque en realidad está a 15 km). Sin embargo, en una zona despoblada como la Riviera Maya, en la que todo el transporte es por carretera, 15 kilómetros son 10 minutos en coche, y de hecho hay muchos hoteles que no tienen vecinos a menos de varios kilómetros de distancia. La moraleja de lo que acabamos de exponer es que la distancia se percibe distinto según la zona, por lo que debemos utilizar algún criterio adaptativo.
+El concepto de ``hotel similar'' que buscamos en este caso tiene que ver no sólo con que los hoteles sean en sí mismos similares, sino que además estén cerca. La dificultad es que la noción de lo que significa la palabra ``cerca'' varía de lugar a lugar. Por ejemplo, en una zona con una alta densidad de hoteles, como Reforma Centro en la Ciudad de México, un hotel es considerado cercano si está a, digamos, no más de 1 ó 2 kilómetros. Una opción en el Aeropuerto Benito Juárez no es aceptable y difícilmente alguien diría que dicha opción está cerca de Reforma Centro (aunque en realidad está a 15 km). Sin embargo, en una zona despoblada como la Riviera Maya, en la que todo el transporte es por carretera, 15 kilómetros son 10 minutos en coche, y de hecho hay muchos hoteles que no tienen vecinos a menos de varios kilómetros de distancia. La moraleja es que la distancia se percibe distinto según la zona, por lo que debemos utilizar algún criterio adaptativo.
 
-Una primera idea para incorporar la distancia en el modelo fue meterla de alguna manera en el \emph{score}, por ejemplo, como un tercer término en el promedio. Sin embargo, encontramos un argumento que sugiere que esto podría no ser la mejor idea: Supongamos que buscamos recomendaciones para el hotel A y tenemos dos candidatos, B y C. Dada la densidad de la zona, ambos están ``cerca'' de A, pero resulta que B está a la mitad de distancia de A que C. Además, supongamos que C se parece un poco más a A que B. La pregunta es entonces: ¿deberíamos recomendar a B sobre C aunque se parece menos y dado que ambos están cerca? Creemos que la respuesta a este ejercicio es claramente que no, que si ambos están cerca, es preferible el hotel más similar. Esta manera de pensar nos llevó a la conclusión de que incorporar la distancia de manera suave (i.e. en el promedio) tal vez no sea la mejor alternativa y que posiblemente la podríamos utilizar en la forma de un filtro dinámico. Para ello hay que seguir dos pasos:
+Una primera idea para incorporar la distancia en el modelo fue meterla de alguna manera en el \emph{score}, por ejemplo, como un tercer término en el promedio. Sin embargo, encontramos un argumento que sugiere que esto podría no ser la mejor idea: Supongamos que buscamos recomendaciones para el hotel A y tenemos dos candidatos, B y C. Dada la densidad de la zona, ambos están ``cerca'' de A, pero resulta que B está a la mitad de distancia de A que C. Además, supongamos que C se parece un poco más a A que B. La pregunta es entonces: ¿deberíamos recomendar a B sobre C aunque se parece menos y dado que ambos están cerca? Creemos que la respuesta a este ejercicio es claramente que no, que si ambos están cerca, es preferible el hotel más similar. Esta manera de pensar nos llevó a la conclusión de que incorporar la distancia de manera suave (como por ejemplo dándole una ponderación en el \emph{score}) tal vez no sea la mejor alternativa. Por ello decidimos mejor incorporarla en la forma de un filtro dinámico. Para ello hay que seguir dos pasos:
 \begin{enumerate}
 	\item Definir qué entendemos por hoteles cercanos.
 	\item Pasar a la siguiente ronda del modelo los hoteles que cumplen dicho criterio, ordenados por \emph{score}, es decir, por qué tan parecidos son al hotel en cuestión.
 \end{enumerate}
-El paso crítico para este método es la definición de cercanía. Una primera idea es, por ejemplo, elegir los 20 ó 30 hoteles más cercanos al hotel en cuestión. Sin embargo, este enfoque ingenuo tiene un problema grave: si un hotel es único en su categoría en la zona (por ejemplo es de 5 estrellas en un pueblo), entonces posiblemente los 20 hoteles más cercanos a él no se parezcan en lo absoluto. En estos casos debería permitirse una mayor flexibilidad de búsqueda en favor de obtener mejores recomendaciones. En la figura (\ref{fig:distdin}) ilustramos lo que sucede y a continuación describimos el proceso formalmente.
+El paso crítico para este método es la definición de cercanía. Una primera idea es, por ejemplo, elegir los 20 ó 30 hoteles más cercanos al hotel en cuestión. Sin embargo, este enfoque ingenuo tiene un problema grave: si un hotel es único en su categoría en la zona (por ejemplo es de 5 estrellas en un pueblo pequeño), entonces posiblemente los 20 hoteles más cercanos a él no se parezcan en lo absoluto. En estos casos debería permitirse una mayor flexibilidad de búsqueda en favor de obtener mejores recomendaciones. En la figura (\ref{fig:distdin}) ilustramos lo que sucede y a continuación describimos el proceso formalmente.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/distdin.pdf}
 	\caption{\label{fig:distdin} El filtro debe ser más laxo cuando hay pocos hoteles similares cercanos (izquierda) y más estricto cuando hay más (derecha).}
 \end{figure}
 \begin{regla}[Distancia: filtro dinámico] \label{r:distanciadinamica}
-La función de acumulación de score al alejarse del hotel $i$ está dada por $F_i: \R \to \R$, es decir:
+La función de acumulación de score al alejarse del hotel $i$, $F_i: \R \to \R$, está definida para cada $d \in \R$ como sigue:
 \[
 F_i(d) = \sum_{j | d_{geo}(i,j) < d} score(i,j)
 \]
@@ -576,10 +573,11 @@ es decir, la mínima distancia que garantice que se acumula al menos $w_{inner}$
 \HH_i^3 = \{j \in \HH_i^2 : d_{geo}(i,j) \leq r_{inner}\}
 \]
 \end{regla}
+La justificación de la regla anterior es que cuando un hotel es único en su área, los hoteles cercanos no se parecerán a él, lo que provocará que $F_i$ crezca lentamente y, por consiguiente, que $r_{inner}$ sea grande. Por el contrario, si hay muchos hoteles parecidos a $i$ cerca, entonces $F_i$ crecerá rápidamente y por lo tanto $r_{inner}$ será más pequeño.
 
 \section{Precios dinámicos}
 
-Un punto que hasta el momento no hemos tratado son las posibles promociones que los hoteles puedan ofrecer. Si bien el objetivo principal de este sistema es recomendar hoteles similares y no necesariamente descuentos, es deseable que éstos tuvieran algún impacto. Para ello notemos que el filtro estático de precio toma en cuenta el promedio de los precios en el largo plazo. Eso quiere decir que si un hotel baja sus precios temporalmente, podría ser un candidato para otros hoteles más baratos, pero el promedio impide que esto suceda. Una forma de suavizar este problema es filtrar con los precios en la fecha de la búsqueda en lugar de los promedios. Es decir que, si bien debemos calcular $\alpha$ y $r_{inner}$ con $\HH_i^2$ tal como lo hemos descrito hasta el momento, conviene utilizar
+Un punto que hasta el momento no hemos tratado son las posibles promociones que los hoteles puedan ofrecer. Si bien el objetivo principal de este sistema es recomendar hoteles similares y no necesariamente descuentos, es deseable que éstos tuvieran algún impacto. Para ello notemos que el filtro estático de precio toma en cuenta el promedio de los precios en el largo plazo. Eso quiere decir que si un hotel baja sus precios temporalmente, podría ser un candidato para otros hoteles más baratos, pero tanto la baja de los precios como su impacto se ven diluidos en el promedio. Una forma de suavizar este problema es filtrar con los precios en la fecha de la búsqueda en lugar de los promedios. Es decir que, si bien debemos calcular $\alpha$ y $r_{inner}$ con $\HH_i^2$ tal como lo hemos descrito hasta el momento, conviene utilizar
 \begin{align}
 	\mathcal{D^*} = \text{ período para el cual se busca reservar}
 \end{align}
@@ -587,18 +585,21 @@ para calcular los precios en lugar del período histórico largo $\mathcal{D}$.
 \begin{regla}[Precio dinámico] \label{r:preciodinamico}
 Dadas $\alpha$ y $r_{inner}$ obtenidas en R\ref{r:preciolargo}, R\ref{r:distanciaestatica} y R\ref{r:distanciadinamica}, denotamos las \textbf{recomendaciones finales} por
 \[
-\RR_i = \{j \in \HH : p^{D^*}_j > p^{sup}_i \text{,  } d_{geo}(i,j) \leq r_{inner}\},
+\RR_i = \{j \in \HH : p^{D^*}_j \leq (1 + \gamma)p^{D^*}_i \text{,  } d_{geo}(i,j) \leq r_{inner}\},
 \]
 y los hoteles se presentarán ordenados por \emph{score}, de mayor a menor.
 \end{regla}
+Hay que tener en cuenta que este último cambio aumenta considerablemente el costo computacional de calcular las recomendaciones, ya que habrá que conseguir los precios de todos los hoteles cercanos a $i$ en las fechas apropiadas cada vez que un usuario entre a la página del hotel (sería inviable almacenar todas las recomendaciones para todas las fechas posibles). Compárese esto con utilizar precios estáticos de largo plazo y almacenar las recomendaciones de $i$ una sola vez, dado que serán fijas para todos los usuarios.
+
+Si se considera que la carga computacional es demasiado pesada para la infraestructura en la que se correrá el sistema de recomendación, se puede omitir los precios dinámicos, poniendo $\RR := \HH_i^3$ y mostrando los hoteles ordenados por \emph{score} de la misma manera que en R\ref{r:preciodinamico}.
 
 \section{Consideraciones prácticas}
 
-Una última consideración que hay que tener son los casos extremos. Un caso es que la zona del hotel buscado tenga muy pocas opciones dentro de la cerca exterior y el otro es cuando el hotel es muy barato para la zona, por lo que el filtro de precio le impide ver suficientes de los demás hoteles.
+Una última consideración que hay que tener son los casos extremos. Un caso es que la zona del hotel buscado tenga muy pocas opciones dentro de la cerca exterior y el otro es cuando el hotel es muy barato para la zona, por lo que el filtro de precio le impide ver suficientes de los demás hoteles. En ambos, un asesor deberá utilizar su \emph{ingenio} para salir de paso. Lo que es indispensable es que \emph{siempre} recomiende algo, aunque sea lo menos peor cuando no tenga alternativa.
 
-Para aliviar el primer problema el procedimiento es simple: como no queremos que se queden vacías las recomendaciones, ignoramos todo lo anterior y regresamos un número pequeño predefinido de hoteles cercanos, ordenados por distancia, dado que hay muy pocas opciones. Si por otro lado sí hay suficientes hoteles dentro de la cerca exterior pero el filtro de precio es demasiado estricto, entonces se ignora por completo este filtro.
+Para aliviar el primer problema el procedimiento es simple: como no queremos que se queden vacías las recomendaciones, ignoramos todo lo anterior y regresamos un número pequeño predefinido de hoteles cercanos, ordenados por distancia. Decidimos ignorar el \emph{score} en estos casos porque, dado que hay muy pocas opciones, creemos que hay que darle prioridad al lugar en particular que buscó el cliente. Si, por otro lado, sí hay suficientes hoteles dentro de la cerca exterior, pero el filtro de precio es demasiado estricto, entonces ignoramos por completo este filtro.
 \begin{regla}[Casos extremos] \label{r:casosextremos}
-Sea $rec_{min}$ el mínimo número de recomendaciones que se desea.
+Sea $rec_{min} > 0$ el mínimo número de recomendaciones que se desea.
 \begin{enumerate}[(I)]
 	\item Si $|\HH_i^2| < rec_{min}$, entonces redefinimos
 		\[
@@ -609,7 +610,7 @@ Sea $rec_{min}$ el mínimo número de recomendaciones que se desea.
 		\RR_i^{ex} = \{j \in \HH : j \text{ es uno de los } rec_{min} \text{ hoteles más cercanos a } i\}
 	\]
 	Además, ignoramos el score y los presentamos ordenados por distancia al hotel $i$.
-	\item Las dos reglas anteriores aplican de manera análoga para $\HH_i^{1*}$ y $\HH_i^{2*}$.
+	\item Las dos reglas anteriores aplican de manera análoga para $\HH_i^{1*}$ y $\HH_i^{2*}$, los equivalentes a $\HH_i^{1}$ y $\HH_i^{2}$ que utilizan el precio dinámico.
 \end{enumerate}
 \end{regla}
 
@@ -619,7 +620,7 @@ El procedimiento descrito anteriormente es largo y puede ser difícil de asimila
 \begin{enumerate}
 	\item Sean $i$ un hotel, $D$ un periodo largo y $D^*$ el periodo en el que se desea reservar.
 	\item Calculamos $\alpha$ y $r_{inner}$ como está descrito en R\ref{r:preciolargo}, R\ref{r:distanciaestatica} y R\ref{r:distanciadinamica}.
-	\item Checamos los casos extremos descritos en R\ref{r:casosextremos}. Si ninguno aplica, continuamos; si resulta el caso (II), entonces recalculamos el paso anterior y continuamos; si resulta el caso (I), recomendamos con $\RR_i^{ex}$ y terminamos.
+	\item Checamos los casos extremos descritos en R\ref{r:casosextremos}. Si ninguno aplica, continuamos; si resulta el caso (II), entonces recalculamos el paso (2) y continuamos al (4); si resulta el caso (I), recomendamos con $\RR_i^{ex}$ por distancia y terminamos.
 	\item Generamos las recomendaciones finales como está descrito en R\ref{r:preciodinamico} y las presentamos ordenadas por \emph{score}.
 \end{enumerate}
 

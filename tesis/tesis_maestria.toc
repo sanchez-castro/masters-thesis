@@ -9,16 +9,16 @@
 \contentsline {section}{\numberline {2.3}Distancia: filtro est\IeC {\'a}tico}{17}{section.2.3}
 \contentsline {section}{\numberline {2.4}Similitud de hoteles}{18}{section.2.4}
 \contentsline {section}{\numberline {2.5}Distancia: filtro din\IeC {\'a}mico}{29}{section.2.5}
-\contentsline {section}{\numberline {2.6}Precios din\IeC {\'a}micos}{31}{section.2.6}
-\contentsline {section}{\numberline {2.7}Consideraciones pr\IeC {\'a}cticas}{32}{section.2.7}
-\contentsline {section}{\numberline {2.8}Juntando todo}{33}{section.2.8}
-\contentsline {section}{\numberline {2.9}Comentarios}{33}{section.2.9}
-\contentsline {chapter}{\numberline {3}Implementaci\IeC {\'o}n}{34}{chapter.3}
-\contentsline {section}{\numberline {3.1}Informaci\IeC {\'o}n}{34}{section.3.1}
-\contentsline {section}{\numberline {3.2}Sistema de respaldo}{36}{section.3.2}
-\contentsline {chapter}{\numberline {4}Desempe\IeC {\~n}o}{38}{chapter.4}
-\contentsline {section}{\numberline {4.1}An\IeC {\'a}lisis de redes}{38}{section.4.1}
-\contentsline {section}{\numberline {4.2}Desempe\IeC {\~n}o de la p\IeC {\'a}gina}{44}{section.4.2}
-\contentsline {chapter}{\numberline {5}Conclusiones}{49}{chapter.5}
-\contentsline {section}{\numberline {5.1}Trabajo futuro}{49}{section.5.1}
-\contentsline {section}{\numberline {5.2}Comentarios finales}{49}{section.5.2}
+\contentsline {section}{\numberline {2.6}Precios din\IeC {\'a}micos}{32}{section.2.6}
+\contentsline {section}{\numberline {2.7}Consideraciones pr\IeC {\'a}cticas}{33}{section.2.7}
+\contentsline {section}{\numberline {2.8}Juntando todo}{34}{section.2.8}
+\contentsline {section}{\numberline {2.9}Comentarios}{34}{section.2.9}
+\contentsline {chapter}{\numberline {3}Implementaci\IeC {\'o}n}{35}{chapter.3}
+\contentsline {section}{\numberline {3.1}Informaci\IeC {\'o}n}{35}{section.3.1}
+\contentsline {section}{\numberline {3.2}Sistema de respaldo}{37}{section.3.2}
+\contentsline {chapter}{\numberline {4}Desempe\IeC {\~n}o}{39}{chapter.4}
+\contentsline {section}{\numberline {4.1}An\IeC {\'a}lisis de redes}{39}{section.4.1}
+\contentsline {section}{\numberline {4.2}Desempe\IeC {\~n}o de la p\IeC {\'a}gina}{45}{section.4.2}
+\contentsline {chapter}{\numberline {5}Conclusiones}{50}{chapter.5}
+\contentsline {section}{\numberline {5.1}Trabajo futuro}{50}{section.5.1}
+\contentsline {section}{\numberline {5.2}Comentarios finales}{50}{section.5.2}
