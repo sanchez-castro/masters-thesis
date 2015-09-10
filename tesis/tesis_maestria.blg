@@ -1,55 +1,51 @@
 This is BibTeX, Version 0.99d (TeX Live 2012)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: tesis_maestria.aux
-The style file: plain.bst
+The style file: apalike.bst
 Database file #1: bibliografia.bib
-Warning--entry type for "R" isn't style-file defined
---line 42 of file bibliografia.bib
-Warning--entry type for "sql" isn't style-file defined
---line 49 of file bibliografia.bib
 Warning--entry type for "analytics" isn't style-file defined
---line 57 of file bibliografia.bib
+--line 2 of file bibliografia.bib
 Warning--empty journal in ward
 Warning--empty journal in ward-notes
 You've used 8 entries,
-            2118 wiz_defined-function locations,
-            541 strings with 5181 characters,
-and the built_in function-call counts, 1944 in all, are:
-= -- 181
+            1935 wiz_defined-function locations,
+            516 strings with 4877 characters,
+and the built_in function-call counts, 2376 in all, are:
+= -- 231
 > -- 95
-< -- 1
-+ -- 40
+< -- 7
++ -- 32
 - -- 30
-* -- 96
-:= -- 353
-add.period$ -- 25
+* -- 172
+:= -- 458
+add.period$ -- 24
 call.type$ -- 8
-change.case$ -- 36
-chr.to.int$ -- 0
+change.case$ -- 53
+chr.to.int$ -- 8
 cite$ -- 10
-duplicate$ -- 74
-empty$ -- 160
-format.name$ -- 30
-if$ -- 400
-int.to.chr$ -- 0
-int.to.str$ -- 8
+duplicate$ -- 96
+empty$ -- 150
+format.name$ -- 42
+if$ -- 443
+int.to.chr$ -- 1
+int.to.str$ -- 0
 missing$ -- 6
-newline$ -- 43
-num.names$ -- 16
-pop$ -- 58
+newline$ -- 42
+num.names$ -- 24
+pop$ -- 47
 preamble$ -- 1
-purify$ -- 31
+purify$ -- 55
 quote$ -- 0
-skip$ -- 54
+skip$ -- 77
 stack$ -- 0
-substring$ -- 42
-swap$ -- 6
+substring$ -- 98
+swap$ -- 3
 text.length$ -- 1
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 28
+type$ -- 44
 warning$ -- 2
 while$ -- 16
-width$ -- 9
-write$ -- 84
-(There were 5 warnings)
+width$ -- 0
+write$ -- 100
+(There were 3 warnings)

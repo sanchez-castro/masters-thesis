@@ -1,47 +1,46 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{}
 
-\bibitem{R}
-The R~Project for Statistical~Computing.
-\newblock \url{https://www.r-project.org/}, 2015.
+\bibitem[{Google Inc.}, 2015]{analytics}
+{Google Inc.} (2015).
+\newblock {Google Analytics}.
+\newblock \url{https://www.google.com/analytics/}.
 
-\bibitem{elements}
-Trevor Hastie, Robert Tibshirani, and Jerome Friedman.
+\bibitem[Hastie et~al., 2001]{elements}
+Hastie, T., Tibshirani, R., and Friedman, J. (2001).
 \newblock {\em The Elements of Statistical Learning}.
 \newblock Springer Series in Statistics. Springer New York Inc., New York, NY,
-  USA, 2001.
+  USA.
 
-\bibitem{analytics}
-Google Inc.
-\newblock Google {A}nalytics.
-\newblock \url{https://www.google.com/analytics/}, 2015.
-
-\bibitem{sql}
-Microsoft.
-\newblock {S}{Q}{L} {S}erver.
+\bibitem[{Microsoft Corporation}, 2015]{sql}
+{Microsoft Corporation} (2015).
+\newblock {SQL Server}.
 \newblock
-  \url{http://www.microsoft.com/en-us/server-cloud/products/sql-server/}, 2015.
+  \url{http://www.microsoft.com/en-us/server-cloud/products/sql-server/}.
 
-\bibitem{ward}
-Fionn Murtagh and Pierre Legendre.
-\newblock Ward’s hierarchical clustering method: Clustering criterion and
-  agglomerative algorithm.
-\newblock 2011.
+\bibitem[Murtagh and Legendre, 2011]{ward}
+Murtagh, F. and Legendre, P. (2011).
+\newblock {Ward’s Hierarchical Clustering Method: Clustering Criterion and
+  Agglomerative Algorithm}.
 
-\bibitem{pagerank}
-Lawrence Page, Sergey Brin, Rajeev Motwani, and Terry Winograd.
-\newblock The {P}age{R}ank {C}itation ranking: Bringing order to the web.
-\newblock Technical Report 1999-66, Stanford InfoLab, November 1999.
+\bibitem[Page et~al., 1999]{pagerank}
+Page, L., Brin, S., Motwani, R., and Winograd, T. (1999).
+\newblock {The PageRank Citation Ranking: Bringing Order to the Web.}
+\newblock Technical Report 1999-66, Stanford InfoLab.
 \newblock Previous number = SIDL-WP-1999-0120.
 
-\bibitem{mmds}
-Anand Rajaraman and Jeffrey~David Ullman.
+\bibitem[Rajaraman and Ullman, 2011]{mmds}
+Rajaraman, A. and Ullman, J.~D. (2011).
 \newblock {\em Mining of Massive Datasets}.
-\newblock Cambridge University Press, New York, NY, USA, 2011.
+\newblock Cambridge University Press, New York, NY, USA.
 
-\bibitem{ward-notes}
-Cosma Shalizi.
-\newblock Distances between {C}lustering, {H}ierarchical clustering. notes from
-  ``statistics 36-350: Data mining''.
-\newblock 2009.
+\bibitem[Shalizi, 2009]{ward-notes}
+Shalizi, C. (2009).
+\newblock {Distances between Clustering, Hierarchical Clustering. Notes from
+  ``Statistics 36-350: Data Mining''}.
+
+\bibitem[{Various}, 2015]{R}
+{Various} (2015).
+\newblock {The R Project for Statistical Computing}.
+\newblock \url{https://www.r-project.org/}.
 
 \end{thebibliography}
