@@ -3,6 +3,9 @@ library(grid)
 library(ggthemes)
 library(dplyr)
 library(igraph)
+library(RGoogleAnalytics)
+library(knitr)
+library(tidyr)
 
 # Auxiliares --------------------------------------------------------------
 
@@ -250,6 +253,146 @@ plot(red)
 write.graph(red, file='tesis/datos/red_ejemplos.graphml', format = 'graphml')
 
 
+
+# Analytics ---------------------------------------------------------------
+
+oauth_token <- Auth(client.id = "410202734756-vuek66j0asrnk5aicd0geog0uf5kje2u.apps.googleusercontent.com",
+                    client.secret = "81DW-mkNRQAF21-FD-89dkI2")
+
+ValidateToken(oauth_token)
+
+## FECHAS
+start.date = '2015-08-01'
+end.date = '2015-09-13'
+##
+
+params_list_1 <- Init(start.date = start.date,
+                      end.date = end.date,
+                      dimensions = 'ga:userType,ga:date',
+                      metrics = 'ga:users,ga:sessions,ga:bounceRate,ga:avgSessionDuration,ga:goalConversionRateAll,ga:pageviews',
+                      #                     filters = 'ga:pagePath%3D@view=similarhotel',
+                      segments = 'sessions::condition::ga:pagePath=~view=(similarhotel|similarpackage)',
+                      table.id = 'ga:22605939')
+ga_query_1 <- QueryBuilder(query.params.list = params_list_1)
+ga_df_1 <- GetReportData(ga_query_1, token = oauth_token)
+
+###
+
+params_list_2 <- Init(start.date = start.date,
+                      end.date = end.date,
+                      dimensions = 'ga:userType,ga:date',
+                      metrics = 'ga:users,ga:sessions,ga:bounceRate,ga:avgSessionDuration,ga:goalConversionRateAll,ga:pageviews',
+                      segments = 'sessions::condition::ga:dimension18==Hotel;condition::!ga:pagePath=~view=(similarhotel|similarpackage)',
+                      #                     filters = '!ga:pagePath%3D@view=similarhotel',
+                      table.id = 'ga:22605939')
+ga_query_2 <- QueryBuilder(query.params.list = params_list_2)
+ga_df_2 <- GetReportData(ga_query_2, token = oauth_token)
+
+v <- ga_df_1
+nv <- ga_df_2
+# save(list = c('v', 'nv'), file = 'tesis/datos/query_api_20150101_20150913.Rdata')
+head(ga_df_1)
+head(ga_df_2)
+
+# library(lubridate)
+
+#load('datos/query_api_20150101_20150913.Rdata')
+
+
+dat <- rbind(
+  data.frame(viewed_recom = 'yes', v),
+  data.frame(viewed_recom = 'no', nv)
+) %>%
+  group_by(viewed_recom, date) %>%
+  summarise(users = sum(users),
+            bounceRate = sum(bounceRate * sessions)/sum(sessions),
+            avgSessionDuration= sum(avgSessionDuration * sessions)/sum(sessions)/60,
+            goalConversionRateAll = sum(goalConversionRateAll* sessions)/sum(sessions),
+            pageviews = sum(pageviews),
+            sessions = sum(sessions)) %>%
+  mutate(pageviews_per_session = pageviews / sessions) %>%
+  filter(!is.na(date)) %>%
+  ungroup
+dat <- dat[dat$pageviews < max(dat$pageviews), ]
+
+dat$date <- strptime(dat$date, '%Y%m%d') %>%
+  as.character %>%
+  as.Date
+
+dat2 <- dat %>%
+  gather(var, val, sessions, bounceRate, avgSessionDuration, goalConversionRateAll, pageviews_per_session)
+
+
+### Estadísticas descriptivas
+
+dat %>%
+  group_by(viewed_recom) %>%
+  summarise(tot_sessions = sum(sessions),
+            bounce_rate = sum(bounceRate * sessions)/sum(sessions),
+            avg_session_minutes= sum(avgSessionDuration * sessions)/sum(sessions),
+            conversion_rate = sum(goalConversionRateAll* sessions)/sum(sessions)) %>%
+  mutate(perc_sessions = 100*tot_sessions/sum(tot_sessions)) %>%
+  data.frame %>%
+  dplyr::select(viewed_recom, tot_sessions, perc_sessions, bounce_rate, avg_session_minutes, conversion_rate) %>%
+  kable(digits = 2)
+
+### Series de tiempo: comparación en la misma escala
+
+qplot(date, val, data=dat2, geom='line', color=viewed_recom) +
+  geom_smooth() +
+  facet_wrap(~ var, scales = 'free_y') +
+  theme(axis.text.x = element_text(angle=90)) +
+  scale_x_date()
+
+### Series de tiempo: comparación en escalas distintas
+
+qplot(date, val, data=dat2, geom='line', color=viewed_recom) +
+  geom_smooth() +
+  facet_wrap(var ~ viewed_recom, scales = 'free_y', ncol = 2) +
+  theme(axis.text.x = element_text(angle=90)) +
+  scale_x_date()
+
+### Series de tiempo: sólo los que usaron recomendaciones
+levels(dat2$var) <- c('Usuarios','Tasa de rebote','Duración promedio de la sesión','Tasa de conversión','Páginas vistas por sesión')
+p <- ggplot(filter(dat2, viewed_recom=='yes'), aes(date, val)) +
+  geom_line() +
+  geom_vline(aes(xintercept=as.numeric(date[date=='2015-09-10'])), linetype=4) +
+  geom_smooth() +
+  facet_wrap(~ var, scales = 'free_y', ncol = 2) +
+  theme(axis.text.x = element_text(angle=90)) +
+  scale_x_date() +
+  labs(x='Fecha', y='', title='Indicadores para usuarios que utilizaron el sistema')
+p
+ggsave('tesis/imagenes/analytics_x.pdf', p, scale = 1, width = 8, height = 8, units = 'in')
+
+### Los que vieron como proporción de los que no
+
+dat3 <- inner_join(filter(dat, viewed_recom == 'no'),
+                   filter(dat, viewed_recom == 'yes'),
+                   by = c('date')) %>%
+  dplyr::select(-viewed_recom.x,-viewed_recom.y)
+
+for(col in names(dat)[!(names(dat) %in% c('date','viewed_recom'))]){
+  dat3[[paste0('p_',col)]] <- ifelse(dat3[[paste0(col,'.x')]] == 0,
+                      -1,
+                      dat3[[paste0(col,'.y')]]/dat3[[paste0(col,'.x')]])
+}
+
+dat4 <- dat3 %>%
+  dplyr::select(date, p_users, p_bounceRate, p_avgSessionDuration, p_goalConversionRateAll, p_pageviews_per_session) %>%
+  gather(var, value, p_users:p_pageviews_per_session)
+levels(dat4$var) <- c('Usuarios','Tasa de rebote','Duración promedio de la sesión','Tasa de conversión','Páginas vistas por sesión')
+
+p <- ggplot(dat4, aes(date, value)) +
+  geom_line() +
+  geom_vline(aes(xintercept=as.numeric(date[date=='2015-09-10'])), linetype=4) +
+  geom_smooth() +
+  theme(axis.text.x = element_text(angle=90)) +
+  scale_x_date() +
+  facet_wrap(~var, scales = 'free_y', ncol=2) +
+  labs(x='Fecha',y='',title='Indicadores cociente: con vs. sin sistema')
+p
+ggsave('tesis/imagenes/analytics_y.pdf', p, scale = 1, width = 8, height = 8, units = 'in')
 
 
 

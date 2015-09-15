@@ -801,25 +801,61 @@ Finalmente, en las redes anteriores hicimos dos grandes supuestos que no necesar
 
 \section{Desempeño de la página}
 
-Google Analytics
+El análisis de redes de la sección anterior evalúa el sistema de recomendación desde un punto de vista hipotético, en el sentido de que nos permite ver qué cosas \emph{puede} o no hacer el sistema. Por ejemplo, ilustra desde qué nodos de la gráfica podemos llegar a cuáles otros, cuáles son más importantes, etc. Sin embargo, el análisis teórico de la red debe ser complementado con uno de su desempeño en el mundo real, que en este caso corresponde con el de la página web de Best Day. Utilizamos la herramienta Google Analytics \cite{analytics} para obtener las diversas métricas de interés que analizaremos en esta sección.
 
+
+Dado que estamos presentando una versión nueva de un sistema que ya existía, nos gustaría comparar su desempeño contra la versión anterior y no tanto en términos absolutos. Para hacerlo, nos basaremos en las series de tiempo de las diversas métricas, fijándonos qué pasó antes y después de que subiéramos el nuevo sistema a producción. Lo haremos para las sesiones que fueron asistidas por el sistema de recomendación (i.e. que dieron \emph{click} en alguna recomendación), para los siguientes indicadores:
+\begin{enumerate}
+	\item \emph{Número de usuarios} que entraron a la página.
+	\item \emph{Tasa de rebote}, es decir, la proporción de clientes que entró a la página y se salió sin dar \emph{click} a ninguna liga.
+	\item \emph{Duración promedio de la sesión} del cliente en la página.
+	\item \emph{Tasa de conversión}, que es la proporción de clientes que compraron algo una vez habiendo entrado a la página.
+	\item \emph{Número promedio de páginas} visitadas durante la sesión
+\end{enumerate}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.9\textwidth]{imagenes/analytics_x.pdf}
+	\caption{\label{fig:analytics_x} Métricas del desempeño de la página. La línea vertical indica el momento en el que se cambió el sistema de recomendación.}
+\end{figure}
+
+En la figura (\ref{fig:analytics_x}) podemos ver las series de tiempo de las métricas descritas anteriormente. Después de estudiarlas brevemente, es inmediato ver que hay factores estacionales y de otros tipos que dificultan la interpretación de las gráficas. La pregunta es entonces si realmente queremos analizar estas métricas, algunas variantes de las mismas o de plano otras completamente nuevas. Creemos que la respuesta a esto es que hay que modificarlas de modo que revelen su información relevante, puesto que sí son datos apropiados para medir el desempeño de una página web. La transformación que utilizaremos es la siguiente: Supongamos que $X_t$ es uno de los indicadores antes mencionados al tiempo $t$. Entonces, en lugar de $X_t$ utilizaremos el cociente de $X_t$ para las personas que fueron asistidas por el sistema de recomendación (i.e. dieron \emph{click} en alguna recomendación), entre las que no lo utilizaron. Es decir, para un indicador al tiempo $t$, $X_t$, analizaremos
+\[
+Y_t = \frac{X_t \; | \text{ utilizó el sistema}}{X_t \; | \text{ no utilizó el sistema}}
+\]
+La ventaja de utilizar $Y_t$ en lugar de $X_t$ es que quita en buena medida los factores externos, por lo que una mala o una buena época no sesgará tan fuertemente los resultados. Esto se debe a que $Y_t$ compara los individuos que utilizaron el sistema con los que no lo usaron, de modo que los factores externos (como por ejemplo un aumento de la cantidad de sesiones en temporada alta) no tendrán efecto alguno, o no uno tan marcado. A pesar de ello, la serie de tiempo $Y_t$ nos indicará si el efecto de $X_t$ ha cambiado para los clientes que utilizaron el sistema en comparación con los demás, desde el momento en que se implementó la nueva versón. Dado que esto último es lo que buscamos averiguar, sí es apropiado utilizar $Y_t$ en lugar de $X_t$. A continuación enlistamos la interpretación de los indicadores transformados:
+\begin{enumerate}
+	\item Proporción de usuarios que usaron el sistema de recomendación.
+	\item Comparación de las tasas de rebote entre clientes que usaron / no usaron el sistema.
+	\item Número de sesiones sin sistema de recomendación que dura una sesión que sí lo utilizó.
+	\item 100\% más el porcentaje de veces que aumentó la tasa de conversión al usar el sistema.
+	\item 100\% más el aumento porcentual del número de páginas vistas en una sesión.
+\end{enumerate}
+En la figura (\ref{fig:analytics_y}) mostramos los indicadores en esta nueva forma. Como se puede ver...
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.9\textwidth]{imagenes/analytics_y.pdf}
+	\caption{\label{fig:analytics_y} Indicadores en su forma $Y_t$. La línea vertical indica el momento en el que se cambió el sistema de recomendación.}
+\end{figure}
 
 
 
 % ----------------------------------------------------------------------------------------------------
 \chapter{Conclusiones} \label{cap:5}
+
+Por qué no distancia absoluta?
+
+No es personalizado, sino de hoteles similares.
+
+\section{Qué es el sistema de recomendación de hoteles}
+
+[Ver presentación para qué sí/no es o podría ser]
+
 \section{Trabajo futuro}
 Incorporar los hoteles vistos recientemente de forma dinámica.
 Porcentaje dinámico en forma de `U' para el tope de precio.
 
 Otras métricas
-\section{Comentarios finales}
-Por qué no distancia absoluta?
-
-No es personalizado, sino de hoteles similares.
-
-[Ver presentación para qué sí/no es o podría ser]
-
 
 
 

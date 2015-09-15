@@ -21,6 +21,6 @@
 \contentsline {chapter}{\numberline {4}Desempe\IeC {\~n}o}{42}{chapter.4}
 \contentsline {section}{\numberline {4.1}An\IeC {\'a}lisis de redes}{42}{section.4.1}
 \contentsline {section}{\numberline {4.2}Desempe\IeC {\~n}o de la p\IeC {\'a}gina}{48}{section.4.2}
-\contentsline {chapter}{\numberline {5}Conclusiones}{53}{chapter.5}
-\contentsline {section}{\numberline {5.1}Trabajo futuro}{53}{section.5.1}
-\contentsline {section}{\numberline {5.2}Comentarios finales}{53}{section.5.2}
+\contentsline {chapter}{\numberline {5}Conclusiones}{57}{chapter.5}
+\contentsline {section}{\numberline {5.1}Qu\IeC {\'e} es el sistema de recomendaci\IeC {\'o}n de hoteles}{57}{section.5.1}
+\contentsline {section}{\numberline {5.2}Trabajo futuro}{57}{section.5.2}
