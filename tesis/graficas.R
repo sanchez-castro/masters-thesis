@@ -118,7 +118,7 @@ ggplot(aux) +
 
 ## Elección de alpha
 set.seed(1234)
-n <- 50
+n <- 100
 x <- rbeta(n, shape1 = 8, shape2 = 2)
 qplot(x)
 y <- 3*x - 2 + rnorm(n, 0, 0.1)
@@ -126,20 +126,30 @@ d <- data.frame(x,y) %>%
   filter(x > 0, x < 1, y > 0, y < 1)
 mx <- mean(x)
 my <- mean(y)
-arr <- data.frame(x = rep(mx, 3),
-                  y = rep(my, 3),
-                  xend = c(0.75, 1, 1),
-                  yend = c(0.9, 1, my + (1-mx)),
-                  col = c('blue','red','black'))
+arr <- data.frame(x = rep(mx, 4),
+                  y = rep(my, 4),
+                  xend = c(0.75, 1, 1, 1),
+                  yend = c(0.9, 1, my + (1-mx), 0.3))
+
+a <- arr[3:4] - arr[1:2]
+a <- a/abs(apply(a,1,sum))
+arr$alpha <- as.character(round(a, 2)[,1])
+
+a <- arr[3:4] - arr[1:2]
+a <- a/apply(a,1,function(x) sqrt(sum(x*x)))
+arr[c('xend','yend')] <- arr[c('x','y')] + a/4
+
 plot_alpha <- ggplot(d) +
   geom_point(aes(x,y)) +
   geom_segment(data=arr,
-               mapping=aes(x=x, xend=xend, y=y, yend=yend),
+               mapping=aes(x=x, xend=xend, y=y, yend=yend, color=alpha),
+               size=1,
                arrow = arrow(length = unit(0.5,'cm'))) +
   geom_point(aes(x=mx, y=my), color = 'red', size = 3) +
-  geom_text(aes(x=mx, y=my, label='(mean(x), mean(y))'), hjust=1.1) +
-  xlim(0,1) +
-  ylim(0,1) +
+  geom_text(aes(x=mx, y=my, label='(list(bar(x), bar(y)))'), parse = T,
+            hjust=1.3) +
+  xlim(0,1.01) +
+  ylim(0,1.01) +
   coord_equal() +
   labs(title = 'Dirección de avance de la similitud\npara distintos valores de alpha',
        x = 'Similitud de servicios',
@@ -148,7 +158,7 @@ plot_alpha
 
 ggsave(filename = 'tesis/imagenes/alpha.pdf',
        plot = plot_alpha,
-       width = 8, height = 8)
+       width = 6, height = 6)
 
 
 # Distancia: criterio dinámico --------------------------------------------
@@ -263,7 +273,7 @@ ValidateToken(oauth_token)
 
 ## FECHAS
 start.date = '2015-08-01'
-end.date = '2015-09-13'
+end.date = '2015-09-17'
 ##
 
 params_list_1 <- Init(start.date = start.date,
@@ -363,7 +373,7 @@ p <- ggplot(filter(dat2, viewed_recom=='yes'), aes(date, val)) +
   scale_x_date() +
   labs(x='Fecha', y='', title='Indicadores para usuarios que utilizaron el sistema')
 p
-ggsave('tesis/imagenes/analytics_x.pdf', p, scale = 1, width = 8, height = 8, units = 'in')
+# ggsave('tesis/imagenes/analytics_x.pdf', p, scale = 1, width = 8, height = 8, units = 'in')
 
 ### Los que vieron como proporción de los que no
 
@@ -392,7 +402,7 @@ p <- ggplot(dat4, aes(date, value)) +
   facet_wrap(~var, scales = 'free_y', ncol=2) +
   labs(x='Fecha',y='',title='Indicadores cociente: con vs. sin sistema')
 p
-ggsave('tesis/imagenes/analytics_y.pdf', p, scale = 1, width = 8, height = 8, units = 'in')
+# ggsave('tesis/imagenes/analytics_y.pdf', p, scale = 1, width = 8, height = 8, units = 'in')
 
 
 

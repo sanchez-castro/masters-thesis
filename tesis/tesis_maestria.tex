@@ -323,7 +323,7 @@ Antes de entrar en criterios dinámicos de distancia y en similitudes de hoteles
 
 El problema con lo anterior es que además la gran mayoría de los cálculos se desperdiciarían, ya que en nuestro contexto no tiene mucha utilidad guardar la similitud entre un hotel en Veracruz y otro en Las Vegas. Una manera de resolver este problema es ignorar hoteles que seguro no recomendaremos. Dado que queremos que el sistema regrese hoteles similares \emph{y} cercanos, es razonable ignorar los que estén más lejos que una cantidad fija suficientemente grande en cualquier destino.
 
-Hay diversas fórmulas para calcular la distancia geodésica entre dos puntos, unas más sofisticadas que otras. Sin embargo, como en este caso estamos interesados en hoteles cercanos, basta con la versión que supone que la Tierra es esférica:
+Hay diversas fórmulas para calcular la distancia entre dos puntos sobre la superficie terrestre que están basadas en coordenadas. Algunas son más sofisticadas que otras y van desde suponer que la Tierra es plana hasta tomar en cuenta que es elipsoidal. Dado que estamos interesados en hoteles cercanos, no es necesario utilizar fórmulas complicadas que además sean costosas de calcular. Sin embargo, suponer que la Tierra es plana también es algo aventurado. Creemos que la distancia geodésica que supone que la Tierra es perfectamente esférica aporta un balance apropiado entre complejidad y precisión, por lo que la utilizaremos de este punto en adelante:
 \begin{defn}[Distancia geodésica]
 Definimos la distancia geodésica (en kilómetros) entre dos puntos $x = (x_{long}, x_{lat})$ y $y = (y_{long}, y_{lat})$ por la distancia mínima que hay que recorrer por la superficie terrestre para llegar de uno a otro, suponiendo que la tierra es esférica. Si definimos $R =$ radio promedio de la Tierra $\approx 6371 km$, $\Delta_{long} = y_{long} - x_{long}$ y $\Delta_{lat} = y_{lat} - x_{lat}$, entonces
 \[
@@ -348,39 +348,7 @@ Es importante hacer una buena elección de $r_{outer}$ para mantener el cálculo
 
 El filtro de cercanía y el límite de precio son esenciales para el algoritmo de recomendación. Sin embargo, no capturan nada sobre la naturaleza misma del hotel. Para ello utilizaremos información sobre los servicios disponibles en cada hotel, puesto que incluyen información más detallada sobre la categoría y el perfil que las estrellas por sí solas. Buscaremos desarrollar una medida de similitud entre hoteles que sea más informativa y utilizarla para ordenar las recomendaciones que estén a una distancia y precio razonables.
 
-Lo primero que tenemos que hacer al diseñar la similitud entre dos hoteles es pensar qué entendemos por ``hoteles similares''. Una idea es utilizar los servicios tal cuál en un vector binario $s_j$ para cada hotel $j$, y por ejemplo utilizar como medida de similitud la cantidad de servicios en que coinciden dos hoteles $i$ y $j$:
-\[
-sim(i,j) = \sum_k 1 - |s_{ik} - s_{jk}|
-\]
-Después de algunas pruebas con distancias de este estilo nos dimos cuenta de tres problemas fundamentales que tiene este enfoque, independientemente de la medida particular que utilicemos:
-\begin{enumerate}
-	\item Es una técnica muy ruidosa y no permite que servicios (casi) sustitutos contribuyan a la similitud entre los hoteles.
-	\item No se toma en cuenta cuál de los hoteles tiene más servicios.
-	\item No necesariamente se captura la filosofía de los hoteles.
-\end{enumerate}
-Elaboremos más en estos puntos. El primero tiene que ver con el hecho de que los hoteles son más que la suma de sus servicios: son experiencias completas. Es decir, si el hotel A tiene futbol, snorkel y tenis, probablemente se parezca más al hotel B que tiene basquetbol, kayak y squash, que al hotel C, que sólo tiene futbol, puesto que aunque A y B no tienen ningún deporte en común, tienen una selección que será suficientemente buena en la mayoría de los casos. Sin embargo, cualquier similitud basada en los vectores $s_j$ diría que A se parece más a C que a B. La solución a este problema es aglomerar los servicios en categorías dentro de las cuales los servicios sean aproximadamente equivalentes y comparar la cantidad de cada categoría.
-
-El segundo punto es sumamente importante porque hay un factor fundamentalmente asimétrico en la forma en que las personas comparan dos hoteles. Esto se debe a que un cliente que ve un hotel con pocos servicios probablemente no le molestará que una recomendación tenga más servicios, siempre y cuando el precio y el perfil del hotel sean similares. De hecho, probablemente preferirá una mayor cantidad de servicios si se respeta el precio.
-
-El tercer punto surge de que este tipo de medidas no capturan explícitamente la similitud entre los perfiles de dos hoteles. Si bien, mientras más servicios coincidan, probablemente haya una mayor coincidencia, una similitud más o menos chica no necesariamente implica que dos hoteles sean fundamentalmente distintos. Consideremos dos hoteles de playa, pero uno de tres y otro de cinco estrellas. Es razonable pensar que sus perfiles no son tan lejanos entre sí como lo serían con un hotel citadino, incluso a pesar de que sus servicios probablemente diferirán más entre sí que entre el de cinco estrellas y el citadino.
-
-Una última observación es que aunque es más fácil pensar en similitudes entre los hoteles, matemáticamente es más práctico trabajar con distancias. La razón es que ya hay una noción formal de lo que es una distancia, lo que nos permitirá utilizar matemáticas bien difundidas en lugar de inventar nociones propias:
-\begin{defn}[Distancia]
-Sea $A$ un conjunto no vacío. La función $d: A \to \R^+ \cup \{0\}$ es una distancia si y sólo si tiene las siguientes propiedades para cualesquiera $a, b, c \in A$:
-\begin{align}
-	d(a,b) &\geq 0 \text{ (positividad)}\label{dpos}\\
-	d(a,b) &= 0 \text{ si y sólo si } a = b \text{ (distancia mínima)}\label{dmin}\\
-	d(a,b) &= d(b,a) \text{ (simetría)}\label{dsim}\\
-	d(a,b) &\leq d(a,c) + d(c,b) \text{ (desigualdad del triángulo)}\label{dtri}
-\end{align}
-\end{defn}
-Una ventaja inmediata aparte de facilitar la comprensión es que si decidimos violar algunas de las propiedades de las distancias sabremos exactamente qué estamos haciendo. Aparte de eso, este enfoque no tiene ningún inconveniente si se construye una distancia acotada, pues se puede invertir al final para generar una medida de similitud. 
-
-A continuación describiremos con más detalle cómo tomamos en cuenta estas observaciones y cómo las integramos para construir nuestra medida de similitud
-
-\subsection*{Categorización de los servicios}
-
-Dado que el enfoque servicio a servicio tiene problemas independientemente de la distancia que elijamos, será el primero que abordaremos. La manera en la que decidimos solucionarlo fue agrupar los servicios en distintas categorías. Dentro de cada una de ellas suponemos que los servicios son sustitutos perfectos, esto es, son perfectamente intercambiables. Si bien este supuesto podría parecer algo aventurado, tuvo muy buenos resultados en la práctica y, en la mayoría de los casos, sí representa a los hoteles aproximadamente como lo haría una persona. Comenzaremos por describir la información disponible y luego la forma en que agrupamos en categorías.
+Lo primero que tenemos que hacer al diseñar la similitud entre dos hoteles es pensar qué entendemos por ``hoteles similares''. Una idea es utilizar los servicios crudos y definir alguna medida razonable basada en ellos. Formalizaremos estos conceptos en las siguientes definiciones:
 \begin{defn}[Conjunto de servicios]
 Definimos $\mathcal{S}$ como el conjunto de todos los servicios y $n_s = |\mathcal{S}|$.
 \end{defn}
@@ -395,13 +363,47 @@ s_{ij} = \left\{
 \end{array}
 \right.
 \]
-Las columnas de $S$ corresponden a los vectores de características de los hoteles:
+Las columnas de $S$ corresponden a los vectores (binarios) de características de los hoteles:
 \[
 S = [s_1 s_2 \dots s_N],
 \]
-es decir, $s_j$ corresponde al vector de características del hotel $j$. Por practicidad, denotamos los renglones de $S$ por $z_i^T = [s_{i1}, s_{i2}, \dots, s_{i3}]$.
+es decir, $s_j$ corresponde al vector de características del hotel $j$. Por practicidad, denotamos los renglones de $S$ por $z_i^T = [s_{i1}, s_{i2}, \dots, s_{in_s}]$.
 \end{defn}
-Para agrupar los servicios tomamos los renglones de $S$ como individuos y los aglomeramos utilizando un aglomerado jerárquico con el criterio de Ward, que está descrito con detalle en \cite{ward} y en \cite{ward-notes}. Tenemos entonces $n_s$ ``observaciones'' cada una con $N$ ``características''. Como en este caso sí importa tener grupos interpretables, asistimos al método manualmente. El resultado es que el algoritmo dio los grupos básicos, pero utilizamos conocimiento humano para arreglar las inconsistencias. Durante el proceso, elegimos un número de categorías y le dimos un nombre apropiado a cada una. Con lo que acabamos entonces es con un mapeo de cada servicio a su categoría correspondiente. Formalizamos estos conceptos en la siguiente definición:
+Regresando al problema de similitud entre hoteles, podemos utilizar, por ejemplo, la cantidad de servicios en que coinciden dos hoteles $i$ y $j$:
+\[
+sim(i,j) = \sum_k 1 - |s_{ik} - s_{jk}|
+\]
+Aunque a primera vista esto se ve bien, después de algunas pruebas nos dimos cuenta de tres problemas fundamentales que tiene este enfoque, independientemente de la medida particular que utilicemos:
+\begin{enumerate}
+	\item Es una técnica muy ruidosa y no permite que servicios (casi) sustitutos contribuyan a la similitud entre los hoteles.
+	\item No se toma en cuenta cuál de los hoteles tiene más servicios.
+	\item No necesariamente se captura la filosofía de los hoteles.
+\end{enumerate}
+Elaboremos más en estos puntos. El primero tiene que ver con el hecho de que los hoteles son más que la suma de sus servicios: son experiencias completas. Es decir, si el hotel A tiene futbol, snorkel y tenis, probablemente se parezca más al hotel B que tiene basquetbol, kayak y squash, que al hotel C, que sólo tiene futbol, puesto que aunque A y B no tienen ningún deporte en común, tienen una selección que será suficientemente buena en la mayoría de los casos. Sin embargo, cualquier similitud basada en los vectores $s_j$ diría que A se parece más a C que a B. La solución a este problema es aglomerar los servicios en categorías dentro de las cuales los servicios sean aproximadamente equivalentes y comparar la cantidad de cada categoría.
+
+El segundo punto es sumamente importante porque hay un factor fundamentalmente asimétrico en la forma en que las personas comparan dos hoteles. Esto se debe a que un cliente que ve un hotel con pocos servicios probablemente no le molestará que una recomendación tenga más servicios, siempre y cuando el precio y el perfil del hotel sean similares. De hecho, probablemente preferirá una mayor cantidad de servicios si se respeta el precio.
+
+El tercer punto surge de que este tipo de medidas no capturan explícitamente la similitud entre los perfiles de dos hoteles. Si bien, mientras más servicios coincidan, probablemente haya una mayor coincidencia, una similitud más o menos chica no necesariamente implica que dos hoteles sean fundamentalmente distintos. Consideremos dos hoteles de playa, pero uno de tres y otro de cinco estrellas. Es razonable pensar que sus perfiles no son tan lejanos entre sí como lo serían con un hotel citadino, incluso a pesar de que sus servicios probablemente diferirán más entre sí que entre el de cinco estrellas y el citadino.
+
+Una última observación es que aunque es más fácil pensar en similitudes entre los hoteles, matemáticamente es más práctico trabajar con distancias. La razón es que ya hay una noción formal de lo que es una distancia, lo que nos permitirá utilizar matemáticas bien difundidas en lugar de inventar nociones propias:
+\begin{defn}[Propiedades teóricas de una distancia]
+Sea $A$ un conjunto no vacío. La función $d: A \to \R^+ \cup \{0\}$ es una distancia si y sólo si tiene las siguientes propiedades para cualesquiera $a, b, c \in A$:
+\begin{align}
+	d(a,b) &\geq 0 \text{ (positividad)}\label{dpos}\\
+	d(a,b) &= 0 \text{ si y sólo si } a = b \text{ (distancia mínima)}\label{dmin}\\
+	d(a,b) &= d(b,a) \text{ (simetría)}\label{dsim}\\
+	d(a,b) &\leq d(a,c) + d(c,b) \text{ (desigualdad del triángulo)}\label{dtri}
+\end{align}
+\end{defn}
+Una ventaja inmediata aparte de facilitar la comprensión es que si decidimos violar algunas de las propiedades de las distancias sabremos exactamente qué estamos haciendo. Aparte de ello, este enfoque no tiene ningún inconveniente si se construye una distancia acotada, pues se puede invertir al final para generar una medida de similitud. 
+
+A continuación describiremos con más detalle cómo tomamos en cuenta estas observaciones y cómo las integramos para construir una medida de similitud apropiada entre dos hoteles.
+
+\subsection*{Categorización de los servicios}
+
+Dado que el enfoque servicio a servicio tiene problemas independientemente de la distancia que elijamos, será el primero que abordaremos. La manera en la que decidimos solucionarlo fue agrupar los servicios en distintas categorías. Dentro de cada una de ellas supondremos que los servicios son sustitutos perfectos, esto es, son perfectamente intercambiables. Si bien este supuesto podría parecer algo aventurado, tuvo muy buenos resultados en la práctica y, en la mayoría de los casos, sí representa a los hoteles aproximadamente como lo haría una persona.
+
+Una forma de agrupar los servicios es manualmente con criterio experto. Sin embargo, podría resultar algo arbitrario hacerlo así, por lo que decidimos complementar nuestra intuición con un método estadístico. Para ello, tomamos los renglones de $S$ como individuos y los aglomeramos utilizando un método de aglomerado jerárquico que utiliza el criterio de Ward. El algoritmo está descrito con detalle en \cite{ward} y en \cite{ward-notes}. Tenemos entonces $n_s$ ``observaciones'' cada una con $N$ ``características'' que podemos meter al programa. De este modo, utilizamos el dendrograma de salida del método para apoyarnos en la creación de las categorías, que además buscamos que fueran interpretables. El resultado final de este proceso es un mapeo de cada servicio a una categoría. Formalizamos estos conceptos en la siguiente definición:
 \begin{defn}[Categorías de servicios]
 Denotamos por $\mathcal{C}$ al conjunto de todas las categorías de servicios, de cardinalidad $n_c$. Definimos la categoría a la que pertenece cada servicio vía la función $\kappa: \mathcal{S} \to \mathcal{C}$, es decir si el servicio $s$ pertenece a la categoría $c$, entonces $\kappa(s) = c$.
 \end{defn}
@@ -478,7 +480,7 @@ Si bien la pseudodistancia \emph{hinge} captura muy bien la falta de servicios d
 
 Una manera de modelar el perfil de un hotel es interpretando el número de servicios en cada categoría no como un número absoluto, sino como una \emph{proporción} de los servicios disponibles. Es decir, tener $m$ servicios en la categoría $k$ es mucho o poco dependiendo del número total de servicios que tiene el hotel. Como en este caso cualquier diferencia de perfil afecta, necesitamos una distancia simétrica, que definimos a continuación.
 \begin{defn}[Divergencia y similitud de perfil]
-Sean $x, y \in \R$. Defnimos la divergencia entre $x$ e $y$ como sigue:
+Sean $x, y \in \R$. Definimos la divergencia entre $x$ e $y$ como sigue:
 \[
 d_{div}(x, y) = \frac{1}{2}\sum_{k=1}^n \left|\frac{x_i}{\sum_j x_j} - \frac{y_i}{\sum_j y_j}\right|,
 \]
@@ -487,14 +489,13 @@ es decir, la distancia absoluta entre los vectores normalizados por su suma. Def
 sim_{div}(x,y) = 1 - d_{div}(x,y)
 \]
 \end{defn}
-Como $d_{div}(\cdot, \cdot)$ siempre está entre 0 y 1, 
-La ventaja de esta distancia (se deja como ejercicio al lector probar que en efecto cumple todas las propiedades) es que primero quita la escala y luego compara los vectores en un espacio equitativo. Regresando a la gráfica (\ref{simperf}), notamos que bajo este criterio, el hotel verde es prácticamente idéntico al negro, incluso a pesar de que es un hotel de mucho menor categoría, debido a que tienen una distribución similar de servicios en cada una de las categorías. Por otra parte, aunque el azul tiene más servicios en cada categoría, tiene una distribución más uniforme que el negro y, por lo tanto, su distancia basada en divergencia será grande.
+Usando el hecho de que $d(x,y) = \sum_{k=1}^n | x_i - y_i |$ es una distancia, es fácil ver que la divergencia cumple las propiedades (\ref{dpos}), (\ref{dsim}) y (\ref{dtri}). La única propiedad que no tiene es la (\ref{dmin}), puesto que $d_{div}(x,y) = d_{div}(x,\lambda y)$ para cualquier $\lambda > 0$. Sin embargo, en el contexto de la comparación de hoteles este hecho es poco relevante y, para todo fin práctico, la divergencia tendrá las propiedades que necesitamos en una distancia. Además de ello, tiene la ventaja de que quita la escala primero y luego compara los vectores en un espacio equitativo. Regresando a la gráfica (\ref{simperf}), notamos que bajo este criterio, el hotel verde es prácticamente idéntico al negro, incluso a pesar de que es un hotel de mucho menor nivel, debido a que ambos tienen una distribución similar de servicios en cada una de las categorías. Por otra parte, aunque el azul tiene más servicios en cada categoría, tiene una distribución más uniforme que el negro y, por lo tanto, su distancia basada en divergencia será grande.
 
-Finalmente, dado que los vectores normalizados suman 1 y los estamos restando, es fácil ver que por el factor de $1/2$ que incluimos en la definición, la divergencia nunca puede pasar de 1 y por lo tanto la similitud que definimos en efecto tiene sentido.
+Finalmente, es importante mencionar que, dado que los vectores normalizados suman 1 y los estamos restando, la divergencia nunca puede pasar de 1 (nótese el factor 1/2 en la definición). Por lo tanto, la similitud que definimos, $sim_{div}(\cdot,\cdot)$, en efecto tiene sentido. La falla de la divergencia por cumplir (\ref{dmin}) resultará únicamente en que la similitud entre dos hoteles pueda ser máxima aunque los hoteles sean distintos.
 
 \subsection*{Similitud completa}
 
-En las secciones anteriores resolvimos parcialmente los tres puntos críticos. Por un lado, al mudar el análisis a la escala de categorías resolvimos el problema del ruido y, por otro, cada uno de los criterios de similitud de servicios y de perfil resuelve uno de los otros dos problemas. Sin embargo, como explicamos en cada sección, ambas tienen fallas. Lo que buscamos entonces es integrar las dos medidas en un criterio que sí tome en cuenta todo. La dificultad radica en cómo hacerlo sin perder información y dándole un peso apropiado a cada uno.
+En las secciones anteriores resolvimos individualmente los tres puntos críticos. Por un lado, al mudar el análisis a la escala de categorías resolvimos el problema del ruido. Por otro, cada uno de los criterios de similitud de servicios y de perfil resuelve uno de los otros dos problemas. Como ninguno de los dos es suficiente por sí solo, los integraremos en una sola medida de similitud que sí tome en cuenta todo. La dificultad radica en cómo hacerlo sin perder información y dándole un peso apropiado a cada uno de los componentes.
 
 De este punto en adelante trabajaremos nuevamente con similitudes, porque es más cómodo hablar de similitudes y porque además son equivalentes a sus distancias asociadas. Dado que tanto la similitud de servicios como la de perfil están en escalas equiparables, una manera razonable de combinarlas sería promediarlas. Sin embargo, podrían tener diferentes niveles de variabilidad, por lo que es prudente permitir la posibilidad de utilizar una ponderación distinta de $1/2$.
 \begin{defn}[Similitud entre hoteles]
@@ -505,13 +506,16 @@ sim_\alpha(c_i, c_j) = \alpha sim_h(c_i, c_j) + (1 - \alpha) sim_{div}(c_i, c_j)
 \end{defn}
 Cabe mencionar que la similitud entre hoteles no es simétrica porque está basada en parte en la similitud de servicios. Es decir, no necesariamente se cumple que $sim_\alpha(c_i, c_j) = sim_\alpha(c_j, c_i)$.
 
-Ya habiendo establecido la forma de combinar las dos medidas de similitud, el siguiente paso es elegir un valor apropiado de $\alpha$, que de preferencia sea óptima con respecto a algún criterio. Para ello, hay que notar que aunque ambas similitudes están entre 0 y 1, podrían tener niveles de variación y medias distintos, por lo que utilizar $\alpha = 1/2$ podría no ser una buena idea. Ilustramos este hecho en la figura (\ref{alpha}).
+Ya habiendo establecido la forma de combinar las dos medidas de similitud, el siguiente paso es elegir un valor apropiado de $\alpha$, que de preferencia sea óptima con respecto a algún criterio. Para ello, hay que notar que aunque ambas similitudes están entre 0 y 1, podrían tener niveles de variación y medias distintos, por lo que utilizar $\alpha = 1/2$ podría no ser una buena idea.
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=0.7\textwidth]{imagenes/alpha.pdf}
+	\includegraphics[width=0.8\textwidth]{imagenes/alpha.pdf}
 	\caption{\label{alpha} La elección de $\alpha$ determina la dirección en la que avanza la similitud total al variar la de servicios y la de perfil.}
 \end{figure}
-En el ejemplo, $\alpha = 1/2$ probablemente sería similar a avanzar en la flecha pequeña de la derecha, pero es claro que avanzando en la dirección de la de en medio estaríamos tratando ambas similitudes de manera más equitativa. Dado que lo que queremos es identificar hoteles similares, una buena manera de decidir el valor de $\alpha$ es utilizando la que maximice la varianza explicada por la similitud completa. Proponemos utilizar un Análisis de Componentes principales para calcular la $\alpha$ óptima. Al lector interesado en esta técnica lo remitimos a \cite{elements}, en donde encontrará además diversas variantes del mismo.
+
+En la figura (\ref{alpha}) ilustramos las direcciones de avance del \emph{score} al variar $\alpha$. Es claro ver que conviene utilizar un valor de $\alpha$ entre 0 y 1, como pedimos en la definición, porque de otro modo alguna de las medidas contribuirá negativamente al \emph{score}, como lo ilustran las flechas rosa y violeta. La turquesa muestra la dirección en la que crecería el \emph{score} si utilizáramos $\alpha = 1/2$. Como en este ejemplo la similitud de servicios tiene una menor variabilidad que la de perfil, si escogiéramos ese valor, le estaríamos dando un mayor peso al perfil. Si quisiéramos darles igual peso a ambas medidas, deberíamos utilizar $\alpha = 1/4$, como ilustra la flecha verde.
+
+Dado que queremos identificar hoteles similares, un buen criterio para decidir el valor de $\alpha$ es de manera que maximice el poder discriminatorio del \emph{score}. Es decir, que capture en un solo número la mayor cantidad posible de la información contenida en las dos medidas de similitud. En términos estadísticos, lo que queremos es obtener $\alpha \in (0,1)$ tal que se maximice la varianza del \emph{score} resultante. El método conocido como Análisis de Componentes Principales (ACP) hace algo muy similar a eso, con la pequeña diferencia de que no obtiene $\alpha$ entre 0 y 1. Sin embargo, dado que lo que importa es la dirección de la flecha generada por $\alpha$, podremos solucionar este inconveniente con una simple transformación. Al lector interesado en entender ACP más a profundidad lo remitimos a \cite{elements}, en donde encontrará además diversas variantes del mismo.
 
 Como queremos calcular el valor óptimo de $\alpha$ para las recomendaciones que haremos, tenemos que hacer el análisis con todas (o una muestra suficiente de) las recomendaciones de todos los hoteles. La forma de hacerlo es como sigue:
 \begin{enumerate}
@@ -523,14 +527,25 @@ Como queremos calcular el valor óptimo de $\alpha$ para las recomendaciones que
 		d_{ij} &:= sim_{div}(c_i, c_j)
 	\end{align*}
 	\item Insertamos cada pareja $(h_{ij}, d_{ij})$ como un renglón en una matriz $A$, con dos columnas y número de renglones igual a $\sum_i |\HH_i^2|$. Es decir, los renglones de $A$ pueden ser representados como en la figura (\ref{alpha}).
-	\item Corremos Componentes Principales sobre $A$ y obtenemos el vector propio asociado a la primera componente principal, digamos
+	\item Corremos ACP sobre $A$ y obtenemos el vector propio asociado a la primera componente principal, digamos
 	\[
 	\vec{a} = (a_h, a_d)
 	\]
-	\item El vector $\vec{a}$ define la dirección deseada. Para que sus componentes sumen 1 y por lo tanto definan valores aceptables para $\alpha$ y $1 - \alpha$, dividimos sus componentes entre la suma, de modo que:
+	$\vec{a}$ son las ponderaciones correspondientes a los servicios y al perfil, respectivamente, que maximizan la varianza del \emph{score} resultante,
+	\[
+	sim_{\vec{a}}(c_i, c_j) = a_h sim_h(c_i, c_j) + a_d sim_{div}(c_i, c_j)
+	\]
+	\item Como vimos, el vector $\vec{a}$ define la dirección que buscamos, pero sus componentes no necesariamente suman 1. Para forzar a que esto suceda, si $a_h, a_d \geq 0$, basta dividir $\vec{a}$ entre $a_h + a_d$ para obtener lo que deseamos, puesto que $\vec{a} / (a_h + a_d)$ apuntará en la misma dirección que $\vec{a}$. Si este es el caso, podemos definir
 	\begin{align*}
 		\alpha^* &:= \frac{a_h}{a_h + a_d}\\
 		1 - \alpha^* &:= \frac{a_d}{a_h + a_d}
+	\end{align*}
+	Es fácil ver que la similitud resultante es equivalente a la del punto anterior, notando que
+	\begin{align*}
+	sim_{\alpha^*}(c_i, c_j) &= \alpha^* sim_h(c_i, c_j) + (1 - \alpha^*) sim_{div}(c_i, c_j)\\
+	&= \frac{a_h}{a_h + a_d} sim_h(c_i, c_j) + \frac{a_d}{a_h + a_d} sim_{div}(c_i, c_j)\\
+	&= \frac{1}{a_h + a_d} (a_h sim_h(c_i, c_j) + a_d sim_{div}(c_i, c_j))\\
+	&= \frac{1}{a_h + a_d} sim_{\vec{a}}(c_i, c_j)
 	\end{align*}
 \end{enumerate}
 De este punto en adelante únicamente utilizaremos la similitud completa utilizando $\alpha^*$. La siguiente definición nos ayudará a facilitar la exposición.
@@ -692,7 +707,7 @@ Si también falla el sistema de recomendación antiguo no hay mucho que podamos 
 
 Hay algunas otros detalles técnicos que no entran naturalmente en ningún otro lado, pero que sí son importantes. En esta sección los describiremos brevemente con el fin de aclarar por completo la forma en que se debe implementar este sistema de recomendación:
 \begin{itemize}
-	\item \emph{Software:} Como hemos comentado, el acceso a la base de datos, tanto para el análisis como para producción, se realizó a través de código SQL. En particular, utilizamos Stored Procedures de SQL Server 2008, optimizadas para evitar sobrecargar la base. En \cite{sql} hay información de las últimas versiones de este software. Toda la analítica se llevó a cabo en $R$ (sitio del proyecto en \cite{R}), desde el aglomerado jerárquico hasta la generación de las recomendaciones. En el diagrama (\ref{fig:flujo}) de la siguiente sección será más evidente qué partes del sistema se hicieron en qué lenguaje.
+	\item \emph{Software:} Como hemos comentado, el acceso a la base de datos, tanto para el análisis como para producción, se realizó a través de código SQL. En particular, utilizamos Stored Procedures de SQL Server 2008, optimizadas para evitar sobrecargar la base. En \cite{sql} hay información de las últimas versiones de este software. Toda la analítica se llevó a cabo en \texttt{R} (sitio del proyecto en \cite{R}), desde el aglomerado jerárquico hasta la generación de las recomendaciones. En el diagrama (\ref{fig:flujo}) de la siguiente sección será más evidente qué partes del sistema se hicieron en qué lenguaje.
 	\item \emph{Almacenamiento de las recomendaciones:} En la práctica no es conveniente calcular los conjuntos $\RR_i$ al vuelo por su elevado costo computacional. Por ello los precalculamos para cada hotel y los metimos en una tabla $R$ con tuplas de la forma (hotel buscado, hotel recomendado, \emph{score}). Si se quiere utilizar los precios estáticos, se puede tomar, digamos, los 20 hoteles recomendados con mayor score para cada hotel buscado. Esto disminuye aún bastante el tamaño de $R$ y, por lo tanto, el costo de consultar las recomendaciones de un hotel. Si, por otro lado, se utilizan los precios estáticos, se debe almacenar todos los hoteles en la cerca interior y filtrarlos dinámicamente con los precios de la fecha consultada.
 	\item \emph{Actualización de las recomendaciones:} Dado que los hoteles son entidades más o menos estáticas, no tiene mucho sentido actualizarlas demasiado seguido. Basta correr el algoritmo que genera las recomendaciones una vez al mes, cuando mucho, para ir capturando los pequeños cambios que puedan haber ocurrido.
 \end{itemize}
@@ -700,12 +715,12 @@ Hay algunas otros detalles técnicos que no entran naturalmente en ningún otro 
 
 \section{Arquitectura final del sistema}
 
-En la figura (\ref{fig:flujo}) mostramos la arquitectura que el sistema debería tener idealmente. Por un lado, la base de datos analítica alimenta los Stored Procedures y el aglomerado jerárquico en \emph{R} de los servicios en categorías. Estos procesos se encargan de generar la matriz $C$ y la tabla $H$ con la información de los hoteles, completa con coordenadas y precios. El algoritmo de recomendación corre completamente en \emph{R} y genera una tabla con las recomendaciones. Esta tabla se debe cargar a la base de datos operativa para entrar a producción. Idealmente, la carga se debería realizar automáticamente, pero dada la baja frecuencia de las actualizaciones, si por alguna razón no es viable hacerlo así, basta con que se pueda hacer manualmente. Una vez que la tabla $R$ está en la base de datos operativa, la página (i.e. nuestro ``vendedor'' electrónico) puede aprovecharla para recomendar de manera más inteligente.
+En la figura (\ref{fig:flujo}) mostramos la arquitectura que el sistema debería tener idealmente. Por un lado, la base de datos analítica alimenta los Stored Procedures y el aglomerado jerárquico en \texttt{R} de los servicios en categorías. Estos procesos se encargan de generar la matriz $C$ y la tabla $H$ con la información de los hoteles, completa con coordenadas y precios. El algoritmo de recomendación corre completamente en \texttt{R} y genera una tabla con las recomendaciones. Esta tabla se debe cargar a la base de datos operativa para entrar a producción. Idealmente, la carga se debería realizar automáticamente, pero dada la baja frecuencia de las actualizaciones, si por alguna razón no es viable hacerlo así, basta con que se pueda hacer manualmente. Una vez que la tabla $R$ está en la base de datos operativa, la página (i.e. nuestro ``vendedor'' electrónico) puede aprovecharla para recomendar de manera más inteligente.
 
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/flowchart.pdf}
-	\caption{\label{fig:flujo} Diagrama de flujo del sistema de recomendación. Amarillo: bases de datos. Rojo: Interacción humana. Verde: Procesos en \emph{R}. Azul: Procesos en SQL.}
+	\caption{\label{fig:flujo} Diagrama de flujo del sistema de recomendación. Amarillo: bases de datos. Rojo: Interacción humana. Verde: Procesos en \texttt{R}. Azul: Procesos en SQL.}
 \end{figure}
 
 
@@ -741,7 +756,7 @@ Los hoteles y sus recomendaciones se pueden modelar de manera muy natural como u
 
 Uno de los primeros problemas que le encontramos al sistema actual es que dentro de una zona y una categoría las recomendaciones eran siempre iguales, lo que además de resultar aburrido y poco útil después de poco tiempo, le da un peso excesivo a los hoteles que aparecen hasta arriba de la lista de un destino y ciertas estrellas: todos los clientes que busquen un hotel en ese grupo verán lo mismo. En el mundo de las redes, esto es equivalente a nodos con un grado de entrada muy elevado o con PageRank alto.
 
-Por otro lado, independientemente de lo anterior, las recomendaciones eran cerradas, esto es, no podíamos salir de un cierto grupo de hoteles únicamente por medio de las recomendaciones. Esto equivale a que la red del modelo sea \emph{disconexa} (i.e. no conexa) en lugares en donde no debería. No es problemático que, por ejemplo, la recomendaciones de hoteles en Ciudad Juárez no nos pudieran llevar eventualmente a opciones en Mérida. Lo que sí es poco deseable es que secciones geográficamente cercanas sean disconexas, como por ejemplo si empezamos con un hotel de negocios en Cancún, que no haya forma de llegar a uno en la zona hotelera. Ilustramos estos puntos en la gráfica (\ref{fig:disconexo}).
+Por otro lado, independientemente de lo anterior, las recomendaciones eran cerradas, esto es, no podíamos salir de un cierto grupo de hoteles únicamente por medio de las recomendaciones. Esto equivale a que la red del modelo sea \emph{disconexa} (i.e. no conexa) en lugares en donde no debería. No es problemático que, por ejemplo, la recomendaciones de hoteles en Ciudad Juárez no nos pudieran llevar eventualmente a opciones en Mérida. Lo que sí es poco deseable es que secciones geográficamente cercanas sean disconexas. Por ejemplo, si empezamos con un hotel de negocios en Cancún, es deseable que en algunos pocos \emph{clicks} se pueda llegar a uno en la zona hotelera. Ilustramos estos puntos en la gráfica (\ref{fig:disconexo}).
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth,
