@@ -272,8 +272,8 @@ oauth_token <- Auth(client.id = "410202734756-vuek66j0asrnk5aicd0geog0uf5kje2u.a
 ValidateToken(oauth_token)
 
 ## FECHAS
-start.date = '2015-08-01'
-end.date = '2015-09-17'
+start.date = '2015-07-01'
+end.date = '2015-09-22'
 ##
 
 params_list_1 <- Init(start.date = start.date,
