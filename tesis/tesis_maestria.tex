@@ -101,7 +101,7 @@ FIRMA
 % ----------------------------------------------------------------------------------------------------
 \tableofcontents
 \listoffigures
-\listoftables
+%\listoftables
  
 % ----------------------------------------------------------------------------------------------------
 \addcontentsline{toc}{chapter}{Pr\'ologo}
@@ -232,7 +232,7 @@ Como decíamos arriba, Trip Advisor no es la competencia directa de Best Day, pe
 \end{itemize}
 El sistema de TripAdvisor también funciona razonablemente bien, pero parece estar más basado en la calificación de los usuarios que en la categoría del hotel. Nos pareció que podría mejorar si tuviera una mayor flexibilidad, pues comparte el problema de la falta de inventiva del sistema de Expedia. A pesar de las faltas, este enfoque tiene sentido en el contexto de su página y funciona más o menos bien.
 
-Es posible que el sistema de TripAdvisor sea un filtro colaborativo (ver \cite{mmds} para mayor información) desde el punto de vista de los productos (i.e. \emph{item-based}). Un sistema de este estilo podría funcionar bien si se tuviera clientes recurrentes, puesto que está basado en hacer silogismos del tipo ``a los clientes que les gustó A también les gustó B''. Sin embargo, Best Day no tiene una recurrencia tan alta y tampoco tiene información suficientemente detallada de los clientes como para tratar de seguir por este camino. Por lo tanto, sería inviable implementar un sistema de este estilo.
+Es posible que el sistema de TripAdvisor sea un filtro colaborativo\footnote{Ver \cite{mmds} para mayor información.} desde el punto de vista de los productos (i.e. \emph{item-based}). Un sistema de este estilo podría funcionar bien si se tuviera clientes recurrentes, puesto que está basado en hacer silogismos del tipo ``a los clientes que les gustó A también les gustó B''. Sin embargo, Best Day no tiene una recurrencia tan alta y tampoco tiene información suficientemente detallada de los clientes como para tratar de seguir por este camino. Por lo tanto, sería inviable implementar un sistema de este estilo.
 
 
 \subsection*{Best Day (bestday.com.mx)}
@@ -403,7 +403,7 @@ A continuación describiremos con más detalle cómo tomamos en cuenta estas obs
 
 Dado que el enfoque servicio a servicio tiene problemas independientemente de la distancia que elijamos, será el primero que abordaremos. La manera en la que decidimos solucionarlo fue agrupar los servicios en distintas categorías. Dentro de cada una de ellas supondremos que los servicios son sustitutos perfectos, esto es, son perfectamente intercambiables. Si bien este supuesto podría parecer algo aventurado, tuvo muy buenos resultados en la práctica y, en la mayoría de los casos, sí representa a los hoteles aproximadamente como lo haría una persona.
 
-Una forma de agrupar los servicios es manualmente con criterio experto. Sin embargo, podría resultar algo arbitrario hacerlo así, por lo que decidimos complementar nuestra intuición con un método estadístico. Para ello, tomamos los renglones de $S$ como individuos y los aglomeramos utilizando un método de aglomerado jerárquico que utiliza el criterio de Ward. El algoritmo está descrito con detalle en \cite{ward} y en \cite{ward-notes}. Tenemos entonces $n_s$ ``observaciones'' cada una con $N$ ``características'' que podemos meter al programa. De este modo, utilizamos el dendrograma de salida del método para apoyarnos en la creación de las categorías, que además buscamos que fueran interpretables. El resultado final de este proceso es un mapeo de cada servicio a una categoría. Formalizamos estos conceptos en la siguiente definición:
+Una forma de agrupar los servicios es manualmente con criterio experto. Sin embargo, podría resultar algo arbitrario hacerlo así, por lo que decidimos complementar nuestra intuición con un método estadístico. Para ello, tomamos los renglones de $S$ como individuos y los aglomeramos utilizando un método de aglomerado jerárquico que utiliza el criterio de Ward\footnote{El algoritmo está descrito con detalle en \cite{ward} y en \cite{ward-notes}.}. Tenemos entonces $n_s$ ``observaciones'' cada una con $N$ ``características'' que podemos meter al programa. De este modo, utilizamos el dendrograma de salida del método para apoyarnos en la creación de las categorías, que además buscamos que fueran interpretables. El resultado final de este proceso es un mapeo de cada servicio a una categoría. Formalizamos estos conceptos en la siguiente definición:
 \begin{defn}[Categorías de servicios]
 Denotamos por $\mathcal{C}$ al conjunto de todas las categorías de servicios, de cardinalidad $n_c$. Definimos la categoría a la que pertenece cada servicio vía la función $\kappa: \mathcal{S} \to \mathcal{C}$, es decir si el servicio $s$ pertenece a la categoría $c$, entonces $\kappa(s) = c$.
 \end{defn}
@@ -515,7 +515,7 @@ Ya habiendo establecido la forma de combinar las dos medidas de similitud, el si
 
 En la figura (\ref{alpha}) ilustramos las direcciones de avance del \emph{score} al variar $\alpha$. Es claro ver que conviene utilizar un valor de $\alpha$ entre 0 y 1, como pedimos en la definición, porque de otro modo alguna de las medidas contribuirá negativamente al \emph{score}, como lo ilustran las flechas rosa y violeta. La turquesa muestra la dirección en la que crecería el \emph{score} si utilizáramos $\alpha = 1/2$. Como en este ejemplo la similitud de servicios tiene una menor variabilidad que la de perfil, si escogiéramos ese valor, le estaríamos dando un mayor peso al perfil. Si quisiéramos darles igual peso a ambas medidas, deberíamos utilizar $\alpha = 1/4$, como ilustra la flecha verde.
 
-Dado que queremos identificar hoteles similares, un buen criterio para decidir el valor de $\alpha$ es de manera que maximice el poder discriminatorio del \emph{score}. Es decir, que capture en un solo número la mayor cantidad posible de la información contenida en las dos medidas de similitud. En términos estadísticos, lo que queremos es obtener $\alpha \in (0,1)$ tal que se maximice la varianza del \emph{score} resultante. El método conocido como Análisis de Componentes Principales (ACP) hace algo muy similar a eso, con la pequeña diferencia de que no obtiene $\alpha$ entre 0 y 1. Sin embargo, dado que lo que importa es la dirección de la flecha generada por $\alpha$, podremos solucionar este inconveniente con una simple transformación. Al lector interesado en entender ACP más a profundidad lo remitimos a \cite{elements}, en donde encontrará además diversas variantes del mismo.
+Dado que queremos identificar hoteles similares, un buen criterio para decidir el valor de $\alpha$ es de manera que maximice el poder discriminatorio del \emph{score}. Es decir, que capture en un solo número la mayor cantidad posible de la información contenida en las dos medidas de similitud. En términos estadísticos, lo que queremos es obtener $\alpha \in (0,1)$ tal que se maximice la varianza del \emph{score} resultante. El método conocido como Análisis de Componentes Principales (ACP)\footnote{Al lector interesado en entender ACP más a profundidad lo remitimos a \cite{elements}, en donde encontrará además diversas variantes del mismo.} hace algo muy similar a eso, con la pequeña diferencia de que no obtiene $\alpha$ entre 0 y 1. Sin embargo, dado que lo que importa es la dirección de la flecha generada por $\alpha$, podremos solucionar este inconveniente con una simple transformación.
 
 Como queremos calcular el valor óptimo de $\alpha$ para las recomendaciones que haremos, tenemos que hacer el análisis con todas (o una muestra suficiente de) las recomendaciones de todos los hoteles. La forma de hacerlo es como sigue:
 \begin{enumerate}
@@ -667,7 +667,7 @@ Opcionalmente se puede agregar el volumen de noches y la utilidad bruta en el mi
 
 Para obtener esta tabla es necesario notar que no hay un catálogo de precios, por lo que los tuvimos que estimar mediante las reservaciones que se hicieron en el periodo analizado. Es decir, el precio promedio por noche en el periodo $D$ (en USD) de un hotel dado es:
 \[
-\text{precio promedio} = \frac{\text{Suma de importes (USD) de las reservas en el periodo } D}{\text{Suma de noches reservadas en el periodo } D}
+\text{precio promedio} = \frac{\text{Suma de importes de las reservas en el periodo } D}{\text{Suma de noches reservadas en el periodo } D}
 \]
 Para accesar fácilmente esta información generamos un procedimiento en SQL Server que recibe una fecha de inicio, hace $D = $ de la fecha proporcionada hasta hoy, y finalmente regresa la tabla con la información de los hoteles. Para la primera versión decidimos utilizar un periodo de 2 años, con el fin de evitar que los hoteles poco vendidos no tuvieran ningún precio.
 
@@ -707,7 +707,7 @@ Si también falla el sistema de recomendación antiguo no hay mucho que podamos 
 
 Hay algunas otros detalles técnicos que no entran naturalmente en ningún otro lado, pero que sí son importantes. En esta sección los describiremos brevemente con el fin de aclarar por completo la forma en que se debe implementar este sistema de recomendación:
 \begin{itemize}
-	\item \emph{Software:} Como hemos comentado, el acceso a la base de datos, tanto para el análisis como para producción, se realizó a través de código SQL. En particular, utilizamos Stored Procedures de SQL Server 2008, optimizadas para evitar sobrecargar la base. En \cite{sql} hay información de las últimas versiones de este software. Toda la analítica se llevó a cabo en \texttt{R} (sitio del proyecto en \cite{R}), desde el aglomerado jerárquico hasta la generación de las recomendaciones. En el diagrama (\ref{fig:flujo}) de la siguiente sección será más evidente qué partes del sistema se hicieron en qué lenguaje.
+	\item \emph{Software:} Como hemos comentado, el acceso a la base de datos, tanto para el análisis como para producción, se realizó a través de código SQL. En particular, utilizamos Stored Procedures de SQL Server 2008\footnote{En la página oficial \cite{sql} hay información de las últimas versiones de este software.}, optimizadas para evitar sobrecargar la base. Toda la analítica se llevó a cabo en \texttt{R}\footnote{Sitio del proyecto en \cite{R}}, desde el aglomerado jerárquico hasta la generación de las recomendaciones. En el diagrama (\ref{fig:flujo}) de la siguiente sección será más evidente qué partes del sistema se hicieron en qué lenguaje.
 	\item \emph{Almacenamiento de las recomendaciones:} En la práctica no es conveniente calcular los conjuntos $\RR_i$ al vuelo por su elevado costo computacional. Por ello los precalculamos para cada hotel y los metimos en una tabla $R$ con tuplas de la forma (hotel buscado, hotel recomendado, \emph{score}). Si se quiere utilizar los precios estáticos, se puede tomar, digamos, los 20 hoteles recomendados con mayor score para cada hotel buscado. Esto disminuye aún bastante el tamaño de $R$ y, por lo tanto, el costo de consultar las recomendaciones de un hotel. Si, por otro lado, se utilizan los precios estáticos, se debe almacenar todos los hoteles en la cerca interior y filtrarlos dinámicamente con los precios de la fecha consultada.
 	\item \emph{Actualización de las recomendaciones:} Dado que los hoteles son entidades más o menos estáticas, no tiene mucho sentido actualizarlas demasiado seguido. Basta correr el algoritmo que genera las recomendaciones una vez al mes, cuando mucho, para ir capturando los pequeños cambios que puedan haber ocurrido.
 \end{itemize}
@@ -749,7 +749,7 @@ Antes de describir las características de las redes, debemos definir lo que es 
 		\item \emph{Grado de salida (out-degree):} En redes dirigidas, el número de arcos que salen de un nodo.
 		\item \emph{Grado (degree):} En redes dirigidas, corresponde al grado de salida más el grado de entrada. En redes no dirigidas, es el número total de arcos de un nodo.
 	\end{itemize}
-	\item \emph{PageRank:} Es una medida de importancia que fue diseñada para ver la relevancia de las páginas web. A grandes rasgos, coincide con la probabilidad de que un navegador que da \emph{click} al azar en las ligas (arcos) que ve llegue a una cierta página (nodo). Utilizaremos el PageRank para medir la importancia de los hoteles dentro del sistema, pues representará la probabilidad de que un usuario llegue a un hotel dado si le da \emph{click} a recomendaciones al azar. Al lector interesado lo referimos al artículo original, \cite{pagerank}, y a \cite{mmds} para mayor información sobre el PageRank y sobre redes en general.
+	\item \emph{PageRank:} Es una medida de importancia que fue diseñada para ver la relevancia de las páginas web. A grandes rasgos, coincide con la probabilidad de que un navegador que da \emph{click} al azar en las ligas (arcos) que ve llegue a una cierta página (nodo). Utilizaremos el PageRank para medir la importancia de los hoteles dentro del sistema, pues representará la probabilidad de que un usuario llegue a un hotel dado si le da \emph{click} a recomendaciones al azar.\footnote{Al lector interesado lo referimos al artículo original, \cite{pagerank}, y a \cite{mmds} para mayor información sobre el PageRank y sobre redes en general.}
 \end{itemize}
 
 \section{Modelado del sistema con una red}
@@ -787,8 +787,8 @@ La gráfica (\ref{fig:destinos}) nos da una idea de lo que sucede con el algorit
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[height=0.80\textwidth, angle=90,
-		trim = 0 800 0 800, clip]{imagenes/cancun.png}
+	\includegraphics[height=0.70\textwidth, angle=90,
+		trim = 0 900 0 900, clip]{imagenes/cancun.png}
 	\caption{\label{fig:cancun} Hoteles en Cancún. La importancia (PageRank) está dada por el tamaño de los nodos. Sin contar los nodos inaccesibles, el diámetro de esta gráficaes de 7 pasos y la distancia promedio entre nodos es de 3.3.}
 \end{figure}
 
@@ -802,6 +802,7 @@ Como podemos ver en la gráfica (\ref{fig:cancun_laquinta}), de un hotel citadin
 	\caption{\label{fig:cancun_laquinta} Tamaño: PageRank. Color: Más oscuro implica mayor cercanía (en recomendaciones) al hotel La Quinta Inn and Suites.}
 \end{figure}
 \begin{figure}[ht]
+	\centering
 	\includegraphics[height=0.75\textwidth, angle=90,
 		trim = 100 900 100 900, clip]{imagenes/cancun_iberostar2.png}
 	\caption{\label{fig:cancun_iberostar} Tamaño: PageRank. Color: Más oscuro implica mayor cercanía (en recomendaciones) al hotel Iberostar Cancún.}
@@ -823,7 +824,7 @@ Finalmente, en las redes anteriores hicimos dos grandes supuestos que no necesar
 
 \section{Desempeño de la página web}
 
-El análisis de redes de del capítulo \ref{cap:4} evalúa el sistema de recomendación desde un punto de vista hipotético, en el sentido de que nos permite ver qué cosas \emph{puede} o no hacer el sistema. Por ejemplo, ilustra desde qué nodos de la gráfica podemos llegar a cuáles otros, cuáles son más importantes, etc. Sin embargo, el análisis teórico de la red debe ser complementado con uno de su desempeño en el mundo real, que en este caso corresponde con el de la página web de Best Day. Utilizamos la herramienta Google Analytics \cite{analytics} para obtener las diversas métricas de interés que analizaremos en esta sección.
+El análisis de redes de del capítulo \ref{cap:4} evalúa el sistema de recomendación desde un punto de vista hipotético, en el sentido de que nos permite ver qué cosas \emph{puede} o no hacer el sistema. Por ejemplo, ilustra desde qué nodos de la gráfica podemos llegar a cuáles otros, cuáles son más importantes, etc. Sin embargo, el análisis teórico de la red debe ser complementado con uno de su desempeño en el mundo real, que en este caso corresponde con el de la página web de Best Day. Utilizamos la herramienta Google Analytics\footnote{Más información en la página incluida en la bibliografía, \cite{analytics}.} para obtener las diversas métricas de interés que analizaremos en esta sección.
 
 Dado que estamos presentando una versión nueva de un sistema que ya existía, nos gustaría comparar su desempeño contra la versión actual y no tanto en términos absolutos. Para hacerlo, nos basaremos en las series de tiempo de las diversas métricas, fijándonos qué pasó antes y después de que subiéramos el nuevo sistema a producción. Lo haremos para las sesiones que fueron asistidas por el sistema de recomendación (i.e. que dieron \emph{click} en alguna recomendación), para los siguientes indicadores:
 \begin{enumerate}
@@ -854,7 +855,17 @@ La ventaja de utilizar $Y_t$ en lugar de $X_t$ es que quita en buena medida los 
 	\item 100\% más el porcentaje de veces que aumentó la tasa de conversión al usar el sistema.
 	\item 100\% más el aumento porcentual del número de páginas vistas en una sesión.
 \end{enumerate}
-En la figura (\ref{fig:analytics_y}) mostramos los indicadores en esta nueva forma, nuevamente para 2014 y 2015. Las conclusiones que podemos sacar de estas gráficas no son tan concluyentes como nos gustaría, pero las enunciamos de cualquier modo a continuación:
+En la figura (\ref{fig:analytics_y}) mostramos los indicadores en esta nueva forma, nuevamente para 2014 y 2015. Las conclusiones que podemos sacar de estas gráficas no son tan definitivas como nos gustaría, pero las enunciamos a continuación:
+\begin{enumerate}
+	\item \emph{Usuarios:} Hubo muchos menos usuarios que usaron el sistema en comparación de los que no en el periodo de observación en 2015 que en 2014. Este hecho probablemente se debe a factores desconocidos como por ejemplo el diseño de la página. Sin embargo, al menos en 2015 la tendencia cambió un poco al momento en que se introdujo el nuevo sistema. Es decir, parece ser que el sistema influyó en que se utilizaran más las recomendaciones, pero hay factores de mucho mayor peso que desconocemos.
+	\item \emph{Tasa de rebote:} La tasa de rebote de las personas que utilizan el sistema de recomendación es mucho más baja que la de las que no. En 2015 las tasas de rebote fueron más bajas que en 2014, pero uno podría esperar que subieran un poco en septiembre (presumiblemente por la temporada). El nuevo sistema parece mitigar ligeramente esta subida, aunque no de forma contundente.
+	\item \emph{Duración promedio de la sesión:} Las sesiones de los usuarios del sistema (en comparación con los no-usuarios) eran levemente más cortas en 2014 que en 2015. Analizando los datos del año anterior, se podría esperar que esta variable debería bajar. Sin embargo, en el momento en el que se introdujo el sistema nuevo, siguió en aumento en lugar de bajar, como sería de esperarse.
+	\item \emph{Tasa de conversión:} El cociente de la tasa de conversión entre los usuarios y los no-usuarios se mantuvo aproximandamente igual en los dos años, aunque bajó en 2015. El nuevo sistema no hizo nada definitivo para mejorar este problema, por lo que probablemente depende de otros factores.
+	\item \emph{Páginas vistas por sesión:} En este caso tenemos un efecto similar al de la tasa de rebote, puesto que al momento de introducir el nuevo sistema, la tendencia de aumento de este indicador sigue su tendencia lineal en lugar de bajar como lo hizo el año pasado.
+\end{enumerate}
+Analizando lo anterior podemos ver varios efectos positivos del sistema. Por ejemplo, el número de páginas visitadas por sesión parece haber aumentado en relación a la tendencia que se esperaría según lo observado en 2014. Es bastante razonable que esto sea el caso, pues si las recomendaciones son mejores y más variadas, aumenta la probabilidad de que un cliente explore más. Otros indicadores de desempeño como la duración de la sesión y la tasa de rebote también parecieron tener mejoras moderadas. Sin embargo, tal parece que tanto el porcentaje de usuarios que utilizan el sistema como la tasa de conversión no son afectados por el modelo. El tema de los usuarios probablemente se deba a que el hecho de que un usuario empiece a usar el sistema depende de otros factores más potentes, como la ubicación y el diseño de la lista. Claramente una vez que empiezan a usarlo, sí utilizan más el nuevo que el anterior (ver páginas vistas por sesión). Por otro lado, la tasa de conversión depende a fin de cuentas de las ofertas de Best Day. Es decir, por más que un cliente vea más hoteles, no comprará si no está convencido de la oferta.
+
+La conclusión global de este análisis es que, después de aproximadamente un mes de observación \emph{post} implementación, empieza a haber signos prometedores del nuevo sistema en algunos rubros, pero no en todos. Creemos que para mejorar de manera integral el sistema de recomendación habría que también explorar sus componentes gráficos y otras partes de la página de Best Day. Sin embargo, esos análisis quedan fuera de este trabajo.
 
 \begin{figure}[ht]
 	\centering
@@ -862,30 +873,43 @@ En la figura (\ref{fig:analytics_y}) mostramos los indicadores en esta nueva for
 	\caption{\label{fig:analytics_y} Indicadores en su forma $Y_t$. La línea vertical indica el momento en el que se cambió el sistema de recomendación.}
 \end{figure}
 
-Notar que Analytics es muestreado
 
 % ----------------------------------------------------------------------------------------------------
-\section{Conclusiones}
+\section{Discusión}
 
-Por qué no distancia absoluta y o coseno?
+Concluiremos el presente trabajo discutiendo algunos temas de interés que surgieron a lo largo del trabajo. Un tema relevante que podría surgir incluso al comenzar a leer esta tesis es \emph{¿por qué utilizamos un sistema de recomendación basado en contenido?} La respuesta esto tiene varias partes. En primer lugar, por razones históricas y de negocio, Best Day no tiene información detallada de todos los clientes\footnote{A diferencia por ejemplo de Netflix o Amazon, que guardan todo el historial de compras y comportamiento de sus clientes.} porque permite comprar viajes sin tener una cuenta con ellos. Aparte de ello, esos sistemas pueden ser más complejos de manejar y se necesita planear antes de implementar la página. Tal como está hoy en día, sería complicado hacerlo sin cambiar varios aspectos estructurales importantes. Además, dado que los viajes son productos caros, los clientes tienen una tasa de compra y de repetición muy bajas, por lo que se contaría con muy poca información por cliente para hacer un filtro colaborativo, por ejemplo\footnote{Ver \cite{mmds} para una descripción detallada de lo que es un filtro colaborativo}. Por estas razones, decidimos que tenía más sentido hacer un sistema no personalizado que tuviera mejores propiedades que el que se tenía inicialmente, pero con la misma premisa de recomendar hoteles similares.
 
-No es personalizado, sino de hoteles similares.
+En la parte de teoría hay muchos temas que no están cerrados de ninguna manera. Por ejemplo, uno se podría preguntar \emph{por qué decidimos usar las medidas de verosimilitud como lo hicimos en lugar de distancia coseno}. La respuesta en este caso es que de este modo tenemos una mayor interpretabilidad de los resultados, que perderíamos utilizando distancia coseno o alguna otra medida. Sin embargo, ésta y muchas otras decisiones que tomamos en la construcción del modelo pueden ser fácilmente desafiadas, puesto que, si bien elegimos las mejores opciones que encontramos, no negamos que se pueda encontrar otras mejores. En la sección de trabajo futuro daremos algunas ideas para sofisticar algunos pasos del proceso.
 
-Por qué sistema basado en contenido? etc, etc
+En cuanto al desempeño se refiere, creemos que fue bueno, pero no deslumbrante. Algo que sí logró fue hacernos entender que se requiere mucho más que una buena elección de hoteles para que un sistema de recomendación funcione bien. Es claro que otros aspectos como la presentación y la oferta en sí (que es el producto a fin de cuentas) influyen mucho en la toma de decisiones de los clientes. Un detalle importante que también hay que tener en cuenta sobre este análisis es que los datos de Google Analytics son muestreados. Es decir, dado que hay muchísima información del comportamiento de la página, Google regresa información con una muestra aleatoria del total de la información. Esto podría ocasionar, con mala suerte, que se llegue a conclusiones equivocadas, aunque es sumamente improbable. Otra consideración que hay que tener en este sentido es que, por cuestiones de tiempo, tuvimos menos de un mes de información disponible, y probablemente con un periodo más largo podríamos sacar resultados más definitivos.
 
-\section{Qué es el sistema de recomendación de hoteles}
+Un último tema para esta discusión es que hay que entender los resultados y el desempeño del sistema a la luz de lo que es y de lo que no es. A continuación enlistamos algunos puntos que consideramos de suma importancia para este fin:
+\begin{itemize}
+	\item \textbf{Qué \emph{sí} hace:}
+	\begin{enumerate}
+		\item \emph{Recomienda} hoteles similares a uno dado. Tiene una medida de similitud que busca emular el criterio de una persona.
+		\item Toma en cuenta el precio con el fin de ser \emph{empático} y atento a las necesidades del cliente.
+		\item Toma en cuenta la distancia entre hoteles para que la similitud también sea geográfica.
+		\item Intenta emular que es \emph{inteligente} recomendando hoteles de forma no simétrica y no transitiva, con el fin de promover que el cliente \emph{explore} la página.
+	\end{enumerate}
+	\item \textbf{Qué \emph{no} hace:}
+	\begin{enumerate}
+		\item No encuentra sets competitivos según lo que pensaría una persona, sino según dónde está un hotel y qué ofrece.
+		\item No es un sistema de promociones. La versión con precios dinámicos permite que aparezcan hoteles que bajan sus precios en las recomendaciones de hoteles similares más baratos, pero no les da un precio ni un lugar especial.
+		\item No toma en cuenta el historial de búsqueda ni es personalizado de ninguna manera.
+	\end{enumerate}
+\end{itemize}
 
-[Ver presentación para qué sí/no es o podría ser]
 
 \section{Trabajo futuro}
-Incorporar los hoteles vistos recientemente de forma dinámica.
-Porcentaje dinámico en forma de `U' para el tope de precio.
 
-Otras métricas
+En la sección anterior discutimos varios temas interesantes que surgieron en el diseño del modelo. En particular, incluimos una lista de qué hace y qué no hace el sistema que construimos. Nos gustaría concluir este capítulo y el presente trabajo con una lista de las cosas que \emph{podría} hacer el sistema.
 
-Poner las recomendaciones en otro lado.
+Independientemente de si se mejora el modelo, su desempeño probablemente mejoraría si se mejorara la calidad de la información que se le administra. Encontramos que muchos hoteles tienen información incompleta, lo que hace que el algoritmo sea menos preciso.
 
+En cuanto al modelo, hay al menos tres temas que creemos que podría valer la pena investigar. El primero de ellos se refiere a las medidas de similitud. Sería interesante investigarlas ampliamente para ver si tienen algún impacto en la calidad del sistema. Otro a idea que se podría explorar es la posibilidad de no tener un porcentaje de precio fijo para el filtro. Pensamos que por ejemplo podría permitirse valores grandes de $\gamma$ para hoteles baratos\footnote{Si un hotel cuesta \$200, uno de \$400 sigue siendo más o menos barato.} y hoteles caros\footnote{Podríamos pensar que el dinero no es problema para ciertos clientes, en cuyo caso habría que recomendar indiscriminadamente la mejor opción.}, pero más pequeños para hoteles de gama media\footnote{En este caso queremos ser más precisos con el precio}. Esto sugeriría que $\gamma$ sea una función del precio del hotel buscado con forma de ``U'' o alguna otra que se encuentre que sea apropiada. Un último cambio que se le podría hacer al modelo es, por ejemplo, tomar en cuenta los hoteles recientemente vistos para recomendar nuevos, aunque esto tendría el riesgo de volver muy rígido al modelo.
 
+Finalmente, las conclusiones del análisis cuantitativo de la página nos llevaron a pensar en la importancia de los factores externos al modelo. No podemos enfatizar suficiente que (1) si las recomendaciones se ven mal, nadie les dará \emph{click} incluso si son excelentes y (2) que, por bien que se recomiende, la conversión no aumentará significativamente si el producto es el mismo.
 
 
 
