@@ -133,9 +133,9 @@ En el segundo capítulo (\ref{cap:2}) describiremos a detalle el modelo que cons
 
 El tercer capítulo (\ref{cap:3}) tiene información técnica necesaria para la implementación del modelo en el escenario real de Best Day. Incluye el tratamiento de la información y las acciones a tomar en presencia de datos de mala calidad o faltantes. En pocas palabras, es la liga entre el capítulo \ref{cap:2} y el mundo real.
 
-En el capítulo cuatro (\ref{cap:4}) hablaremos del desempeño del modelo, desde dos puntos de vista. El primero es desde el punto de vista del negocio, es decir cómo se comporta la página antes y después de implementar el modelo propuesto. El segundo es desde el punto de vista del cliente, es decir si las recomendaciones tienen sentido y por lo tanto si hemos logrado hacer el trabajo un asesor humano. En esta segunda parte también incluiremos un análisis de importancia de los hoteles, que resulta naturalmente del modelo que elegimos.
+En el capítulo cuatro (\ref{cap:4}) hablaremos del comportamiento del modelo desde un punto de vista teórico. Es decir, veremos si las recomendaciones tienen sentido y si el nuevo sistema tiene el comportamiento que buscábamos.
 
-Finalmente, concluiremos en el quinto capítulo (\ref{cap:5}), donde discutiremos algunos puntos importantes sobre el sistema y sus implicaciones y algunas ideas para trabajo futuro.
+Finalmente, en la primera parte del quinto capítulo (\ref{cap:5}) examinaremos el desempeño del modelo en el mundo real vía un análisis de la página de Best Day. Posteriormente concluiremos con una discusión de algunos puntos importantes sobre el sistema, sus implicaciones y algunas ideas para trabajo futuro.
 
 % ----------------------------------------------------------------------------------------------------
 \chapter{Análisis previo} \label{cap:1}
@@ -817,9 +817,9 @@ Otro aspecto que hay que tener en cuenta es que, aunque el precio no está restr
 
 Finalmente, en las redes anteriores hicimos dos grandes supuestos que no necesariamente se cumplirán en la práctica: (1) que los clientes sólo ven las primeras cinco recomendaciones (cuatro de ellas distintas al original), y (2) que los clientes eligen una recomendación al azar y con la misma probabilidad. El primer supuesto no se cumplirá en la práctica porque los clientes tendrán más alternativas si ven más elementos de la lista de recomendaciones. Este hecho es ventajoso para el sistema porque ayudará, al menos en parte, a que haya menos hoteles que nadie recomiende. El segundo supuesto tampoco se cumplirá porque hay otros factores que motivan a un cliente a seleccionar una recomendación, como por ejemplo el precio, la foto (\emph{thumbnail}) que se le presenta en la página o incluso el nombre del hotel. Se podría hacer un análisis exhaustivo usando herramientas estadísticas que analicen el comportamiento de la página, pero no estamos seguros de que el impacto sería lo suficientemente importante para justificar dicho análisis.
 
-\chapter{Resultados prácticos y conclusiones} \label{cap:5}
+%--------------------------------------------------------------
 
-...
+\chapter{Resultados prácticos y conclusiones} \label{cap:5}
 
 \section{Desempeño de la página web}
 
@@ -836,11 +836,13 @@ Dado que estamos presentando una versión nueva de un sistema que ya existía, n
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=0.9\textwidth]{imagenes/analytics_x.pdf}
-	\caption{\label{fig:analytics_x} Métricas del desempeño de la página. La línea vertical indica el momento en el que se cambió el sistema de recomendación.}
+	\includegraphics[width=0.9\textwidth]{imagenes/analytics_anios_x.pdf}
+	\caption{\label{fig:analytics_x} Métricas del desempeño de la página de agosto y septiembre para 2014 y 2015. La línea vertical indica el momento en el que se cambió el sistema de recomendación en 2015.}
 \end{figure}
 
-En la figura (\ref{fig:analytics_x}) podemos ver las series de tiempo de las métricas descritas anteriormente. Después de estudiarlas brevemente, es inmediato ver que hay factores estacionales y de otros tipos que dificultan la interpretación de las gráficas. La pregunta es entonces si realmente queremos analizar estas métricas, algunas variantes de las mismas o de plano otras completamente nuevas. Creemos que la respuesta a esto es que hay que modificarlas de modo que revelen su información relevante, puesto que sí son datos apropiados para medir el desempeño de una página web. La transformación que utilizaremos es la siguiente: Supongamos que $X_t$ es uno de los indicadores antes mencionados al tiempo $t$. Entonces, en lugar de $X_t$ utilizaremos el cociente de $X_t$ para las personas que fueron asistidas por el sistema de recomendación (i.e. dieron \emph{click} en alguna recomendación), entre las que no lo utilizaron. Es decir, para un indicador al tiempo $t$, $X_t$, analizaremos
+En la figura (\ref{fig:analytics_x}) podemos ver las series de tiempo de las métricas descritas anteriormente. Si nos fijamos únicamente en las gráficas correspondientes a 2015, es inmediato ver que hay factores estacionales\footnote{Por ejemplo, los usuarios bajan porque hay una transición de temporada alta a temporada baja.} que dificultan la interpretación de las gráficas. Incluimos la información del mismo periodo pero del año anterior (2014) con el fin de mitigar estos efectos, pero aún así hay otros problemas. En particular, incluso en las secciones en las que no se ha cambiado el sistema de recomendación en 2015 (i.e. a la izquierda de la línea punteada), las métricas difieren bastante. En conclusión, el fenómeno presenta muchos factores afuera de este análisis para permitirinos sacar conclusiones de forma adecuada.
+
+En este punto es prudente preguntarnos si realmente queremos analizar estas métricas, algunas variantes de las mismas o de plano otras completamente nuevas. Una posible respuesta a esto es que hay que modificarlas de modo que revelen su información relevante, puesto que sí son datos apropiados para medir el desempeño de una página web. La transformación que utilizaremos es la siguiente: Supongamos que $X_t$ es uno de los indicadores antes mencionados al tiempo $t$. Entonces, en lugar de $X_t$ utilizaremos el cociente de $X_t$ para las personas que fueron asistidas por el sistema de recomendación (i.e. dieron \emph{click} en alguna recomendación), entre las que no lo utilizaron. Es decir, para un indicador al tiempo $t$, $X_t$, analizaremos
 \[
 Y_t = \frac{X_t \; | \text{ utilizó el sistema}}{X_t \; | \text{ no utilizó el sistema}}
 \]
@@ -852,14 +854,15 @@ La ventaja de utilizar $Y_t$ en lugar de $X_t$ es que quita en buena medida los 
 	\item 100\% más el porcentaje de veces que aumentó la tasa de conversión al usar el sistema.
 	\item 100\% más el aumento porcentual del número de páginas vistas en una sesión.
 \end{enumerate}
-En la figura (\ref{fig:analytics_y}) mostramos los indicadores en esta nueva forma. Como se puede ver...
+En la figura (\ref{fig:analytics_y}) mostramos los indicadores en esta nueva forma, nuevamente para 2014 y 2015. Las conclusiones que podemos sacar de estas gráficas no son tan concluyentes como nos gustaría, pero las enunciamos de cualquier modo a continuación:
+
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=0.9\textwidth]{imagenes/analytics_y.pdf}
+	\includegraphics[width=0.9\textwidth]{imagenes/analytics_anios_y.pdf}
 	\caption{\label{fig:analytics_y} Indicadores en su forma $Y_t$. La línea vertical indica el momento en el que se cambió el sistema de recomendación.}
 \end{figure}
 
-
+Notar que Analytics es muestreado
 
 % ----------------------------------------------------------------------------------------------------
 \section{Conclusiones}

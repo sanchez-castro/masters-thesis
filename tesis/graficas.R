@@ -272,8 +272,8 @@ oauth_token <- Auth(client.id = "410202734756-vuek66j0asrnk5aicd0geog0uf5kje2u.a
 ValidateToken(oauth_token)
 
 ## FECHAS
-start.date = '2015-07-01'
-end.date = '2015-09-22'
+start.date = '2015-08-01'
+end.date = '2015-09-27'
 ##
 
 params_list_1 <- Init(start.date = start.date,
@@ -331,7 +331,7 @@ dat$date <- strptime(dat$date, '%Y%m%d') %>%
 
 dat2 <- dat %>%
   gather(var, val, sessions, bounceRate, avgSessionDuration, goalConversionRateAll, pageviews_per_session)
-
+levels(dat2$var) <- c('Usuarios','Tasa de rebote (%)','Duración promedio de la sesión (minutos)','Tasa de conversión (%)','Páginas vistas por sesión')
 
 ### Estadísticas descriptivas
 
@@ -363,7 +363,6 @@ qplot(date, val, data=dat2, geom='line', color=viewed_recom) +
   scale_x_date()
 
 ### Series de tiempo: sólo los que usaron recomendaciones
-levels(dat2$var) <- c('Usuarios','Tasa de rebote','Duración promedio de la sesión','Tasa de conversión','Páginas vistas por sesión')
 p <- ggplot(filter(dat2, viewed_recom=='yes'), aes(date, val)) +
   geom_line() +
   geom_vline(aes(xintercept=as.numeric(date[date=='2015-09-10'])), linetype=4) +
@@ -405,7 +404,128 @@ p
 # ggsave('tesis/imagenes/analytics_y.pdf', p, scale = 1, width = 8, height = 8, units = 'in')
 
 
+##########################################
+# Comparando un año contra el siguiente
+##########################################
 
+start.date = '2014-08-01'
+end.date = '2014-09-27'
+##
+
+params_list_1 <- Init(start.date = start.date,
+                      end.date = end.date,
+                      dimensions = 'ga:userType,ga:date',
+                      metrics = 'ga:users,ga:sessions,ga:bounceRate,ga:avgSessionDuration,ga:goalConversionRateAll,ga:pageviews',
+                      #                     filters = 'ga:pagePath%3D@view=similarhotel',
+                      segments = 'sessions::condition::ga:pagePath=~view=(similarhotel|similarpackage)',
+                      table.id = 'ga:22605939')
+ga_query_1 <- QueryBuilder(query.params.list = params_list_1)
+ga_df_1 <- GetReportData(ga_query_1, token = oauth_token)
+
+###
+
+params_list_2 <- Init(start.date = start.date,
+                      end.date = end.date,
+                      dimensions = 'ga:userType,ga:date',
+                      metrics = 'ga:users,ga:sessions,ga:bounceRate,ga:avgSessionDuration,ga:goalConversionRateAll,ga:pageviews',
+                      segments = 'sessions::condition::ga:dimension18==Hotel;condition::!ga:pagePath=~view=(similarhotel|similarpackage)',
+                      #                     filters = '!ga:pagePath%3D@view=similarhotel',
+                      table.id = 'ga:22605939')
+ga_query_2 <- QueryBuilder(query.params.list = params_list_2)
+ga_df_2 <- GetReportData(ga_query_2, token = oauth_token)
+
+v <- ga_df_1
+nv <- ga_df_2
+# save(list = c('v', 'nv'), file = 'tesis/datos/query_api_20150101_20150913.Rdata')
+head(ga_df_1)
+head(ga_df_2)
+
+# library(lubridate)
+
+#load('datos/query_api_20150101_20150913.Rdata')
+
+
+dat_old <- rbind(
+  data.frame(viewed_recom = 'yes', v),
+  data.frame(viewed_recom = 'no', nv)
+) %>%
+  group_by(viewed_recom, date) %>%
+  summarise(users = sum(users),
+            bounceRate = sum(bounceRate * sessions)/sum(sessions),
+            avgSessionDuration= sum(avgSessionDuration * sessions)/sum(sessions)/60,
+            goalConversionRateAll = sum(goalConversionRateAll* sessions)/sum(sessions),
+            pageviews = sum(pageviews),
+            sessions = sum(sessions)) %>%
+  mutate(pageviews_per_session = pageviews / sessions) %>%
+  filter(!is.na(date)) %>%
+  ungroup
+dat_old <- dat_old[dat_old$pageviews < max(dat_old$pageviews), ]
+
+dat_old$date <- strptime(dat_old$date, '%Y%m%d') %>%
+  as.character %>%
+  as.Date
+
+dat2_old <- dat_old %>%
+  gather(var, val, sessions, bounceRate, avgSessionDuration, goalConversionRateAll, pageviews_per_session)
+levels(dat2_old$var) <- c('Usuarios','Tasa de rebote (%)','Duración promedio de la sesión (minutos)','Tasa de conversión (%)','Páginas vistas por sesión')
+
+# Los que usaron recomendaciones: este año vs el anterior
+
+dat22 <- rbind(dat2_old, dat2) %>%
+  mutate(year= as.character(year(date)),
+         datediff = as.numeric(date - as.Date(paste0(year,'-08-01'))))
+
+p <- ggplot(filter(dat22, viewed_recom=='yes'), aes(datediff, val, color=year)) +
+  geom_line() +
+  geom_vline(aes(xintercept=as.numeric(datediff[date=='2015-09-10'])), linetype=4) +
+  geom_smooth() +
+  facet_wrap(~ var, scales = 'free_y', ncol = 2) +
+  #theme(axis.text.x = element_text(angle=90)) +
+  scale_x_continuous(breaks=c(0,20,40), labels=format.Date(as.Date('2015-08-01') + c(0,20,40), '%d/%b')) +
+  scale_color_discrete(name='Año') +
+  #scale_x_date() +
+  labs(x='Fecha', y='Fecha relativa', title='Indicadores para usuarios que utilizaron el sistema')
+p
+
+# ggsave('tesis/imagenes/analytics_anios_x.pdf', p, scale = 1, width = 8, height = 8, units = 'in')
+
+
+### Los que vieron como proporción de los que no
+
+dat3_old <- inner_join(filter(dat_old, viewed_recom == 'no'),
+                   filter(dat_old, viewed_recom == 'yes'),
+                   by = c('date')) %>%
+  dplyr::select(-viewed_recom.x,-viewed_recom.y)
+
+for(col in names(dat_old)[!(names(dat_old) %in% c('date','viewed_recom'))]){
+  dat3_old[[paste0('p_',col)]] <- ifelse(dat3_old[[paste0(col,'.x')]] == 0,
+                                     -1,
+                                     dat3_old[[paste0(col,'.y')]]/dat3_old[[paste0(col,'.x')]])
+}
+
+dat4_old <- dat3_old %>%
+  dplyr::select(date, p_users, p_bounceRate, p_avgSessionDuration, p_goalConversionRateAll, p_pageviews_per_session) %>%
+  gather(var, value, p_users:p_pageviews_per_session)
+levels(dat4_old$var) <- c('Usuarios','Tasa de rebote','Duración promedio de la sesión','Tasa de conversión','Páginas vistas por sesión')
+
+
+dat44 <- rbind(dat4_old, dat4) %>%
+  mutate(year= as.character(year(date)),
+         datediff = as.numeric(date - as.Date(paste0(year,'-08-01'))))
+
+  
+p <- ggplot(dat44, aes(datediff, value, color=year)) +
+  geom_line() +
+  geom_vline(aes(xintercept=as.numeric(datediff[date=='2015-09-10'])), linetype=4) +
+  geom_smooth() +
+  theme(axis.text.x = element_text(angle=90)) +
+  scale_x_continuous(breaks=c(0,20,40), labels=format.Date(as.Date('2015-08-01') + c(0,20,40), '%d/%b')) +
+  scale_color_discrete(name='Año') +
+  #scale_x_date() +
+  facet_wrap(~var, scales = 'free_y', ncol=2) +
+  labs(x='Fecha',y='',title='Indicadores cociente: con vs. sin sistema')
+p
+# ggsave('tesis/imagenes/analytics_anios_y.pdf', p, scale = 1, width = 8, height = 8, units = 'in')
 
 
 
