@@ -18,9 +18,13 @@
 \contentsline {section}{\numberline {3.2}Sistema de respaldo}{39}{section.3.2}
 \contentsline {section}{\numberline {3.3}Otras consideraciones}{40}{section.3.3}
 \contentsline {section}{\numberline {3.4}Arquitectura final del sistema}{41}{section.3.4}
-\contentsline {chapter}{\numberline {4}Desempe\IeC {\~n}o}{43}{chapter.4}
-\contentsline {section}{\numberline {4.1}An\IeC {\'a}lisis de redes}{43}{section.4.1}
-\contentsline {section}{\numberline {4.2}Desempe\IeC {\~n}o de la p\IeC {\'a}gina}{49}{section.4.2}
-\contentsline {chapter}{\numberline {5}Conclusiones}{58}{chapter.5}
-\contentsline {section}{\numberline {5.1}Qu\IeC {\'e} es el sistema de recomendaci\IeC {\'o}n de hoteles}{58}{section.5.1}
-\contentsline {section}{\numberline {5.2}Trabajo futuro}{58}{section.5.2}
+\contentsline {chapter}{\numberline {4}Propiedades te\IeC {\'o}ricas del modelo}{43}{chapter.4}
+\contentsline {section}{\numberline {4.1}Teor\IeC {\'\i }a b\IeC {\'a}sica de redes}{43}{section.4.1}
+\contentsline {section}{\numberline {4.2}Modelado del sistema con una red}{45}{section.4.2}
+\contentsline {section}{\numberline {4.3}An\IeC {\'a}lisis de la red}{47}{section.4.3}
+\contentsline {section}{\numberline {4.4}Conclusiones del an\IeC {\'a}lisis de redes}{48}{section.4.4}
+\contentsline {chapter}{\numberline {5}Resultados pr\IeC {\'a}cticos y conclusiones}{54}{chapter.5}
+\contentsline {section}{\numberline {5.1}Desempe\IeC {\~n}o de la p\IeC {\'a}gina web}{54}{section.5.1}
+\contentsline {section}{\numberline {5.2}Conclusiones}{57}{section.5.2}
+\contentsline {section}{\numberline {5.3}Qu\IeC {\'e} es el sistema de recomendaci\IeC {\'o}n de hoteles}{58}{section.5.3}
+\contentsline {section}{\numberline {5.4}Trabajo futuro}{58}{section.5.4}

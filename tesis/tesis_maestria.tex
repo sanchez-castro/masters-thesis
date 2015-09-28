@@ -725,38 +725,40 @@ En la figura (\ref{fig:flujo}) mostramos la arquitectura que el sistema debería
 
 
 % ----------------------------------------------------------------------------------------------------
-\chapter{Desempeño} \label{cap:4}
+\chapter{Propiedades teóricas del modelo} \label{cap:4}
 
-Hasta este punto hemos descrito tanto el modelo matemático detrás del sistema de recomendación como las consideraciones prácticas que se debe tener para implementarlo exitosamente. Si bien hemos argumentado todas las decisiones que tomamos en la construcción del sistema, en este capítulo analizaremos su comportamiento en la práctica desde dos enfoques: un análisis de redes y un análisis de la página web de Best Day usando Google Analytics \cite{analytics}. En las siguientes dos secciones hablaremos de cada uno de ellos 
+Hasta este punto hemos descrito tanto el modelo matemático detrás del sistema de recomendación como las consideraciones prácticas que se debe tener para implementarlo exitosamente. Si bien hemos argumentado todas las decisiones que tomamos en la construcción del sistema, en este capítulo analizaremos algunas de sus propiedades teóricas para ver si en verdad logramos nuestro cometido.
 
-\section{Análisis de redes}
+Dado que el sistema que diseñamos consiste en recomendar hoteles partiendo de otros hoteles, resulta natural utilizar la teoría de redes para analizarlo. Las redes son construcciones matemáticas muy versátiles que permiten modelar muchos tipos de fenómenos. En general, cualquier tema de interés que tenga elementos que estén conectados de alguna forma se puede modelar con una red. En este caso, por ejemplo, los elementos serán los hoteles y las conexiones serán las recomendaciones. En las siguientes secciones daremos un brevísimo resumen de algunas de las características principales de las redes y evaluaremos el desempeño del sistema de recomendación utilizando este enfoque.
 
-Las redes son construcciones matemáticas muy versátiles que permiten modelar muchos tipos de fenómenos. En general, cualquier tema de interés que tenga elementos que estén conectados de alguna forma se puede modelar con una red. En las siguientes secciones daremos un brevísimo resumen de algunas de las características principales de las redes y evaluaremos el desempeño del sistema de recomendación utilizando este enfoque.
+\section{Teoría básica de redes}
 
-\subsubsection*{Teoría de redes}
-
-Antes de describir las características de las redes, debemos definir lo que son. Una red es esencialmente un conjunto $V$ (que puede incluir cualquier tipo de entidades, individuos, etc.), junto con una colección de conexiones $E$ entre los elementos de $V$. Los elementos en $V$ usualmente se conocen como \emph{nodos} o \emph{vértices}, mientras que las conexiones (en $E$) son llamadas \emph{arcos}. Hay dos principales tipos de redes y sus diferencias radican en si sus arcos son \emph{dirigidos} o \emph{no dirigidos}. Los arcos no dirigidos se utilizan para representar relaciones simétricas, como las conexiones en una red social (como Facebook): ``Juan es amigo de Pedro si y sólo si Pedro es amigo de Juan''. Por otro lado, se utilizan arcos dirigidos cuando las relaciones no necesariamente son bilaterales. Por ejemplo, si se toman los cruces de calles como nodos y los arcos como las calles mismas, cada arco debe tener la dirección de la calle que representa. Cuando se da el caso de relaciones bilaterales en una red dirigida, se puede poner dos arcos, uno en cada dirección. Otras características interesantes de las redes son:
+Antes de describir las características de las redes, debemos definir lo que es una red. Una red es esencialmente un conjunto $V$ (que puede incluir cualquier tipo de entidades, individuos, etc.), junto con una colección de conexiones $E$ entre los elementos de $V$. Los elementos en $V$ usualmente se conocen como \emph{nodos} o \emph{vértices}, mientras que las conexiones (en $E$) son llamadas \emph{arcos}. Hay dos principales tipos de redes y sus diferencias radican en si sus arcos son \emph{dirigidos} o \emph{no dirigidos}. Los arcos no dirigidos se utilizan para representar relaciones simétricas, como las conexiones en una red social (como Facebook): ``Juan es amigo de Pedro si y sólo si Pedro es amigo de Juan''. Por otro lado, se utilizan arcos dirigidos cuando las relaciones no necesariamente son bilaterales. Por ejemplo, si se toman los cruces de calles como nodos y los arcos como las calles mismas, cada arco debe tener la dirección de la calle que representa. Cuando se da el caso de relaciones bilaterales en una red dirigida, se puede poner dos arcos, uno en cada dirección. Otras características interesantes de las redes son:
 \begin{itemize}
 	\item \emph{Variables adicionales de nodos y/o arcos:} Los nodos y los arcos pueden tener otro tipo de características. Por ejemplo, si la red representa una red de tuberías, los arcos podrían tener un flujo máximo asociado.
-	\item \emph{Distancia entre nodos:} La distancia entre dos nodos es la mínima cantidad de arcos que se debe atravesar para llegar de uno de los nodos al otro. Si la red es dirigida sólo está permitido ir en la dirección de los arcos.
-	\item \emph{Conectividad:} Una gráfica es conexa cuando se puede llegar a cualquier nodo desde cualquier otro nodo. En el caso de las gráficas dirigidas sólo se permite transitar en el sentido de los arcos.
-	\item \emph{Diámetro:} El diámetro de una gráfica conexa es la distancia máxima entre cualesquiera dos nodos de la gráfica. Nuevamente, en las gráficas dirigidas se debe respetar la dirección de los arcos.
+	\item \emph{Distancia entre nodos:} La distancia entre dos nodos es la mínima cantidad de arcos que se debe atravesar para llegar de uno de los nodos al otro. Si no hay un camino entre dos nodos, decimos que la distancia entre ambos es infinito. Cabe mencionar que si la red es dirigida, sólo está permitido ir en la dirección de los arcos.
+	\item \emph{Conectividad:}
+	\begin{itemize}
+		\item \emph{Fuerte:} Una gráfica es (fuertemente) conexa cuando se puede llegar a cualquier nodo desde cualquier otro nodo, es decir, la distancia entre cualesquiera dos nodos es estrictamente menor que infinito. Nuevamente, en el caso de las gráficas dirigidas sólo se permite transitar en el sentido de los arcos.
+		\item \emph{Débil:} Una gráfica dirigida es débilmente conexa si es conexa cuando se ignoran los sentidos de sus arcos.
+	\end{itemize}
+	\item \emph{Diámetro:} El diámetro de una gráfica conexa (o de un subconjunto conexo de una gráfica) es la distancia máxima entre cualesquiera dos nodos de la gráfica. Como siempre, en las gráficas dirigidas se debe respetar la dirección de los arcos.
 	\item \emph{Grados:}
 	\begin{itemize}
 		\item \emph{Grado de entrada (in-degree):} En redes dirigidas, el número de arcos que le apuntan a un nodo.
 		\item \emph{Grado de salida (out-degree):} En redes dirigidas, el número de arcos que salen de un nodo.
 		\item \emph{Grado (degree):} En redes dirigidas, corresponde al grado de salida más el grado de entrada. En redes no dirigidas, es el número total de arcos de un nodo.
 	\end{itemize}
-	\item \emph{PageRank:} Es una medida de importancia que fue diseñada para ver la relevancia de las páginas web. A grandes rasgos, coincide con la probabilidad de que un navegador que da \emph{click} al azar en las ligas que ve llegue a una cierta página (nodo). Utilizaremos el PageRank para medir la importancia de los hoteles dentro del sistema, pues representará la probabilidad de que un usuario llegue a un hotel dado si le da \emph{click} a recomendaciones al azar. Al lector interesado lo referimos al artículo original, \cite{pagerank}, y a \cite{mmds} para mayor información sobre el PageRank y sobre redes en general.
+	\item \emph{PageRank:} Es una medida de importancia que fue diseñada para ver la relevancia de las páginas web. A grandes rasgos, coincide con la probabilidad de que un navegador que da \emph{click} al azar en las ligas (arcos) que ve llegue a una cierta página (nodo). Utilizaremos el PageRank para medir la importancia de los hoteles dentro del sistema, pues representará la probabilidad de que un usuario llegue a un hotel dado si le da \emph{click} a recomendaciones al azar. Al lector interesado lo referimos al artículo original, \cite{pagerank}, y a \cite{mmds} para mayor información sobre el PageRank y sobre redes en general.
 \end{itemize}
 
-\subsection*{Modelado del sistema con una red}
+\section{Modelado del sistema con una red}
 
 Los hoteles y sus recomendaciones se pueden modelar de manera muy natural como una red dirigida tomando los hoteles como nodos y el que un hotel recomiende a otro como los arcos. Con un análisis de redes podremos ver si realmente el sistema recomendación cumple con algunas de las propiedades que buscábamos.
 
-Uno de los primeros problemas que le encontramos al sistema actual es que dentro de una zona y una categoría las recomendaciones eran siempre iguales, lo que además de resultar aburrido y poco útil después de poco tiempo, le da un peso excesivo a los hoteles que aparecen hasta arriba de la lista de un destino y ciertas estrellas: todos los clientes que busquen un hotel en ese grupo verán lo mismo. En el mundo de las redes, esto es equivalente a nodos con un grado de entrada muy elevado o con PageRank alto.
+Uno de los primeros problemas que le encontramos al sistema actual es que dentro de una zona y una categoría las recomendaciones son siempre iguales, lo que además de resultar aburrido y poco útil después de poco tiempo, le da un peso excesivo a los hoteles que aparecen hasta arriba de la lista de un destino y ciertas estrellas: todos los clientes que busquen un hotel en ese grupo verán lo mismo. En el mundo de las redes, esto es equivalente a nodos con un grado de entrada muy elevado o con PageRank alto.
 
-Por otro lado, independientemente de lo anterior, las recomendaciones eran cerradas, esto es, no podíamos salir de un cierto grupo de hoteles únicamente por medio de las recomendaciones. Esto equivale a que la red del modelo sea \emph{disconexa} (i.e. no conexa) en lugares en donde no debería. No es problemático que, por ejemplo, la recomendaciones de hoteles en Ciudad Juárez no nos pudieran llevar eventualmente a opciones en Mérida. Lo que sí es poco deseable es que secciones geográficamente cercanas sean disconexas. Por ejemplo, si empezamos con un hotel de negocios en Cancún, es deseable que en algunos pocos \emph{clicks} se pueda llegar a uno en la zona hotelera. Ilustramos estos puntos en la gráfica (\ref{fig:disconexo}).
+Por otro lado, independientemente de lo anterior, las recomendaciones eran cerradas, esto es, no podíamos salir de un cierto grupo de hoteles únicamente por medio de las recomendaciones. Esto equivale a que la red del modelo sea \emph{disconexa} (i.e. no conexa) en lugares en donde no debería. No es problemático que, por ejemplo, la recomendaciones de hoteles en Ciudad Juárez no nos pudieran llevar eventualmente a opciones en Mérida. Sin embargo, sí es poco deseable que eso suceda en secciones geográficamente cercanas. Por ejemplo, si empezamos con un hotel de negocios en Cancún, es deseable que en algunos pocos \emph{clicks} se pueda llegar a uno en la zona hotelera. Ilustramos estos puntos en la gráfica (\ref{fig:disconexo}).
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth,
@@ -764,15 +766,16 @@ Por otro lado, independientemente de lo anterior, las recomendaciones eran cerra
 		]{imagenes/disconexo.pdf}
 	\caption{\label{fig:disconexo} El sistema actual le da mucho peso a pocos hoteles y además no permite llegar de un grupo a otro.}
 \end{figure}
+
 Para modelar las recomendaciones del sistema con una red hay que tener algunas consideraciones. Por un lado, a cada hotel le asignamos un ordenamiento de los demás hoteles dentro de un cierto radio vía el \emph{score}. Sin embargo, utilizar esto como peso para los arcos no es muy realista, puesto que el \emph{score} está en una escala sin ninguna interpretación. Una mejor alternativa es poner como arcos únicamente las 5 mejores recomendaciones de cada hotel, dado que serán los que los clientes verán directamente, sin tener que bajar la lista. Dado que no tenemos información sobre la importancia de cada posición en la lista, supondremos que son iguales, esto es, todos los arcos tendrán el mismo peso.
 
-Utilizaremos el PageRank como la importancia de los nodos en lugar del grado de entrada. La razón de esto es que el grado de entrada da información puramente local. Es decir, si conocemos el grado de entrada, podemos saber cuántos hoteles le apuntan directamente a uno dado, pero no sabemos si hay una tendencia de la gráfica como conjunto a tender a esos nodos. Por eso utilizaremos mejor el PageRank para evaluar la importancia de los nodos, puesto que sí nos da información global.
+Una manera de evaluar la importancia de los nodos sería utilizando su grado de entrada. Sin embargo, esta métrica tiene la desventaja de que da información puramente local. Es decir, si conocemos el grado de entrada, podemos saber cuántos hoteles le apuntan directamente a uno dado, pero no sabemos si hay una tendencia de la gráfica como conjunto a tender a esos nodos. Por esta razón utilizaremos mejor el PageRank, que sí aporta información global, para evaluar la importancia de los nodos.
 
-\subsection*{Análisis de la red}
+\section{Análisis de la red}
 
 Dado que la gráfica resultante de las recomendaciones de los miles de hoteles de Best Day sería poco informativa en un entorno no interactivo, optamos por presentar los resultados del análisis en algunas zonas de interés. Primero haremos un análisis a una escala de varios destinos y posteriormente nos acercaremos a ver con más detalle uno solo.
 
-Analizamos varios destinos importantes de México en la gráfica (\ref{fig:destinos}). En este caso, el tamaño de los nodos está dado por su PageRank, por lo que los nodos son más importantes mientras más grandes son, mientras que los colores representan el destino de cada hotel. Esta representación del sistema de recomendación transparenta las ventajas que tiene. En primer lugar, vemos que la importancia de los nodos está mucho más repartida que en la gráfica de ejemplo del sistema actual. Aunque hay algunos nodos grandes, no son los únicos importantes en la gráfica. Además de ello, parece ser que la gráfica está totalmenta conectada (o casi) por destino; veremos esto a mayor detalle en una figura posterior. Otra ventaja es que es evidente que los destinos muy cercanos pueden estar conectados, como en el caso de los que están en Quintana Roo. Es interesante notar que si hay varios destinos en cadena, se puede llegar a lugares muy lejanos si se explora lo suficiente. Por ejemplo, se puede llegar de Cancún a Tulum, incluso a pesar de que están a 130 km de distancia. Esto puede ser una ventaja porque un cliente que no tiene un destino decidido puede realmente explorar alternativas similares a lo que se le había ocurrido inicialmente.
+Analizamos varios destinos importantes de México en la gráfica (\ref{fig:destinos}). En este caso, el tamaño de los nodos está dado por su PageRank, por lo que los nodos son más importantes mientras más grandes son, mientras que los colores representan el destino de cada hotel. Esta representación del sistema de recomendación transparenta algunas de las ventajas que tiene. En primer lugar, vemos que la importancia de los nodos está mucho más repartida que en la gráfica de ejemplo del sistema actual. Aunque hay algunos nodos grandes, no son los únicos importantes en la gráfica. Además de ello, parece ser que la gráfica está totalmenta conectada (o casi) por destino; veremos esto a mayor detalle en una figura posterior. Otra ventaja es que es evidente que los destinos muy cercanos pueden estar conectados, como en el caso de los que están en Quintana Roo. Es interesante notar que si hay varios destinos en cadena, se puede llegar a lugares muy lejanos si se explora lo suficiente. Por ejemplo, se puede llegar de Cancún a Tulum, incluso a pesar de que están a 130 km de distancia. Esto puede ser una ventaja porque un cliente que no tiene un destino decidido puede explorar alternativas en una zona más amplia que el destino que se le había ocurrido inicialmente. En términos de las características deseables que enunciamos al principio de este trabajo, esto se debe a la \emph{inteligencia} y \emph{flexibilidad} del nuevo sistema.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=\textwidth,
@@ -780,7 +783,7 @@ Analizamos varios destinos importantes de México en la gráfica (\ref{fig:desti
 	\caption{\label{fig:destinos} Red para diversos destinos: Ciudad de México (azul-morado), Cancún (turquesa), Playa del Carmen (verde), Riviera Maya (fucsia), Isla Mujeres (azul), Cozumel (naranja), Tulum (rojo) y Cuernavaca (verde-amarillo). El tamaño de los nodos está dado por el PageRank.}
 \end{figure}
 
-La gráfica (\ref{fig:destinos}) nos da una idea de lo que sucede con el algoritmo a gran escala. Si ahora nos acercamos a un destino en particular, podremos descubrir otras cosas interesantes. Dado que Cancún es el destino principal de Best Day, ahí es donde enfocaremos nuestro análisis. La figura (\ref{fig:cancun}) ilustra qué hoteles son los más importantes en esta zona. En este caso, el tamaño representa el PageRank de los hoteles, por lo que un hotel con un nodo grande tendrá mayor probabilidad de ser elegido al azar utilizando únicamente las recomendaciones.
+La gráfica (\ref{fig:destinos}) nos da una idea de lo que sucede con el algoritmo a gran escala. Si ahora nos acercamos a un destino en particular, podremos descubrir otras cosas interesantes. Dado que Cancún es el destino principal de Best Day, ahí es donde enfocaremos nuestro análisis. La figura (\ref{fig:cancun}) ilustra qué hoteles son los más importantes en esta zona. En este caso, el tamaño representa el PageRank de los hoteles, por lo que un hotel con un nodo grande tendrá mayor probabilidad de ser elegido al azar utilizando únicamente las recomendaciones. Es inmediato ver que esta gráfica está mucho más balanceada que las estrellas que aparecían en la (\ref{fig:disconexo}), puesto que es al menos débilmente conexa. Además, los hoteles tienen varios niveles de importancia en lugar de que haya unos pocos que la acumulen toda.
 
 \begin{figure}[ht]
 	\centering
@@ -789,7 +792,7 @@ La gráfica (\ref{fig:destinos}) nos da una idea de lo que sucede con el algorit
 	\caption{\label{fig:cancun} Hoteles en Cancún. La importancia (PageRank) está dada por el tamaño de los nodos. Sin contar los nodos inaccesibles, el diámetro de esta gráficaes de 7 pasos y la distancia promedio entre nodos es de 3.3.}
 \end{figure}
 
-Ya con una idea de qué hoteles son los más relevantes podemos hacer otro tipo de análisis. Las figuras (\ref{fig:cancun_laquinta}) y (\ref{fig:cancun_iberostar}) también incluyen únicamente hoteles en Cancún y el tamaño de los nodos está dado de la misma manera. Sin embargo, en estos casos el color corresponde al número de pasos que se requiere para llegar de un hotel determinado a los demás. En particular, el hotel más oscuro es el de origen y el color se va degradando conforme más y más pasos se requiera para llegar a los demás. Los hoteles en gris no son accesibles desde el hotel original mediante las primeras cinco recomendaciones de los hoteles. Cabe notar que en realidad son cuatro recomendaciones efectivas, puesto que cada hotel aparece en el primer lugar de su propia lista.
+Ya con una idea de qué hoteles son los más relevantes podemos hacer otro tipo de análisis. Las figuras (\ref{fig:cancun_laquinta}) y (\ref{fig:cancun_iberostar}) también incluyen únicamente hoteles en Cancún y el tamaño de sus nodos está dado de la misma manera. Sin embargo, en estos casos el color corresponde al número de pasos que se requiere para llegar de un hotel determinado a los demás. En particular, el hotel más oscuro es el de origen y el color se va degradando conforme más y más pasos se requiera para llegar a los demás. Los hoteles en gris no son accesibles desde el hotel original mediante las primeras cinco recomendaciones de los hoteles\footnote{Cabe notar que en realidad son cuatro recomendaciones efectivas, puesto que cada hotel aparece en el primer lugar de su propia lista.}.
 
 Como podemos ver en la gráfica (\ref{fig:cancun_laquinta}), de un hotel citadino y de negocios como La Quinta Inn and Suites podemos llegar sin problemas tanto a otros hoteles similares como de plano a hoteles populares en la zona si damos \emph{click} en las recomendaciones adecuadas. Similarmente, la gráfica (\ref{fig:cancun_iberostar}) muestra las posibilidades que se tiene empezando en el hotel Iberostar Cancún. Es claro ver que en el primer caso hay una mayor cantidad de hoteles accesibles que en el segundo, al menos mediante las primeras cinco recomendaciones. Esto se debe a que usualmente es más fácil explorar las regiones remotas de la red empezando en un hotel poco reconocido que en uno popular: la red tiene cierta tendencia a llevarnos a los hoteles populares.
 \begin{figure}[ht]
@@ -804,20 +807,23 @@ Como podemos ver en la gráfica (\ref{fig:cancun_laquinta}), de un hotel citadin
 	\caption{\label{fig:cancun_iberostar} Tamaño: PageRank. Color: Más oscuro implica mayor cercanía (en recomendaciones) al hotel Iberostar Cancún.}
 \end{figure}
 
-\subsection*{Conclusiones del análisis de redes}
+\section{Conclusiones del análisis de redes}
 
 Si bien el sistema que construimos tiene muchas bondades, hay que tener algunas cosas en mente. Para ello, concluiremos nuestro análisis de redes con los siguientes puntos clave.
 
-Antes que nada, hay que notar que si bien el sistema de recomendación fue construido de manera inteligente, no todas sus características están garantizadas. Por ejemplo, no hay razón alguna para pensar que todos los hoteles aparecerán en las recomendaciones de algún otro hotel. Es decir, es posible que nadie recomiende a un hotel en particular. Habrá que tener cuidado con esto y monitorear que no afecte el desempeño del sistema, aunque creemos que en la práctica sería difícil que esto representara un problema.
+Antes que nada, hay que notar que si bien el sistema de recomendación fue construido de manera cuidadosa, sus bondades dependen de las características particulares de la zona, por lo que no hay garantía de que se comportará de manera óptima en todos lados. Por ejemplo, no hay razón alguna para pensar que todos los hoteles aparecerán en las recomendaciones de algún otro hotel. Es decir, es posible que nadie recomiende a un hotel en particular. Habrá que tener cuidado con esto y monitorear que no afecte el desempeño del sistema, aunque creemos que en la práctica sería difícil que esto representara un problema.
 
 Otro aspecto que hay que tener en cuenta es que, aunque el precio no está restringido por abajo, la estructura de la red tiene cierta tendencia a llevar al cliente a los hoteles con PageRank alto. Habrá que observar el cambio en el comportamiento de los clientes para determinar si esto afecta negativamente a los hoteles menos comunes. Nuestra principal preocupación es que demasiados acaben en las mismas opciones siempre, aunque dudamos que el problema sea ni cercanamente tan grave como con el sistema actual.
 
-Finalmente, en las redes anteriores hicimos dos grandes supuestos que no necesariamente se cumplirán en la práctica: (1) que los clientes sólo ven las primeras cinco recomendaciones (o sea cuatro distintas al original), y (2) que los clientes eligen al azar y con la misma probabilidad de cada hotel. El primer supuesto no se cumplirá en la práctica porque los clientes tendrán más alternativas si ven más elementos de la lista de recomendaciones. Este hecho es ventajoso para el sistema porque ayudará, al menos en parte, a que haya menos hoteles que ningún otro recomiende. El segundo supuesto tampoco se cumplirá porque hay otros factores que motivan a un cliente a seleccionar una recomendación, como por ejemplo el precio, la foto (\emph{thumbnail}) que se le presenta en la página o incluso el nombre del hotel. Se podría hacer un análisis exhaustivo con las herramientas de la próxima sección, pero no estamos seguros de que el impacto sería lo suficientemente importante para justificar dicho análisis.
+Finalmente, en las redes anteriores hicimos dos grandes supuestos que no necesariamente se cumplirán en la práctica: (1) que los clientes sólo ven las primeras cinco recomendaciones (cuatro de ellas distintas al original), y (2) que los clientes eligen una recomendación al azar y con la misma probabilidad. El primer supuesto no se cumplirá en la práctica porque los clientes tendrán más alternativas si ven más elementos de la lista de recomendaciones. Este hecho es ventajoso para el sistema porque ayudará, al menos en parte, a que haya menos hoteles que nadie recomiende. El segundo supuesto tampoco se cumplirá porque hay otros factores que motivan a un cliente a seleccionar una recomendación, como por ejemplo el precio, la foto (\emph{thumbnail}) que se le presenta en la página o incluso el nombre del hotel. Se podría hacer un análisis exhaustivo usando herramientas estadísticas que analicen el comportamiento de la página, pero no estamos seguros de que el impacto sería lo suficientemente importante para justificar dicho análisis.
 
-\section{Desempeño de la página}
+\chapter{Resultados prácticos y conclusiones} \label{cap:5}
 
-El análisis de redes de la sección anterior evalúa el sistema de recomendación desde un punto de vista hipotético, en el sentido de que nos permite ver qué cosas \emph{puede} o no hacer el sistema. Por ejemplo, ilustra desde qué nodos de la gráfica podemos llegar a cuáles otros, cuáles son más importantes, etc. Sin embargo, el análisis teórico de la red debe ser complementado con uno de su desempeño en el mundo real, que en este caso corresponde con el de la página web de Best Day. Utilizamos la herramienta Google Analytics \cite{analytics} para obtener las diversas métricas de interés que analizaremos en esta sección.
+...
 
+\section{Desempeño de la página web}
+
+El análisis de redes de del capítulo \ref{cap:4} evalúa el sistema de recomendación desde un punto de vista hipotético, en el sentido de que nos permite ver qué cosas \emph{puede} o no hacer el sistema. Por ejemplo, ilustra desde qué nodos de la gráfica podemos llegar a cuáles otros, cuáles son más importantes, etc. Sin embargo, el análisis teórico de la red debe ser complementado con uno de su desempeño en el mundo real, que en este caso corresponde con el de la página web de Best Day. Utilizamos la herramienta Google Analytics \cite{analytics} para obtener las diversas métricas de interés que analizaremos en esta sección.
 
 Dado que estamos presentando una versión nueva de un sistema que ya existía, nos gustaría comparar su desempeño contra la versión actual y no tanto en términos absolutos. Para hacerlo, nos basaremos en las series de tiempo de las diversas métricas, fijándonos qué pasó antes y después de que subiéramos el nuevo sistema a producción. Lo haremos para las sesiones que fueron asistidas por el sistema de recomendación (i.e. que dieron \emph{click} en alguna recomendación), para los siguientes indicadores:
 \begin{enumerate}
@@ -856,11 +862,13 @@ En la figura (\ref{fig:analytics_y}) mostramos los indicadores en esta nueva for
 
 
 % ----------------------------------------------------------------------------------------------------
-\chapter{Conclusiones} \label{cap:5}
+\section{Conclusiones}
 
-Por qué no distancia absoluta?
+Por qué no distancia absoluta y o coseno?
 
 No es personalizado, sino de hoteles similares.
+
+Por qué sistema basado en contenido? etc, etc
 
 \section{Qué es el sistema de recomendación de hoteles}
 
@@ -871,6 +879,8 @@ Incorporar los hoteles vistos recientemente de forma dinámica.
 Porcentaje dinámico en forma de `U' para el tope de precio.
 
 Otras métricas
+
+Poner las recomendaciones en otro lado.
 
 
 
