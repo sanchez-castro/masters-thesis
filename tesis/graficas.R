@@ -275,13 +275,12 @@ ValidateToken(oauth_token)
 start.date = '2015-08-01'
 end.date = '2015-09-27'
 
-getdata <- function(start.date, end.date){
+getdata <- function(start.date, end.date, daywise=FALSE){
   dimensions <- 'ga:userType,ga:date'
-  metrics <- 'ga:users,ga:sessions,ga:bounceRate,ga:avgSessionDuration,ga:goalConversionRateAll,ga:pageviews,ga:revenuePerTransaction,ga:productRevenuePerPurchase'
+  metrics <- 'ga:users,ga:sessions,ga:bounceRate,ga:avgSessionDuration,ga:goalConversionRateAll,ga:pageviews,ga:revenuePerTransaction'
   segments_y <- 'sessions::condition::ga:pagePath=~view=(similarhotel|similarpackage)'
   segments_n <- 'sessions::condition::ga:dimension18==Hotel;condition::!ga:pagePath=~view=(similarhotel|similarpackage)'
   table.id <- 'ga:22605939'
-  daywise <- F
   ##
   params_list_1 <- Init(start.date = start.date,
                         end.date = end.date,
@@ -327,8 +326,7 @@ getdata <- function(start.date, end.date){
               goalConversionRateAll = sum(goalConversionRateAll* sessions)/sum(sessions),
               pageviews = sum(pageviews),
               sessions = sum(sessions),
-              avgPrice = sum(revenuePerTransaction*sessions)/sum(sessions),
-              avgRevenuePerPurchase= sum(productRevenuePerPurchase*sessions)/sum(sessions)) %>%
+              avgRevenue = sum(revenuePerTransaction*sessions)/sum(sessions)) %>%
     mutate(pageviews_per_session = pageviews / sessions) %>%
     filter(!is.na(date)) %>%
     ungroup
@@ -340,14 +338,17 @@ getdata <- function(start.date, end.date){
   dat
 }
 
-dat1 <- getdata('2015-08-01', '2015-09-27')
-dat2 <- getdata('2014-08-01', '2014-09-27')
+dat1 <- getdata('2015-08-01', '2015-09-27', daywise = T)
+dat2 <- getdata('2014-08-01', '2014-09-27', daywise = T)
 dat <- rbind(dat1, dat2)
 
-long <- dat %>%
-  gather(var, val, sessions, bounceRate, avgSessionDuration, goalConversionRateAll, pageviews_per_session, avgPrice, avgRevenuePerPurchase)
-# levels(dat2$var) <- c('Usuarios','Tasa de rebote (%)','Duración promedio de la sesión (minutos)','Tasa de conversión (%)','Páginas vistas por sesión','Precio promedio por compra','Utilidad bruta')
+# OJO: Hay un dato mega extremo. Así lo hago menos feo
+y <- dat$avgRevenue[dat$viewed_recom == 'yes']
+hist(y)
+dat$avgRevenue[dat$viewed_recom == 'yes'] <- ifelse(y == max(y), mean(y), y)
 
+long <- dat %>%
+  gather(var, val, sessions, bounceRate, avgSessionDuration, goalConversionRateAll, pageviews_per_session, avgRevenue)
 
 # Los que usaron recomendaciones: este año vs el anterior
 
@@ -355,8 +356,9 @@ aux <- long %>%
   mutate(year= as.character(year(date)),
          datediff = as.numeric(date - as.Date(paste0(year,'-08-01')))) %>%
   filter(viewed_recom=='yes')
-#levels(dat2_old$var) <- c('Usuarios','Tasa de rebote (%)','Duración promedio de la sesión (minutos)','Tasa de conversión (%)','Páginas vistas por sesión','Precio promedio por compra','Utilidad bruta')
-
+# Ojo con el valor mega extremo el 2014-09-22
+# aux %>% filter(var=='avgRevenue') %>% arrange(desc(val))
+levels(aux$var) <- c('Usuarios','Tasa de rebote (%)','Duración promedio de la sesión (minutos)','Tasa de conversión (%)','Páginas vistas por sesión','Precio promedio por compra')
 
 p <- ggplot(aux, aes(datediff, val, color=year)) +
   geom_line() +
@@ -387,15 +389,13 @@ for(col in names(dat)[!(names(dat) %in% c('date','viewed_recom'))]){
 }
 
 dat4 <- dat3 %>%
-  dplyr::select(date, p_users, p_bounceRate, p_avgSessionDuration, p_goalConversionRateAll, p_pageviews_per_session, p_avgPrice, p_avgRevenuePerPurchase) %>%
-  gather(var, value, p_users:p_avgRevenuePerPurchase)
-# levels(dat4$var) <- c('Usuarios','Tasa de rebote','Duración promedio de la sesión','Tasa de conversión','Páginas vistas por sesión')
-
+  dplyr::select(date, p_users, p_bounceRate, p_avgSessionDuration, p_goalConversionRateAll, p_pageviews_per_session, p_avgRevenue) %>%
+  gather(var, value, p_users:p_avgRevenue)
 
 aux <- dat4 %>%
   mutate(year= as.character(year(date)),
          datediff = as.numeric(date - as.Date(paste0(year,'-08-01'))))
-
+levels(aux$var) <- c('Usuarios','Tasa de rebote (%)','Duración promedio de la sesión (minutos)','Tasa de conversión (%)','Páginas vistas por sesión','Precio promedio por compra')
   
 p <- ggplot(aux, aes(datediff, value, color=year)) +
   geom_line() +
