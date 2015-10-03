@@ -271,10 +271,7 @@ oauth_token <- Auth(client.id = "410202734756-vuek66j0asrnk5aicd0geog0uf5kje2u.a
 
 ValidateToken(oauth_token)
 
-## FECHAS
-start.date = '2015-08-01'
-end.date = '2015-09-27'
-
+## QUERY
 getdata <- function(start.date, end.date, daywise=FALSE){
   dimensions <- 'ga:userType,ga:date'
   metrics <- 'ga:users,ga:sessions,ga:bounceRate,ga:avgSessionDuration,ga:goalConversionRateAll,ga:pageviews,ga:revenuePerTransaction'
@@ -338,20 +335,21 @@ getdata <- function(start.date, end.date, daywise=FALSE){
   dat
 }
 
-dat1 <- getdata('2015-08-01', '2015-09-27', daywise = T)
-dat2 <- getdata('2014-08-01', '2014-09-27', daywise = T)
+## OBTENER INFO
+dat1 <- getdata('2015-08-01', '2015-09-28', daywise = T)
+dat2 <- getdata('2014-08-01', '2014-09-28', daywise = T)
 dat <- rbind(dat1, dat2)
 
 # OJO: Hay un dato mega extremo. Así lo hago menos feo
 y <- dat$avgRevenue[dat$viewed_recom == 'yes']
 hist(y)
-dat$avgRevenue[dat$viewed_recom == 'yes'] <- ifelse(y == max(y), mean(y), y)
+dat$avgRevenue[dat$viewed_recom == 'yes'] <- ifelse(y == max(y), mean(y[y!=max(y)]), y)
 
+# Base en formato largo
 long <- dat %>%
   gather(var, val, sessions, bounceRate, avgSessionDuration, goalConversionRateAll, pageviews_per_session, avgRevenue)
 
-# Los que usaron recomendaciones: este año vs el anterior
-
+### Los que usaron recomendaciones: este año vs el anterior
 aux <- long %>%
   mutate(year= as.character(year(date)),
          datediff = as.numeric(date - as.Date(paste0(year,'-08-01')))) %>%
