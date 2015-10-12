@@ -12,7 +12,7 @@
 \contentsline {section}{\numberline {2.6}Precios din\IeC {\'a}micos}{34}{section.2.6}
 \contentsline {section}{\numberline {2.7}Consideraciones pr\IeC {\'a}cticas}{35}{section.2.7}
 \contentsline {section}{\numberline {2.8}Resumen del proceso}{36}{section.2.8}
-\contentsline {section}{\numberline {2.9}Comentarios}{36}{section.2.9}
+\contentsline {section}{\numberline {2.9}Comentarios}{37}{section.2.9}
 \contentsline {chapter}{\numberline {3}Implementaci\IeC {\'o}n}{38}{chapter.3}
 \contentsline {section}{\numberline {3.1}Informaci\IeC {\'o}n}{38}{section.3.1}
 \contentsline {section}{\numberline {3.2}Sistema de respaldo}{40}{section.3.2}

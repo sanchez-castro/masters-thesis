@@ -174,12 +174,12 @@ Al parecer en Booking sólo están interesados en lo que el cliente ha buscado y
 
 \subsection*{Despegar (despegar.com)}
 
-Despegar es un competidor más directo y con un mercado más parecido al de Best Day que Booking, aunque está más enfocado en vender boletos de avión que cuartos de hotel. En en su página utilizan varias estrategias distintas para recomendar, por lo que las describiremos por separado. Cabe mencionar que no usan todas las estrategias para todos los hoteles, ni siempre, por lo que sospechamos que tienen información incompleta y sólo muestran lo que tienen disponible.
+Despegar es un competidor más directo y con un mercado más parecido al de Best Day que Booking. En en su página utilizan varias estrategias distintas para recomendar, por lo que las describiremos por separado. Cabe mencionar que no usan todas las estrategias para todos los hoteles, ni siempre, por lo que sospechamos que tienen información incompleta y sólo muestran lo que tienen disponible.
 \begin{itemize}
 	\item \textbf{Búsquedas recientes}
 	\begin{enumerate}
 		\item Se encuentra en la izquierda abajo del mapa. Igual que en booking.com, se tiene que bajar en la página para verlo, por lo que su relevancia es media-baja.
-		\item Son los hoteles buscados recientemente por el usuario. Curiosamente, no siempre nos aparecieron al hacer búsquedas, incluso después de haber visto varios hoteles.
+		\item Son los hoteles buscados recientemente por el usuario. Curiosamente, no siempre nos aparecieron al hacer búsquedas, incluso después de haber visto varios hoteles. Pensamos que esto podría deberse a alguna especie de A-B Testing.
 	\end{enumerate}
 	\item \textbf{Hoteles cercanos}
 	\begin{enumerate}
@@ -260,9 +260,9 @@ Quitando las búsquedas recientes de en medio, podemos analizar los diversos sis
 
 Otro factor que nos pareció mejorable es el uso de la información geográfica. Parece ser que la opción más popular es únicamente utilizar la información incluida en el destino y, de hecho, parece que sólo Despegar tiene una sección de hoteles más cercanos. Si bien utilizar el destino como punto de partida es una opción razonable, creemos que se podría aprovechar mejor la información si se utilizaran las coordenadas geográficas, dado que en la vida real lo que realmente importa es la proximidad de los hoteles; los destinos son particiones más o menos arbitrarias que no deberían afectar mucho las recomendaciones. Por ejemplo, una persona podría recomendar un hotel en Cancún dado que se buscó uno en la zona norte de la Riviera Maya, o uno en Playa del Carmen a una persona que buscó algo en Cozumel.
 
-Un tercer problema con el que nos encontramos en las recomendaciones es que en la mayoría de los casos eran estáticas. Es decir, son idénticas para ciertos grupos de hoteles. Esto pasa en todas las opciones que vimos que utilizan el destino (Booking, Despegar, Best Day) como criterio, pues no dependen también del hotel. Esto en sí mismo puede ser un problema en destinos amplios, puesto que el usuario agota las opciones rápidamente. Hay que decir que de ninguna manera decimos que las recomendaciones estáticas son malas, pero su función debe ser desempeñada por catálogos o por búsquedas avanzadas, no por sistemas de recomendación
+Un tercer problema con el que nos encontramos en las recomendaciones es que en la mayoría de los casos eran estáticas. Es decir, son idénticas para ciertos grupos de hoteles. Esto pasa en todas las opciones que vimos que utilizan el destino (Booking, Despegar, Best Day) como criterio, pues no dependen también del hotel. Esto en sí mismo puede ser un problema en destinos amplios, puesto que el usuario agota las opciones rápidamente. Hay que decir que de ninguna manera decimos que las recomendaciones estáticas son malas, pero su función debe ser desempeñada por catálogos o por búsquedas avanzadas, no por sistemas de recomendación.
 
-En cuarto lugar, nos dimos cuenta que en varias de las páginas se han dado cuenta de que quieren recomendar hoteles vía diversos criterios, pero muchas veces no los han integrado. La estrategia tiende a ser usar un criterio para ordenar a la vez, en lugar de aprovechar varios simultáneamente. Este punto va de la mano con el tercero: los criterios estáticos deben ir en una búsqueda avanzada. Es necesario integrarlos de alguna forma para que parezcan, aunque sea de lejos, inteligentes.
+En cuarto lugar, nos dimos cuenta que en varias de las páginas utilizan diversos criterios para recomendar hoteles, pero muchas veces no los han integrado. La estrategia tiende a ser usar un criterio para ordenar a la vez, en lugar de aprovechar varios simultáneamente. Este punto va de la mano con el tercero: los criterios estáticos deben ir en una búsqueda avanzada. Es necesario integrarlos de alguna forma para que parezcan, aunque sea de lejos, inteligentes.
 
 En quinto lugar, notamos que en general los sistemas que sí recomendaban de forma más sofisticada resultaban rígidos y se podían quedar atorados fácilmente en grupos aislados de hoteles. Esto hace que el sistema se vuelva inútil una vez que se llegó a uno de estos grupos absorbentes. El único que nos pareció decente en este sentido es el de Expedia, aunque sí es algo más rígido de lo que nos gustaría. No podemos dejar de enfatizar la importancia que tiene la ``creatividad'' en este tipo de sistemas. De igual modo que los vendedores reales, el valor que aportan reside en sus ideas, su inventiva y sus propuestas innovadoras. Es por ello que si se les agotan las ideas (o en este caso, si se ciclan en un grupo de ellas que no sea lo suficientemente bueno) se vuelven obsoletos.
 
@@ -283,7 +283,7 @@ Proponemos las siguientes medidas con el fin de propiciar que las recomendacione
 	\item Para que tome en cuenta la distancia \emph{lo más parecido posible a una persona}, proponemos que recomiende hoteles razonablemente \textbf{cercanos} al buscado, donde el criterio de cercanía varía según la densidad de hoteles en la zona.
 	\item Para que \emph{compare hoteles como un vendedor}, las recomendaciones deberán tener un \textbf{perfil} o filosofía similar al original. Además, las recomendaciones deben ser hoteles no necesariamente de las mismas estrellas, pero sí deben tener una cantidad similar de \textbf{servicios} disponibles.
 \end{enumerate}
-En la lista anterior aparentemente hemos dejado fuera las características de \emph{ingenio} y de \emph{flexibilidad}. Sin embargo, más adelante en este capítulo y en el capítulo \ref{cap:3} veremos qué hicimos para tratar con casos atípicos o con muy poca población. Por otro lado, en el capítulo \ref{cap:4} quedará claro que el sistema propuesto naturalmente genera una estructura diversa que difícilmente se quedará enfrascada en unas pocas opciones
+En la lista anterior aparentemente hemos dejado fuera las características de \emph{ingenio} y de \emph{flexibilidad}. Sin embargo, más adelante en este capítulo y en el capítulo \ref{cap:3} veremos qué hicimos para tratar con casos atípicos o con muy poca población. Por otro lado, en el capítulo \ref{cap:4} quedará claro que el sistema propuesto naturalmente genera una estructura diversa que difícilmente se quedará enfrascada en unas pocas opciones.
 
 Antes de entrar a una descripción detallada de cada medida, explicaremos brevemente cómo colaborarán a que nuestro sistema de recomendación tenga las propiedades que buscamos.
 
@@ -302,7 +302,7 @@ Denotamos el conjunto de todos los hoteles por $\HH$ y al número de hoteles por
 
 \section{Precio}
 
-Dado que el precio es un factor determinante en la elección de un hotel para la mayoría de los clientes, es importante respetar sus posibilidades económicas a la hora de recomendar nuevas opciones. Es razonable pensar que dados dos hoteles idénticos, un cliente siempre elegirá el más barato, salvo tal vez unos pocos clientes de súper lujo. Por esta razón, decidimos no imponer ninguna cota inferior al precio de los hoteles recomendados, siempre y cuando cumplan los criterios de similitud que describiremos más adelante. Por otro lado, como puede ser desalentador que las sugerencias contengan opciones demasiado caras, optamos por poner una cota superior al precio de los hoteles. Como en este paso queremos reflejar los precios ``reales'' de los hoteles, utilizaremos su precio de largo plazo para generar el filtro, como se explica a continuación.
+Dado que el precio es un factor determinante en la elección de un hotel para la mayoría de los clientes, es importante respetar sus posibilidades económicas a la hora de recomendar nuevas opciones. Es razonable pensar que dados dos hoteles idénticos, un cliente siempre elegirá el más barato, salvo tal vez unos pocos clientes \emph{upscale}. Por esta razón, decidimos no imponer ninguna cota inferior al precio de los hoteles recomendados, siempre y cuando cumplan los criterios de similitud que describiremos más adelante. Por otro lado, como puede ser desalentador que las sugerencias contengan opciones demasiado caras, optamos por poner una cota superior al precio de los hoteles. Como en este paso queremos reflejar los precios ``reales'' de los hoteles, utilizaremos su precio de largo plazo para generar el filtro, como se explica a continuación.
 \begin{regla}[Filtro de precio de largo plazo] \label{r:preciolargo}
 Sea $\gamma \geq 0$ y sea
 \[
@@ -520,7 +520,7 @@ Dado que queremos identificar hoteles similares, un buen criterio para decidir e
 Como queremos calcular el valor óptimo de $\alpha$ para las recomendaciones que haremos, tenemos que hacer el análisis con todas (o una muestra suficiente de) las recomendaciones de todos los hoteles. La forma de hacerlo es como sigue:
 \begin{enumerate}
 	\item Establecer los parámetros de los filtros estáticos de precio y distancia.
-	\item Para cada hotel $i$, generamos $\HH_i^2$.
+	\item Para cada hotel $i$, generamos $\HH_i^2$ como está descrito en R\ref{r:distanciaestatica}.
 	\item Para todo $j \in \HH_i^2$, calculamos
 	\begin{align*}
 		h_{ij} &:= sim_h(c_i, c_j)\\
@@ -568,7 +568,7 @@ Una primera idea para incorporar la distancia en el modelo fue meterla de alguna
 	\item Definir qué entendemos por hoteles cercanos.
 	\item Pasar a la siguiente ronda del modelo los hoteles que cumplen dicho criterio, ordenados por \emph{score}, es decir, por qué tan parecidos son al hotel en cuestión.
 \end{enumerate}
-El paso crítico para este método es la definición de cercanía. Una primera idea es, por ejemplo, elegir los 20 ó 30 hoteles más cercanos al hotel en cuestión. Sin embargo, este enfoque ingenuo tiene un problema grave: si un hotel es único en su categoría en la zona (por ejemplo es de 5 estrellas en un pueblo pequeño), entonces posiblemente los 20 hoteles más cercanos a él no se parezcan en lo absoluto. En estos casos debería permitirse una mayor flexibilidad de búsqueda en favor de obtener mejores recomendaciones. En la figura (\ref{fig:distdin}) ilustramos lo que sucede y a continuación describimos el proceso formalmente.
+El paso crítico para este método es la definición de cercanía. Una forma de hacerlo es elegir, por ejemplo, los 20 ó 30 hoteles más cercanos al hotel en cuestión. Sin embargo, este enfoque ingenuo tiene un problema grave: si un hotel es único en su categoría en la zona (por ejemplo es de 5 estrellas en un pueblo pequeño), entonces posiblemente los 20 hoteles más cercanos a él no se parezcan en lo absoluto. En estos casos debería permitirse una mayor flexibilidad de búsqueda en favor de obtener mejores recomendaciones. Para lograr esto, le damos un peso distinto a los hoteles cercanos, según su similitud al hotel original, es decir, acumulamos \emph{score} en lugar de cantidad. De este modo, en zonas con muchos hoteles apropiados, la acumulación de \emph{score} será rápida y por lo tanto el radio de búsqueda será pequeño. En contraste, si no hay muchos hoteles similares, el \emph{score} se acumulará más lentamente y por consiguiente el radio será mayor. En la figura (\ref{fig:distdin}) ilustramos lo que sucede y en la siguiente definición describimos el proceso formalmente.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/distdin.pdf}
@@ -588,7 +588,7 @@ es decir, la mínima distancia que garantice que se acumula al menos $w_{inner}$
 \HH_i^3 = \{j \in \HH_i^2 : d_{geo}(i,j) \leq r_{inner}\}
 \]
 \end{regla}
-La justificación de la regla anterior es que cuando un hotel es único en su área, los hoteles cercanos no se parecerán a él, lo que provocará que $F_i$ crezca lentamente y, por consiguiente, que $r_{inner}$ sea grande. Por el contrario, si hay muchos hoteles parecidos a $i$ cerca, entonces $F_i$ crecerá rápidamente y por lo tanto $r_{inner}$ será más pequeño.
+La regla anterior es fácil de entender a la luz de la intuición de lo que queremos lograr. Si un hotel es único en su área, los hoteles cercanos no se parecerán a él, lo que provocará que $F_i$ crezca lentamente y, por consiguiente, que $r_{inner}$ sea grande. Por el contrario, si hay muchos hoteles parecidos a $i$ cerca, entonces $F_i$ crecerá rápidamente y por lo tanto $r_{inner}$ será más pequeño.
 
 \section{Precios dinámicos}
 
@@ -604,15 +604,15 @@ Dadas $\alpha$ y $r_{inner}$ obtenidas en R\ref{r:preciolargo}, R\ref{r:distanci
 \]
 y los hoteles se presentarán ordenados por \emph{score}, de mayor a menor.
 \end{regla}
-Hay que tener en cuenta que este último cambio aumenta considerablemente el costo computacional de calcular las recomendaciones, ya que habrá que conseguir los precios de todos los hoteles cercanos a $i$ en las fechas apropiadas cada vez que un usuario entre a la página del hotel (sería inviable almacenar todas las recomendaciones para todas las fechas posibles). Compárese esto con utilizar precios estáticos de largo plazo y almacenar las recomendaciones de $i$ una sola vez, dado que serán fijas para todos los usuarios.
+Hay que tener en cuenta que este último cambio aumenta considerablemente el costo computacional de calcular las recomendaciones, ya que habrá que conseguir los precios de todos los hoteles cercanos a $i$ en las fechas apropiadas cada vez que un usuario entre a la página del hotel (sería inviable almacenar todas las recomendaciones para todas las fechas posibles). Compárese esto con utilizar precios estáticos de largo plazo, en cuyo caso se puede almacenar las recomendaciones del hotel $i$ una sola vez, dado que serán las mismas para todos los usuarios.
 
 Si se considera que la carga computacional es demasiado pesada para la infraestructura en la que se correrá el sistema de recomendación, se puede omitir los precios dinámicos, poniendo $\RR := \HH_i^3$ y mostrando los hoteles ordenados por \emph{score} de la misma manera que en R\ref{r:preciodinamico}.
 
 \section{Consideraciones prácticas}
 
-Una última consideración que hay que tener son los casos extremos. Un caso es que la zona del hotel buscado tenga muy pocas opciones dentro de la cerca exterior y el otro es cuando el hotel es muy barato para la zona, por lo que el filtro de precio le impide ver suficientes de los demás hoteles. En ambos, un asesor deberá utilizar su \emph{ingenio} para salir de paso. Lo que es indispensable es que \emph{siempre} recomiende algo, aunque sea lo menos peor cuando no tenga alternativa.
+Un último tema que hay que abordar es la posibilidad de que algún hotel no posea suficientes alternativas para generar las recomendaciones. Esto podría darse por dos razones, a saber, (1) debido a que la zona en donde se encuentra el hotel es de baja densidad y por lo tanto no hay suficientes hoteles en su cerca exterior, o (2) porque el hotel es atípicamente barato en comparación con sus vecinos, en cuyo caso el filtro de precio le impedirá ver muchos de los hoteles vecinos. En ambos casos, un asesor deberá utilizar su \emph{ingenio} para salir de paso. Lo que es indispensable es que \emph{siempre} recomiende algo, aunque sea lo menos peor cuando no tenga alternativa.
 
-Para aliviar el primer problema el procedimiento es simple: como no queremos que se queden vacías las recomendaciones, ignoramos todo lo anterior y regresamos un número pequeño predefinido de hoteles cercanos, ordenados por distancia. Decidimos ignorar el \emph{score} en estos casos porque, dado que hay muy pocas opciones, creemos que hay que darle prioridad al lugar en particular que buscó el cliente. Si, por otro lado, sí hay suficientes hoteles dentro de la cerca exterior, pero el filtro de precio es demasiado estricto, entonces ignoramos por completo este filtro.
+Para aliviar el primer problema el procedimiento es simple: como no queremos que se queden vacías las recomendaciones, ignoramos todo lo anterior y regresamos un número pequeño predefinido de hoteles lo más cercanos que se pueda, ordenados por distancia. Decidimos ignorar el \emph{score} en estos casos porque, dado que hay muy pocas opciones, creemos que hay que darle prioridad al destino en particular que buscó el cliente. Si, por otro lado, sí hay suficientes hoteles dentro de la cerca exterior, pero el filtro de precio es demasiado estricto, entonces ignoramos por completo este filtro.
 \begin{regla}[Casos extremos] \label{r:casosextremos}
 Sea $rec_{min} > 0$ el mínimo número de recomendaciones que se desea.
 \begin{enumerate}[(I)]
