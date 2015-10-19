@@ -778,7 +778,7 @@ Dado que la gráfica resultante de las recomendaciones de los miles de hoteles d
 Analizamos varios destinos importantes de México en la gráfica (\ref{fig:destinos}). En este caso, el tamaño de los nodos está dado por su PageRank, por lo que los nodos son más importantes mientras más grandes son, mientras que los colores representan el destino de cada hotel. Esta representación del sistema de recomendación transparenta algunas de las ventajas que tiene. En primer lugar, vemos que la importancia de los nodos está mucho más repartida que en la gráfica de ejemplo del sistema actual. Aunque hay algunos nodos grandes, no son los únicos importantes en la gráfica. En términos de las características que buscábamos al principio, esto equivale a que el sistema sea más \emph{creativo} e \emph{inteligente}, puesto que no recomendará siempre lo mismo. Además de ello, la gráfica de cada destino es débilmente conexa, lo que dificulta que al sistema ``se le acaben las ideas''; veremos esto a mayor detalle en una figura posterior. Otra ventaja evidente es que los destinos muy cercanos pueden estar conectados, como en el caso de los que están en Quintana Roo. Es interesante notar que si hay varios destinos en cadena, se puede llegar a lugares muy lejanos si se explora lo suficiente. Por ejemplo, se puede llegar de Cancún a Tulum, incluso a pesar de que están a 130 km de distancia. Esto puede ser una ventaja porque un cliente que no tiene un destino decidido puede explorar alternativas en una zona más amplia que el destino que se le había ocurrido inicialmente. Esto se puede interpretar como que el sistema tiene cierto \emph{ingenio} y capacidad de encontrar soluciones \emph{out-of-the-box}.
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=\textwidth,
+	\includegraphics[width=0.7\textwidth,
 		trim = 0 300 0 300, clip]{imagenes/destinos2.png}
 	\caption{\label{fig:destinos} Red para diversos destinos: Ciudad de México (azul-morado), Cancún (turquesa), Playa del Carmen (verde), Riviera Maya (fucsia), Isla Mujeres (azul), Cozumel (naranja), Tulum (rojo) y Cuernavaca (verde-amarillo). El tamaño de los nodos está dado por el PageRank.}
 \end{figure}
@@ -787,7 +787,7 @@ Si ahora nos acercamos a un destino en particular, podremos descubrir otras cosa
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[height=0.70\textwidth, angle=90,
+	\includegraphics[width=0.70\textwidth, angle=0,
 		trim = 0 900 0 900, clip]{imagenes/cancun.png}
 	\caption{\label{fig:cancun} Hoteles en Cancún. La importancia (PageRank) está dada por el tamaño de los nodos. Sin contar los nodos inaccesibles, el diámetro de esta gráficaes de 7 pasos y la distancia promedio entre nodos es de 3.3.}
 \end{figure}
@@ -795,19 +795,17 @@ Si ahora nos acercamos a un destino en particular, podremos descubrir otras cosa
 Ya con una idea de qué hoteles son los más relevantes podemos hacer otro tipo de análisis. Las figuras (\ref{fig:cancun_laquinta}) y (\ref{fig:cancun_iberostar}) también incluyen únicamente hoteles en Cancún y el tamaño de sus nodos está dado de la misma manera. Sin embargo, en estos casos el color corresponde al número de pasos que se requiere para llegar de un hotel determinado a los demás. En particular, el hotel más oscuro es el de origen y el color se va degradando conforme más y más pasos se requiera para llegar a los demás. Los hoteles en gris no son accesibles desde el hotel original mediante las primeras cinco recomendaciones de los hoteles\footnote{Cabe notar que en realidad son cuatro recomendaciones efectivas, puesto que cada hotel aparece en el primer lugar de su propia lista.}. Este hecho muestra que, si bien el sistema nuevo es más flexible que el anterior, no puede hacer saltos lógicos demasiado aventurados, incluso en varias etapas. Sin embargo, este hecho no necesariamente es negativo, puesto que, en la mayoría de los casos, los clientes sólo estarán interesados en una parte específica del espectro de hoteles en una zona.
 
 Como podemos ver en la gráfica (\ref{fig:cancun_laquinta}), de un hotel citadino y de negocios como La Quinta Inn and Suites podemos llegar sin problemas tanto a otros hoteles similares como a hoteles populares en la zona si damos \emph{click} en las recomendaciones adecuadas. Similarmente, la gráfica (\ref{fig:cancun_iberostar}) muestra las posibilidades que se tiene empezando en el hotel Iberostar Cancún. Es claro ver que en el primer caso hay una mayor cantidad de hoteles accesibles que en el segundo, al menos mediante las primeras cinco recomendaciones. Esto se debe a que usualmente es más fácil explorar las regiones remotas de la red empezando en un hotel poco reconocido que en uno popular. Esto ocasiona que el asesor electrónico reconozca la calidad de ciertos hoteles y tenga una tendencia a llevar al cliente a ellos. 
-\begin{figure}[ht]
+\begin{figure}[h!t]
 	\centering
-	\includegraphics[height=0.75\textwidth, angle=90,
+	\includegraphics[width=0.9\textwidth, angle=0,
 		trim = 100 900 100 900, clip]{imagenes/cancun_laquinta2.png}
-	\caption{\label{fig:cancun_laquinta} Tamaño: PageRank. Color: Más oscuro implica mayor cercanía (en recomendaciones) al hotel La Quinta Inn and Suites.}
-\end{figure}
-\begin{figure}[ht]
-	\centering
-	\includegraphics[height=0.75\textwidth, angle=90,
+	\caption{\label{fig:cancun_laquinta} Tamaño: PageRank. Color: Más oscuro implica mayor cercanía (en recomendaciones) al hotel La Quinta Inn and Suites.\\\vspace*{1cm}}
+	\includegraphics[width=0.9\textwidth, angle=0,
 		trim = 100 900 100 900, clip]{imagenes/cancun_iberostar2.png}
 	\caption{\label{fig:cancun_iberostar} Tamaño: PageRank. Color: Más oscuro implica mayor cercanía (en recomendaciones) al hotel Iberostar Cancún.}
 \end{figure}
 
+\clearpage
 \section{Conclusiones del análisis de redes}
 
 Si bien el sistema que construimos tiene muchas propiedades favorables, hay que tener algunas cosas en mente. Para ello, concluiremos nuestro análisis de redes con los siguientes puntos clave.
@@ -870,7 +868,7 @@ Analizando lo anterior podemos ver varios efectos positivos del sistema. Por eje
 
 La conclusión global de este análisis es que, después de aproximadamente un mes de observación \emph{post} implementación, empezó a haber signos prometedores del nuevo sistema en algunos rubros, pero no en todos. Creemos que para mejorar de manera integral el sistema de recomendación habría que también explorar sus componentes gráficos y otras partes de la página de Best Day. Sin embargo, esos análisis quedan fuera de este trabajo.
 
-\begin{figure}[ht]
+\begin{figure}[h!t]
 	\centering
 	\includegraphics[width=0.9\textwidth]{imagenes/analytics_anios_y.pdf}
 	\caption{\label{fig:analytics_y} Indicadores en su forma $Y_t$. La línea vertical indica el momento en el que se cambió el sistema de recomendación.}
@@ -878,6 +876,8 @@ La conclusión global de este análisis es que, después de aproximadamente un m
 
 
 % ----------------------------------------------------------------------------------------------------
+
+\clearpage
 \section{Discusión}
 
 Concluiremos el presente trabajo discutiendo algunos temas de interés que surgieron a lo largo del trabajo. Un tema relevante que podría surgir incluso al comenzar a leer esta tesis es \emph{¿por qué utilizamos un sistema de recomendación basado en contenido?} La respuesta esto tiene varias partes. En primer lugar, por razones históricas y de negocio, Best Day no tiene información detallada de todos los clientes\footnote{A diferencia por ejemplo de Netflix o Amazon, que guardan todo el historial de compras y comportamiento de sus clientes.} porque permite comprar viajes sin tener una cuenta con ellos. Aparte de ello, esos sistemas pueden ser más complejos de manejar y se necesita planear antes de implementar la página. Tal como está hoy en día, sería complicado hacerlo sin cambiar varios aspectos estructurales importantes. Además, dado que los viajes son productos caros, los clientes tienen una tasa de compra y de repetición muy bajas, por lo que se contaría con muy poca información por cliente para hacer un filtro colaborativo, por ejemplo\footnote{Ver \cite{mmds} para una descripción detallada de lo que es un filtro colaborativo}. Por estas razones, decidimos que tenía más sentido hacer un sistema no personalizado que tuviera mejores propiedades que el que se tenía inicialmente, pero con la misma premisa de recomendar hoteles similares.
