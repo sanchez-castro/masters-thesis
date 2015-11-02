@@ -20,7 +20,7 @@
 
 -- =============================================
 
-CREATE PROCEDURE [dbo].[spRM_ObtenerListaDeHoteles] 
+/*CREATE*/ ALTER PROCEDURE [dbo].[spRM_ObtenerListaDeHoteles] 
 
 	
 
@@ -40,12 +40,12 @@ BEGIN
 				ON hc.Clav_Hotel = h.Clav_Hotel
 			INNER JOIN Hoteles_Servicios hs with (nolock)
 				ON hc.Clav_Hotel = hs.Clav_hotel
-			WHERE
-		(
+			WHERE h.Clav_Pais in ('AR','MX','BR','US')
+		/*(
 			h.Clav_Pais in ('AR','MX')
 			OR (h.Clav_Pais = 'BR' AND hc.tipo_notif in ('A','E','H','K'))
 			OR (h.Clav_Pais = 'US' AND hc.tipo_notif in ('A','E','H'))
-		)
+		)*/
 		AND h.Activo = 1  
 		AND h.Internet = 1
 		AND h.latitude IS NOT NULL
