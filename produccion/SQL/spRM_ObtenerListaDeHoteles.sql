@@ -8,7 +8,7 @@
 
 -- Description: Obtiene lista de hoteles para alimentar al Sistema de Recomendación de Hoteles
 
--- Llamada:     EXEC spRM_ObtenerListaDeHoteles
+-- Llamada:     EXEC spRM_ObtenerListaDeHoteles 'MX'
 
 -- History:
 
@@ -21,7 +21,7 @@
 -- =============================================
 
 /*CREATE*/ ALTER PROCEDURE [dbo].[spRM_ObtenerListaDeHoteles] 
-
+@country as CHAR(2)
 	
 
 AS
@@ -40,7 +40,8 @@ BEGIN
 				ON hc.Clav_Hotel = h.Clav_Hotel
 			INNER JOIN Hoteles_Servicios hs with (nolock)
 				ON hc.Clav_Hotel = hs.Clav_hotel
-			WHERE h.Clav_Pais in ('AR','MX','BR','US')
+			WHERE h.Clav_Pais = @country 
+			/*h.Clav_Pais in ('AR','MX','BR','US')*/
 		/*(
 			h.Clav_Pais in ('AR','MX')
 			OR (h.Clav_Pais = 'BR' AND hc.tipo_notif in ('A','E','H','K'))

@@ -21,7 +21,8 @@
 -- =============================================
 
 /*CREATE*/ALTER PROCEDURE [dbo].[spRM_ObtenerDatosHoteles] 
-@fecha_ini AS CHAR(8)
+@fecha_ini AS CHAR(8),
+@country as CHAR(2)
 
 AS
 
@@ -47,7 +48,7 @@ BEGIN
 
 	-- Lista de hoteles que queremos (por geografía, etc)
 	INSERT INTO @listaHoteles
-	EXEC spRM_ObtenerListaDeHoteles
+	EXEC spRM_ObtenerListaDeHoteles @country
 
 	-- Precios de largo plazo de los hoteles
 	INSERT INTO @precios

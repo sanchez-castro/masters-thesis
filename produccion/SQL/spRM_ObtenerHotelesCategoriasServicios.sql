@@ -20,8 +20,8 @@
 
 -- =============================================
 
-CREATE PROCEDURE [dbo].spRM_ObtenerHotelesCategoriasServicios 
-
+/*CREATE*/ ALTER PROCEDURE [dbo].spRM_ObtenerHotelesCategoriasServicios 
+@country as CHAR(2)
 
 AS
 
@@ -46,7 +46,7 @@ BEGIN
 
 	-- Lista de hoteles que queremos (por geografía, etc)
 	INSERT INTO @listaHoteles
-	EXEC spRM_ObtenerListaDeHoteles
+	EXEC spRM_ObtenerListaDeHoteles @country
 
 	-- Generamos los servicios de plan de alimentos y los insertamos en @hot_serv
 	INSERT INTO @hot_serv
@@ -62,10 +62,12 @@ BEGIN
 					over (Partition BY hct.Clav_Hotel
 						ORDER BY ra.Rango_Agrupador DESC )
 				rango
-		FROM (SELECT distinct Clav_Hotel, Clav_Plan FROM dbo.hoteles_cuartos_Tarifas2 with (nolock)) hct 
+		FROM (SELECT distinct Clav_Hotel, Clav_Plan FROM dbo.hoteles_cuartos_Tarifas2 with (nolock)) hct
+			INNER JOIN @listaHoteles lh
+				ON hct.Clav_Hotel = lh.Clav_Hotel
 			INNER JOIN dbo.Planes p with (nolock)
 				ON hct.Clav_Plan = p.Clav_Plan
-			LEFT JOIN dbo.RM_Rangos_Agrupadores ra
+			LEFT JOIN dbo.RM_Rangos_Agrupadores ra with (nolock)
 				ON p.Clav_Agrupador = ra.Clav_Agrupador
 		GROUP BY hct.Clav_Hotel
 			, p.Clav_Agrupador
@@ -97,9 +99,9 @@ BEGIN
 	FROM @hot_serv hs
 		INNER JOIN @listaHoteles lh					-- Sólo de los hoteles obtenidos en la lista
 			ON hs.Clav_Hotel = lh.Clav_Hotel
-		INNER JOIN Clasificaciones_Servicios cs
+		INNER JOIN Clasificaciones_Servicios cs WITH (NOLOCK)
 			ON hs.Clav_Servicio = cs.Clav_Servicio
-		INNER JOIN Tipos_Clasificaciones_Servicios tcs
+		INNER JOIN Tipos_Clasificaciones_Servicios tcs WITH (NOLOCK)
 			ON cs.Clav_TipoClasificacionServicio = tcs.Clav_TipoClasificacionServicio
 	WHERE tcs.Codigo <> 'ZIGNORE'					-- Categoria a ignorar
 	GROUP BY hs.Clav_Hotel, tcs.Codigo
