@@ -157,7 +157,7 @@ Pusimos a Price Travel en el primer lugar de la lista porque no tiene un sistema
 
 \subsection*{Booking (booking.com)}
 
-Booking es un competidor muy importante de Best Day, aunque también tiene un mercado más grande y mayor cantidad de opciones en destinos fuera de Latinoamérica. Antes de entrar en los puntos de interés general, cabe mencionar que algo que hace booking que no hacen los demás es que cuando se busca un hotel en la página con la barra inteligente, en lugar de ir directamente a su página, se muestra en el primer lugar de una lista, dando la posibilidad de elegir algún otro hotel. Ahora sí pasemos al tema en cuestión:
+Booking es un competidor muy importante de Best Day, aunque también tiene un mercado más grande y mayor cantidad de opciones en destinos fuera de Latinoamérica, como por ejemplo en Europa. Además, es parte de Priceline Group, que tiene páginas como Kayak (\url{kayak.com}) y a OpenTable (\url{opentable.com}). Antes de entrar en los puntos de interés general, cabe mencionar que algo que hace Booking que no hacen los demás es que cuando se busca un hotel en la página con la barra inteligente, en lugar de ir directamente a su página, se muestra en el primer lugar de una lista, dando la posibilidad de elegir algún otro hotel. Ahora sí pasemos al tema en cuestión:
 \begin{itemize}
 	\item \textbf{Hoteles populares por destino}
 	\begin{enumerate}
@@ -174,7 +174,7 @@ Al parecer en Booking sólo están interesados en lo que el cliente ha buscado y
 
 \subsection*{Despegar (despegar.com)}
 
-Despegar es un competidor más directo y con un mercado más parecido al de Best Day que Booking. En en su página utilizan varias estrategias distintas para recomendar, por lo que las describiremos por separado. Cabe mencionar que no usan todas las estrategias para todos los hoteles, ni siempre, por lo que sospechamos que tienen información incompleta y sólo muestran lo que tienen disponible.
+Despegar es un competidor más directo y con un mercado más parecido al de Best Day que Booking debido a que está dirigida al mercado latinoamericano (sus oficinas centrales están en Argentina). En en su página utilizan varias estrategias distintas para recomendar, por lo que las describiremos por separado. Cabe mencionar que no usan todas las estrategias para todos los hoteles, ni siempre, por lo que sospechamos que tienen información incompleta y sólo muestran lo que tienen disponible.
 \begin{itemize}
 	\item \textbf{Búsquedas recientes}
 	\begin{enumerate}
@@ -203,7 +203,7 @@ La ventaja de Despegar es que al menos toman en cuenta que hay diversos criterio
 
 \subsection*{Expedia (expedia.com)}
 
-En Expedia se le da una prioridad bajísima a las recomendaciones, puesto que están posicionadas en un lugar casi imposible de ver. Sin embargo, tienen un sistema diferente a los demás y por eso lo pusimos en esta posición en la lista de sistemas competidores.
+Expedia es otra agencia de viajes que está invirtiendo mucho en entrar al mercado mexicano con sus marcas \url{expedia.com} y \url{hoteles.com}. Además, es una de las agencias que más énfasis está poniendo en los sistemas inteligentes. De hecho, tienen un sistema diferente a los demás y por eso lo pusimos en esta posición en la lista de sistemas competidores, aunque por alguna razón, en su página las recomendaciones están posicionadas en un lugar casi imposible de ver. 
 \begin{itemize}
 	\item \textbf{Búsquedas recientes}
 	\begin{enumerate}
@@ -667,15 +667,15 @@ Opcionalmente se puede agregar el volumen de noches y la utilidad bruta en el mi
 
 Para obtener esta tabla es necesario notar que no hay un catálogo de precios, por lo que los tuvimos que estimar mediante las reservaciones que se hicieron en el periodo analizado. Es decir, el precio promedio por noche en el periodo $D$ (en USD) de un hotel dado es:
 \[
-\text{precio promedio} = \frac{\text{Suma de importes de las reservas en el periodo } D}{\text{Suma de noches reservadas en el periodo } D}
+\text{Precio promedio} = \frac{\text{Suma de importes de las reservas en el periodo } D}{\text{Suma de noches reservadas en el periodo } D}
 \]
-Para accesar fácilmente esta información generamos un procedimiento en SQL Server que recibe una fecha de inicio, hace $D = $ de la fecha proporcionada hasta hoy, y finalmente regresa la tabla con la información de los hoteles. Para la primera versión decidimos utilizar un periodo de 2 años, con el fin de evitar que los hoteles poco vendidos no tuvieran ningún precio.
+Para acceder fácilmente esta información generamos un procedimiento almacenado\footnote{Procedimiento almacenado físicamente en una base de datos que se ejecuta directamente en el motor de bases de datos facilitando la integración de sistemas.} en SQL Server\footnote{SQL Server es un sistema para la gestión de bases de datos producido por Microsoft basado en el modelo relacional. Sus lenguajes para consultas son T-SQL y ANSI SQL.} que recibe una fecha de inicio, hace $D = $ de la fecha proporcionada hasta hoy, y finalmente regresa la tabla con la información de los hoteles. Para la primera versión decidimos utilizar un periodo de 2 años, con el fin de tomar en cuenta un número suficiente de datos históricos y así evitar que los hoteles poco vendidos no tuvieran ningún precio.
 
 \subsection*{Información de servicios}
 
 Las matrices $S$ y $C$, que contienen la información de los servicios y las categorías respectivamente, son bastante ralas. Por esta razón es conveniente almacenarlas como relaciones con un renglón por cada elemento distinto de cero de la matriz correspondiente. Como $S$ es binaria, la almacenaremos en una tabla con dos columnas, clave del hotel y clave del servicio, mientras que $C$ requiere tres: clave del hotel, clave de la categoría y número de servicios en la categoría.
 
-Dado que en la base de datos de Best Day ya está la tabla con los servicios en el formato deseado, basta filtrar los hoteles con información incompleta o de zonas que no nos interesen y ya tenemos la primera tabla. Para obtener la segunda fue necesario primero correr el aglomerado en R utilizando la primera tabla y crear a mano la relación entre los servicios y las categorías que elegimos. Posteriormente bastó pegarle a cada servicio su categoría correspondiente y sumarizar la tabla de servicios utilizando la clave del hotel y la clave de la categoría como llaves; los conteos dentro de cada grupo corresponden a los valores $c_{ij}$. Nuevamente, generamos un procedimiento de SQL Server para poder obtener esta información con una simple llamada a una función en lugar de una consulta completa.
+Dado que en la base de datos de Best Day ya está la tabla con los servicios en el formato deseado, basta filtrar los hoteles con información incompleta o de zonas que no nos interesen y ya tenemos la primera tabla. Para obtener la segunda fue necesario primero correr el aglomerado en R utilizando la primera tabla y crear a mano la relación entre los servicios y las categorías que elegimos. Posteriormente bastó pegarle a cada servicio su categoría correspondiente y sumarizar la tabla de servicios utilizando la clave del hotel y la clave de la categoría como llaves; los conteos dentro de cada grupo corresponden a los valores $c_{ij}$. Nuevamente, generamos un procedimiento almacenado de SQL Server para poder obtener esta información con una simple llamada a una función en lugar de una consulta completa.
 
 A continuación describiremos un tema sobre los servicios que es importante en el contexto de la recomendación de hoteles similares.
 
@@ -687,7 +687,7 @@ Si bien hay diversas formas en que se podría tomar en cuenta el plan de aliment
 
 \section{Sistema de respaldo}
 
-Uno de los grandes temas que surgen en cualquier modelo matemático que surja del análisis de datos es la calidad de la información. El modelo descrito en el capítulo anterior presupone no sólo que se tiene la información ya en el formato adecuado, sino que además está limpia. La norma en el mundo real es que esto no es así, por lo que será necesario agregar componentes al sistema de recomendación para que funcione incluso cuando la información no sea perfecta. A continuación enlistaremos algunos de los principales problemas que pueden aparecer en este contexto y las posibles soluciones que les podemos dar:
+Uno de los grandes temas que surgen en cualquier modelo matemático que esté basado en datos es la calidad de la información. El modelo descrito en el capítulo anterior presupone no sólo que se tiene la información ya en el formato adecuado, sino que además está limpia. La norma en el mundo real es que esto no es así, por lo que será necesario agregar componentes al sistema de recomendación para que funcione incluso cuando la información no sea perfecta. A continuación enlistaremos algunos de los principales problemas que pueden aparecer en este contexto y las posibles soluciones que les podemos dar:
 \begin{itemize}
 	\item[P1:] El hotel no tiene ninguna reservación en el periodo analizado para obtener los precios.
 	\item[S1:] Utilizamos el modelo pero ignoramos los precios por completo.
@@ -707,7 +707,7 @@ Si también falla el sistema de recomendación antiguo no hay mucho que podamos 
 
 Hay algunas otros detalles técnicos que no entran naturalmente en ningún otro lado, pero que sí son importantes. En esta sección los describiremos brevemente con el fin de aclarar por completo la forma en que se debe implementar este sistema de recomendación:
 \begin{itemize}
-	\item \emph{Software:} Como hemos comentado, el acceso a la base de datos, tanto para el análisis como para producción, se realizó a través de código SQL. En particular, utilizamos Stored Procedures de SQL Server 2008\footnote{En la página oficial \cite{sql} hay información de las últimas versiones de este software.}, optimizadas para evitar sobrecargar la base. Toda la analítica se llevó a cabo en \texttt{R}\footnote{Sitio del proyecto en \cite{R}}, desde el aglomerado jerárquico hasta la generación de las recomendaciones. En el diagrama (\ref{fig:flujo}) de la siguiente sección será más evidente qué partes del sistema se hicieron en qué lenguaje.
+	\item \emph{Software:} Como hemos comentado, el acceso a la base de datos, tanto para el análisis como para producción, se realizó a través del lenguaje SQL\footnote{Structured Query Language (SQL): Lenguaje de programación que permite realizar consultas a bases de datos relacionales de forma estándar.}. En particular, utilizamos procedimientos almacenados de SQL Server 2008\footnote{En la página oficial \cite{sql} hay información de las últimas versiones de este software.}, optimizados con índices para disminuir el tiempo de ejecución lo más posible. Toda la analítica se llevó a cabo en \texttt{R}\footnote{Sitio del proyecto en \cite{R}}, desde el aglomerado jerárquico hasta la generación de las recomendaciones. En el diagrama (\ref{fig:flujo}) de la siguiente sección será más evidente qué partes del sistema se hicieron en qué lenguaje.
 	\item \emph{Almacenamiento de las recomendaciones:} En la práctica no es conveniente calcular los conjuntos $\RR_i$ al vuelo por su elevado costo computacional. Por ello los precalculamos para cada hotel y los metimos en una tabla $R$ con tuplas de la forma (hotel buscado, hotel recomendado, \emph{score}). Si se quiere utilizar los precios estáticos, se puede tomar, digamos, los 20 hoteles recomendados con mayor score para cada hotel buscado. Esto disminuye aún bastante el tamaño de $R$ y, por lo tanto, el costo de consultar las recomendaciones de un hotel. Si, por otro lado, se utilizan los precios estáticos, se debe almacenar todos los hoteles en la cerca interior y filtrarlos dinámicamente con los precios de la fecha consultada.
 	\item \emph{Actualización de las recomendaciones:} Dado que los hoteles son entidades más o menos estáticas, no tiene mucho sentido actualizarlas demasiado seguido. Basta correr el algoritmo que genera las recomendaciones una vez al mes, cuando mucho, para ir capturando los pequeños cambios que puedan haber ocurrido.
 \end{itemize}
