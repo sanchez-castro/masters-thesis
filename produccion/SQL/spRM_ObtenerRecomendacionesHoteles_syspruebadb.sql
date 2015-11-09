@@ -24,7 +24,7 @@ BEGIN
 	-- Hay recomendaciones del algoritmo nuevo?
 	DECLARE @nrec INT = (
 			SELECT count(*)
-			FROM Hoteles_Busquedas_recomendaciones
+			FROM RM_Hoteles_HotelesRecomendaciones
 			WHERE Clav_Hotel = @clav_hotel
 			)
 

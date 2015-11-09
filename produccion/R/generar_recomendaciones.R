@@ -16,23 +16,29 @@ price_range <- 0.3
 outer_fence <- 30
 recommend <- 'all'
 verbose <- 100
-paises <- c('MX','AR','US','BR')
 tempdir <- 'temp'
+paises <- c('MX','AR','US','BR')
+archivo_salida <- 'datos/Hoteles_HotelesRecomendaciones_20151109.csv'
 
 con <- odbcConnect(dsn = 'syscubo',
                    uid = 'bmxddt005062',
                    pwd = '')
 
 
+
+# Correr el resultado por país --------------------------------------------
+
 salida <- list()
 for(pais in paises){
   cat(paste0('---------------------------------------\n'))
   cat(paste0('Procesando ', pais, '...\n'))
   
+  # Obtener información de la base de datos
   print(system.time({
     dat <- obtener_informacion(pais)
   }))
   
+  # Generar recomendaciones
   cat(paste0('Generando recomendaciones de ', pais, '...\n'))
   print(system.time({
     r <- recomendar(
@@ -52,6 +58,7 @@ for(pais in paises){
     recomendados <- r$recomendados
   }))
   
+  # Prerarar la salida
   cat(paste0('Preparando la salida de ', pais, '...\n'))
   print(system.time({
     salida[[pais]] <- recomendados %>%
@@ -66,22 +73,28 @@ for(pais in paises){
       ungroup
   }))
   
+  # Guardar la salida por si el proceso falla a la mitad
   cat(paste0('Guardando la salida de ', pais, '...\n'))
-  out <- list(dat=dat, r=r, salida=salida[[pais]])
-  save(out, file=paste0(tempdir,'/temp_',pais,'.RData'))
+  aux <- list(dat=dat, r=r, salida=salida[[pais]])
+  save(aux, file=paste0(tempdir,'/temp_',pais,'.RData'))
 }
 
-# Obtener información -----------------------------------------------------
-source('produccion/R/obtener_info.R')
 
-# Correr modelo -----------------------------------------------------------
-source('produccion/R/correr_modelo.R')
 
-# Preparar resultados para subirlos a la base de datos --------------------
-source('produccion/R/preparar_salida_version_rapida.R') # [version_completa]
+# Juntar los resultados de todos los países -------------------------------
+out <- rbind_all(salida)
 
-# Actualizar las recomendaciones en la base de datos ----------------------
-#source('produccion/R/actualizar_bd.R')
+
+# Guardar resultados al filesystem local ----------------------------------
+fecha <- sqlQuery(con, 'SELECT CONVERT(VARCHAR, GETDATE(), 121)')[1,1] %>%
+  as.character %>%
+  substr(1,23)
+
+aux <- out %>%
+  mutate(Fecha_Actualizacion = fecha)
+
+write.table(aux, file=archivo_salida, row.names = F, sep = ',')
+
 
 # Limpiar y cerrar --------------------------------------------------------
 
