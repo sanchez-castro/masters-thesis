@@ -6,6 +6,8 @@
 *.log
 *.fls
 *.fdb_latexmk
+*.glo
+*.xdy
 .DS_Store
 datos
 *.blg

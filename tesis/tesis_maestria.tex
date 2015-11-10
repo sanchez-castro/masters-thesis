@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[spanish]{babel}
 \usepackage{amsmath, amsthm, amssymb, graphicx, subcaption, enumerate, hyperref, tikz, pgfplots, verbatim, pdfpages}
+\usepackage[xindy]{glossaries}
 \usepackage[algochapter]{algorithm2e}
 \usetikzlibrary{matrix}
 %\usepackage[]{algorithm2e}
@@ -42,6 +43,63 @@
 \newtheorem{lema}{Lema}[chapter]
 \newtheorem{obs}{Observaci\'on}[chapter]
  
+
+\makenoidxglossaries
+\newglossaryentry{sesion}{
+	name={Sesión},
+	text={sesión},
+	plural={sesiones},
+	description={Una entrada a un sitio web. En cada sesión se puede ver varias páginas dentro del mismo sitio}
+}
+\newglossaryentry{visita}{
+	name={Visita},
+	text={visita},
+	plural={visitas},
+	description={Número de sesiones que tuvo una página web en un periodo dado}
+}
+\newglossaryentry{conversionrate}{
+	name={Tasa de conversión},
+	text={tasa de conversión},
+	description={Proporción de sesiones que generan una venta sobre las sesiones totales}
+}
+\newglossaryentry{bouncerate}{
+	name={Tasa de rebote},
+	text={tasa de rebote},
+	plural={tasas de rebote},
+	description={Proporción de veces que las visitas a la página no generan ningún \emph{click} antes de salir}
+}
+\newglossaryentry{setcompe}{
+	name={Set competitivo},
+	text={set competitivo},
+	plural={sets competitivos},
+	description={El principal grupo de competidores de una compañía}
+}
+\newglossaryentry{r}{
+	name={The R Project for Statistical Computing (\texttt{R})},
+	text={\texttt{R}},
+	description={Lenguaje interpretado de programación para cómputo estadístico}
+}
+\newglossaryentry{abtesting}{
+	name={A/B Testing},
+	text={A/B testing},
+	description={A veces llamado \textit{split testing} consiste en comparar dos versiones de una página web para ver cuál tiene un mejor desempeño}
+}
+\newglossaryentry{sp}{
+	name={Stored Procedure (SP)},
+	text={procedimiento almacenado},
+	plural={procedimientos almacenados},
+	description={Procedimiento almacenado físicamente en una base de datos que se ejecuta directamente en el motor de bases de datos facilitando la integración de sistemas}
+}
+\newglossaryentry{sql}{
+	name={Structured Query Language (SQL)},
+	description={Structured Query Language (SQL): Lenguaje de programación que permite realizar consultas a bases de datos relacionales de forma estándar}
+}
+\newglossaryentry{sqlserver}{
+	name={SQL Server},
+	description={Sistema para la gestión de bases de datos producido por Microsoft basado en el modelo relacional. Sus lenguajes para consultas son T-SQL y ANSI SQL}
+}
+
+
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
@@ -71,7 +129,7 @@ MAESTRO EN CIENCIA DE DATOS\\
 \vspace{1cm}
 FELIPE GERARD VALD\'ES\\
 \vspace{2cm}
-{\normalsize ASESOR: [Si me dejan] NADIA DEL VILLAR}\\
+{\normalsize ASESOR: NADIA DEL VILLAR}\\
 \vspace{2cm}
 \end{center}
 \begin{flushleft}
@@ -102,7 +160,7 @@ FIRMA
 \tableofcontents
 \listoffigures
 %\listoftables
- 
+
 % ----------------------------------------------------------------------------------------------------
 \addcontentsline{toc}{chapter}{Pr\'ologo}
 \chapter*{Pr\'ologo} \label{cap:0}
@@ -179,7 +237,7 @@ Despegar es un competidor más directo y con un mercado más parecido al de Best
 	\item \textbf{Búsquedas recientes}
 	\begin{enumerate}
 		\item Se encuentra en la izquierda abajo del mapa. Igual que en booking.com, se tiene que bajar en la página para verlo, por lo que su relevancia es media-baja.
-		\item Son los hoteles buscados recientemente por el usuario. Curiosamente, no siempre nos aparecieron al hacer búsquedas, incluso después de haber visto varios hoteles. Pensamos que esto podría deberse a alguna especie de A-B Testing.
+		\item Son los hoteles buscados recientemente por el usuario. Curiosamente, no siempre nos aparecieron al hacer búsquedas, incluso después de haber visto varios hoteles. Pensamos que esto podría deberse a alguna especie de \gls{abtesting}\footnote{Ver glosario.}.
 	\end{enumerate}
 	\item \textbf{Hoteles cercanos}
 	\begin{enumerate}
@@ -247,7 +305,7 @@ Finalmente, analizaremos lo que se hace actualmente en Best Day. Del mismo modo 
 	\item \textbf{Búsquedas recientes}
 	\begin{enumerate}
 		\item Se encuentran directamente debajo de los hoteles similares.
-		\item Similarmente a la competencia, aparece una lista de los hoteles que el usuario visitó recientemente. Las búsquedas recientes permanecen entre sesiones dentro de una misma computadora.
+		\item Similarmente a la competencia, aparece una lista de los hoteles que el usuario visitó recientemente. Las búsquedas recientes permanecen entre \glspl{sesion} dentro de una misma computadora.
 	\end{enumerate}
 \end{itemize}
 Sin duda, el hecho de tener una sección de búsquedas recientes es un punto a favor de este sistema de recomendación, aunque no aporta nada que no tengan los competidores. Desafortunadamente, la calidad de sus recomendaciones es muy variable. En zonas homogéneas y con mucha oferta para una categoría dada, las recomendaciones pueden ser aceptables. Sin embargo, en destinos donde hay hoteles muy distintos pero con la misma categoría, como podrían ser un hotel citadino y uno de playa, las recomendaciones dejan mucho que desear. Además, si no hay hoteles bajo este criterio, o si hay muy pocos, no se muestra nada, o una lista muy pequeña. Es decir, el ``asesor'' electrónico de Best Day maneja las recomendaciones en grupos: dada información del cliente (destino y estrellas) es sumamente insistente con las alternativas. En pocas palabras, no tiene ninguna ventaja sobre un catálogo agrupado por destino y estrellas.
@@ -669,13 +727,13 @@ Para obtener esta tabla es necesario notar que no hay un catálogo de precios, p
 \[
 \text{Precio promedio} = \frac{\text{Suma de importes de las reservas en el periodo } D}{\text{Suma de noches reservadas en el periodo } D}
 \]
-Para acceder fácilmente esta información generamos un procedimiento almacenado\footnote{Procedimiento almacenado físicamente en una base de datos que se ejecuta directamente en el motor de bases de datos facilitando la integración de sistemas.} en SQL Server\footnote{SQL Server es un sistema para la gestión de bases de datos producido por Microsoft basado en el modelo relacional. Sus lenguajes para consultas son T-SQL y ANSI SQL.} que recibe una fecha de inicio, hace $D = $ de la fecha proporcionada hasta hoy, y finalmente regresa la tabla con la información de los hoteles. Para la primera versión decidimos utilizar un periodo de 2 años, con el fin de tomar en cuenta un número suficiente de datos históricos y así evitar que los hoteles poco vendidos no tuvieran ningún precio.
+Para acceder fácilmente esta información generamos un \gls{sp}\footnote{Ver \emph{Stored Procedure} en el glosario.} en \gls{sqlserver}\footnote{\textit{Ver glosario.}} que recibe una fecha de inicio, hace $D = $ de la fecha proporcionada hasta hoy, y finalmente regresa la tabla con la información de los hoteles. Para la primera versión decidimos utilizar un periodo de 2 años, con el fin de tomar en cuenta un número suficiente de datos históricos y así evitar que los hoteles poco vendidos no tuvieran ningún precio.
 
 \subsection*{Información de servicios}
 
 Las matrices $S$ y $C$, que contienen la información de los servicios y las categorías respectivamente, son bastante ralas. Por esta razón es conveniente almacenarlas como relaciones con un renglón por cada elemento distinto de cero de la matriz correspondiente. Como $S$ es binaria, la almacenaremos en una tabla con dos columnas, clave del hotel y clave del servicio, mientras que $C$ requiere tres: clave del hotel, clave de la categoría y número de servicios en la categoría.
 
-Dado que en la base de datos de Best Day ya está la tabla con los servicios en el formato deseado, basta filtrar los hoteles con información incompleta o de zonas que no nos interesen y ya tenemos la primera tabla. Para obtener la segunda fue necesario primero correr el aglomerado en R utilizando la primera tabla y crear a mano la relación entre los servicios y las categorías que elegimos. Posteriormente bastó pegarle a cada servicio su categoría correspondiente y sumarizar la tabla de servicios utilizando la clave del hotel y la clave de la categoría como llaves; los conteos dentro de cada grupo corresponden a los valores $c_{ij}$. Nuevamente, generamos un procedimiento almacenado de SQL Server para poder obtener esta información con una simple llamada a una función en lugar de una consulta completa.
+Dado que en la base de datos de Best Day ya está la tabla con los servicios en el formato deseado, basta filtrar los hoteles con información incompleta o de zonas que no nos interesen y ya tenemos la primera tabla. Para obtener la segunda fue necesario primero correr el aglomerado en R utilizando la primera tabla y crear a mano la relación entre los servicios y las categorías que elegimos. Posteriormente bastó pegarle a cada servicio su categoría correspondiente y sumarizar la tabla de servicios utilizando la clave del hotel y la clave de la categoría como llaves; los conteos dentro de cada grupo corresponden a los valores $c_{ij}$. Nuevamente, generamos un \gls{sp} de \gls{sqlserver} para poder obtener esta información con una simple llamada a una función en lugar de una consulta completa.
 
 A continuación describiremos un tema sobre los servicios que es importante en el contexto de la recomendación de hoteles similares.
 
@@ -707,20 +765,20 @@ Si también falla el sistema de recomendación antiguo no hay mucho que podamos 
 
 Hay algunas otros detalles técnicos que no entran naturalmente en ningún otro lado, pero que sí son importantes. En esta sección los describiremos brevemente con el fin de aclarar por completo la forma en que se debe implementar este sistema de recomendación:
 \begin{itemize}
-	\item \emph{Software:} Como hemos comentado, el acceso a la base de datos, tanto para el análisis como para producción, se realizó a través del lenguaje SQL\footnote{Structured Query Language (SQL): Lenguaje de programación que permite realizar consultas a bases de datos relacionales de forma estándar.}. En particular, utilizamos procedimientos almacenados de SQL Server 2008\footnote{En la página oficial \cite{sql} hay información de las últimas versiones de este software.}, optimizados con índices para disminuir el tiempo de ejecución lo más posible. Toda la analítica se llevó a cabo en \texttt{R}\footnote{Sitio del proyecto en \cite{R}}, desde el aglomerado jerárquico hasta la generación de las recomendaciones. En el diagrama (\ref{fig:flujo}) de la siguiente sección será más evidente qué partes del sistema se hicieron en qué lenguaje.
+	\item \emph{Software:} Como hemos comentado, el acceso a la base de datos, tanto para el análisis como para producción, se realizó a través del lenguaje \gls{sql}\footnote{Ver glosario.}. En particular, utilizamos procedimientos almacenados de \gls{sqlserver} 2008\footnote{Ver glosario y \cite{sql}.}, optimizados con índices para disminuir el tiempo de ejecución lo más posible. Toda la analítica se llevó a cabo en \gls{r}\footnote{Ver glosario y \cite{R}}, desde el aglomerado jerárquico hasta la generación de las recomendaciones. En el diagrama (\ref{fig:flujo}) de la siguiente sección será más evidente qué partes del sistema se hicieron en qué lenguaje.
 	\item \emph{Almacenamiento de las recomendaciones:} En la práctica no es conveniente calcular los conjuntos $\RR_i$ al vuelo por su elevado costo computacional. Por ello los precalculamos para cada hotel y los metimos en una tabla $R$ con tuplas de la forma (hotel buscado, hotel recomendado, \emph{score}). Si se quiere utilizar los precios estáticos, se puede tomar, digamos, los 20 hoteles recomendados con mayor score para cada hotel buscado. Esto disminuye aún bastante el tamaño de $R$ y, por lo tanto, el costo de consultar las recomendaciones de un hotel. Si, por otro lado, se utilizan los precios estáticos, se debe almacenar todos los hoteles en la cerca interior y filtrarlos dinámicamente con los precios de la fecha consultada.
 	\item \emph{Actualización de las recomendaciones:} Dado que los hoteles son entidades más o menos estáticas, no tiene mucho sentido actualizarlas demasiado seguido. Basta correr el algoritmo que genera las recomendaciones una vez al mes, cuando mucho, para ir capturando los pequeños cambios que puedan haber ocurrido.
 \end{itemize}
 
 
-\section{Arquitectura final del sistema}
+\section{Arquitectura final del sistema} \label{sec:arqui}
 
-En la figura (\ref{fig:flujo}) mostramos la arquitectura que el sistema debería tener idealmente. Por un lado, la base de datos analítica alimenta los Stored Procedures y el aglomerado jerárquico en \texttt{R} de los servicios en categorías. Estos procesos se encargan de generar la matriz $C$ y la tabla $H$ con la información de los hoteles, completa con coordenadas y precios. El algoritmo de recomendación corre completamente en \texttt{R} y genera una tabla con las recomendaciones. Esta tabla se debe cargar a la base de datos operativa para entrar a producción. Idealmente, la carga se debería realizar automáticamente, pero dada la baja frecuencia de las actualizaciones, si por alguna razón no es viable hacerlo así, basta con que se pueda hacer manualmente. Una vez que la tabla $R$ está en la base de datos operativa, la página (i.e. nuestro ``vendedor'' electrónico) puede aprovecharla para recomendar de manera más inteligente.
+En la figura (\ref{fig:flujo}) mostramos la arquitectura que el sistema debería tener idealmente. Por un lado, la base de datos analítica alimenta los \glspl{sp} y el aglomerado jerárquico en \gls{r} de los servicios en categorías. Estos procesos se encargan de generar la matriz $C$ y la tabla $H$ con la información de los hoteles, completa con coordenadas y precios. El algoritmo de recomendación corre completamente en \gls{r} y genera una tabla con las recomendaciones. Esta tabla se debe cargar a la base de datos operativa para entrar a producción. Idealmente, la carga se debería realizar automáticamente, pero dada la baja frecuencia de las actualizaciones, si por alguna razón no es viable hacerlo así, basta con que se pueda hacer manualmente. Una vez que la tabla $R$ está en la base de datos operativa, la página (i.e. nuestro ``vendedor'' electrónico) puede aprovecharla para recomendar de manera más inteligente.
 
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/flowchart.pdf}
-	\caption{\label{fig:flujo} Diagrama de flujo del sistema de recomendación. Amarillo: bases de datos. Rojo: Interacción humana. Verde: Procesos en \texttt{R}. Azul: Procesos en SQL.}
+	\caption{\label{fig:flujo} Diagrama de flujo del sistema de recomendación. Amarillo: bases de datos. Rojo: Interacción humana. Verde: Procesos en \gls{r}. Azul: Procesos en \gls{sql}.}
 \end{figure}
 
 
@@ -826,10 +884,10 @@ El análisis de redes de del capítulo \ref{cap:4} evalúa el sistema de recomen
 
 Dado que estamos presentando una versión nueva de un sistema que ya existía, nos gustaría comparar su desempeño contra la versión actual y no tanto en términos absolutos. Para hacerlo, nos basaremos en las series de tiempo de las diversas métricas, fijándonos qué pasó antes y después de que subiéramos el nuevo sistema a producción. Lo haremos para las sesiones que fueron asistidas por el sistema de recomendación (i.e. que dieron \emph{click} en alguna recomendación), para los siguientes indicadores:
 \begin{enumerate}
-	\item \emph{Número de usuarios} que entraron a la página.
-	\item \emph{Tasa de rebote}, es decir, la proporción de clientes que entró a la página y se salió sin dar \emph{click} a ninguna liga.
+	\item \emph{Número de \glspl{visita}} realizadas a la página.
+	\item \emph{\Gls{bouncerate}}, es decir, la proporción de clientes que entró a la página y se salió sin dar \emph{click} a ninguna liga.
 	\item \emph{Duración promedio de la sesión} del cliente en la página.
-	\item \emph{Tasa de conversión}, que es la proporción de clientes que compraron algo una vez habiendo entrado a la página.
+	\item \emph{\Gls{conversionrate}}, que es la proporción de clientes que compraron algo una vez habiendo entrado a la página.
 	\item \emph{Número promedio de páginas} visitadas durante la sesión
 	\item \emph{Monto promedio} de cada transacción.
 \end{enumerate}
@@ -849,22 +907,22 @@ Y_t = \frac{X_t \; | \text{ utilizó el sistema}}{X_t \; | \text{ no utilizó el
 La ventaja de utilizar $Y_t$ en lugar de $X_t$ es que quita en buena medida los factores externos, por lo que una mala o una buena época no sesgará tan fuertemente los resultados. Esto se debe a que $Y_t$ compara los individuos que utilizaron el sistema con los que no lo usaron, de modo que los factores externos (como por ejemplo un aumento de la cantidad de sesiones en temporada alta) no tendrán efecto alguno, o no uno tan marcado. A pesar de ello, la serie de tiempo $Y_t$ nos indicará si el efecto de $X_t$ ha cambiado para los clientes que utilizaron el sistema en comparación con los demás, desde el momento en que se implementó la nueva versón. Dado que esto último es lo que buscamos averiguar, sí es apropiado utilizar $Y_t$ en lugar de $X_t$. A continuación enlistamos la interpretación de los indicadores transformados:
 \begin{enumerate}
 	\item Proporción de usuarios que usaron el sistema de recomendación.
-	\item Comparación de las tasas de rebote entre clientes que usaron / no usaron el sistema.
-	\item Número de sesiones sin sistema de recomendación que dura una sesión que sí lo utilizó.
-	\item 100\% más el porcentaje de veces que aumentó la tasa de conversión al usar el sistema.
+	\item Comparación de las \glspl{bouncerate} entre clientes que usaron / no usaron el sistema.
+	\item Cociente de duración entre \glspl{sesion} que no usaron el sistema vs. sesiones que sí lo usaron.
+	\item 100\% más el porcentaje de veces que aumentó la \gls{conversionrate} al usar el sistema.
 	\item 100\% más el aumento porcentual del número de páginas vistas en una sesión.
 	\item Cuántas veces más cara es la venta promedio de los usuarios del sistema en comparación con los no usuarios.
 \end{enumerate}
 En la figura (\ref{fig:analytics_y}) mostramos los indicadores en esta nueva forma, nuevamente para 2014 y 2015. Las conclusiones que podemos sacar de estas gráficas no son tan definitivas como nos gustaría, pero las enunciamos a continuación:
 \begin{enumerate}
 	\item \emph{Usuarios:} Hubo muchos menos usuarios que usaron el sistema en comparación de los que no en el periodo de observación en 2015 que en 2014. Este hecho probablemente se debe a factores desconocidos como por ejemplo el diseño de la página. Sin embargo, al menos en 2015 la tendencia cambió un poco al momento en que se introdujo el nuevo sistema. Es decir, parece ser que el sistema influyó en que se utilizaran más las recomendaciones, pero hay factores de mucho mayor peso que desconocemos.
-	\item \emph{Tasa de rebote:} La tasa de rebote de las personas que utilizan el sistema de recomendación es mucho más baja que la de las que no. En 2015 las tasas de rebote fueron más bajas que en 2014, pero uno podría esperar que subieran un poco en septiembre (presumiblemente por la temporada). El nuevo sistema parece mitigar ligeramente esta subida, aunque no de forma contundente.
+	\item \emph{\Gls{bouncerate}:} La \gls{bouncerate} de las personas que utilizan el sistema de recomendación es mucho más baja que la de las que no. En 2015 las \glspl{bouncerate} fueron más bajas que en 2014, pero uno podría esperar que subieran un poco en septiembre (presumiblemente por la temporada). El nuevo sistema parece mitigar ligeramente esta subida, aunque no de forma contundente.
 	\item \emph{Duración promedio de la sesión:} Las sesiones de los usuarios del sistema (en comparación con los no-usuarios) eran levemente más cortas en 2014 que en 2015. Analizando los datos del año anterior, se podría esperar que esta variable debería bajar. Sin embargo, en el momento en el que se introdujo el sistema nuevo, siguió en aumento en lugar de bajar, como habría sido de esperarse siguiendo la tendencia de 2014.
-	\item \emph{Tasa de conversión:} El cociente de la tasa de conversión entre los usuarios y los no-usuarios se mantuvo aproximandamente igual en los dos años, aunque bajó en 2015. El nuevo sistema no hizo nada definitivo para mejorar este problema, por lo que probablemente depende de otros factores.
-	\item \emph{Páginas vistas por sesión:} En este caso tenemos un efecto similar al de la tasa de rebote, puesto que al momento de introducir el nuevo sistema, la tendencia de aumento de este indicador siguió su tendencia lineal en lugar de bajar como lo hizo en 2014.
+	\item \emph{\Gls{conversionrate}:} El cociente de la \gls{conversionrate} entre los usuarios y los no-usuarios se mantuvo aproximandamente igual en los dos años, aunque bajó en 2015. El nuevo sistema no hizo nada definitivo para mejorar este problema, por lo que probablemente depende de otros factores.
+	\item \emph{Páginas vistas por sesión:} En este caso tenemos un efecto similar al de la \gls{bouncerate}, puesto que al momento de introducir el nuevo sistema, la tendencia de aumento de este indicador siguió su tendencia lineal en lugar de bajar como lo hizo en 2014.
 	\item \emph{Monto promedio por transacción:} Este cociente parece haber mantenido la tendencia que traía, que era un poco más baja que en 2014. Es decir, el sistema nuevo no parece fomentar fuertemente que los clientes compren más caro (\emph{upsell}).
 \end{enumerate}
-Analizando lo anterior podemos ver varios efectos positivos del sistema. Por ejemplo, el número de páginas visitadas por sesión parece haber aumentado en relación a la tendencia que se esperaría según lo observado en 2014. Es bastante razonable que esto sea el caso, pues si las recomendaciones son mejores y más variadas, aumenta la probabilidad de que un cliente explore más. Otros indicadores de desempeño como la duración de la sesión, la cantidad de páginas vistas por sesión y la tasa de rebote también presentaron mejoras moderadas, en especial las primeras dos. Sin embargo, tal parece que tanto el porcentaje de usuarios que utilizaron el sistema, como la tasa de conversión y el monto de cada compra, no fueron afectados visiblemente por el modelo. El tema de los usuarios probablemente se deba a que el hecho de que un usuario empiece a usar el sistema depende de otros factores más potentes, como la ubicación y el diseño de la lista. Claramente una vez que empiezan a usarlo, sí utilizan más el nuevo que el anterior, como reflejan las páginas vistas por sesión y la duración de las sesiones. Por otro lado, la tasa de conversión y el monto de las compras dependen a fin de cuentas de las ofertas de Best Day. Es decir, por más que un cliente vea más hoteles, no comprará si no está convencido del precio.
+Analizando lo anterior podemos ver varios efectos positivos del sistema. Por ejemplo, el número de páginas visitadas por sesión parece haber aumentado en relación a la tendencia que se esperaría según lo observado en 2014. Es bastante razonable que esto sea el caso, pues si las recomendaciones son mejores y más variadas, aumenta la probabilidad de que un cliente explore más. Otros indicadores de desempeño como la duración de la sesión, la cantidad de páginas vistas por sesión y la \gls{bouncerate} también presentaron mejoras moderadas, en especial las primeras dos. Sin embargo, tal parece que tanto el porcentaje de usuarios que utilizaron el sistema, como la \gls{conversionrate} y el monto de cada compra, no fueron afectados visiblemente por el modelo. El tema de los usuarios probablemente se deba a que el hecho de que un usuario empiece a usar el sistema depende de otros factores más potentes, como la ubicación y el diseño de la lista. Claramente una vez que empiezan a usarlo, sí utilizan más el nuevo que el anterior, como reflejan las páginas vistas por sesión y la duración de las sesiones. Por otro lado, la \gls{conversionrate} y el monto de las compras dependen a fin de cuentas de las ofertas de Best Day. Es decir, por más que un cliente vea más hoteles, no comprará si no está convencido del precio.
 
 La conclusión global de este análisis es que, después de aproximadamente un mes de observación \emph{post} implementación, empezó a haber signos prometedores del nuevo sistema en algunos rubros, pero no en todos. Creemos que para mejorar de manera integral el sistema de recomendación habría que también explorar sus componentes gráficos y otras partes de la página de Best Day. Sin embargo, esos análisis quedan fuera de este trabajo.
 
@@ -897,7 +955,7 @@ Un último tema para esta discusión es que hay que entender los resultados y el
 	\end{enumerate}
 	\item \textbf{Qué \emph{no} hace:}
 	\begin{enumerate}
-		\item No encuentra sets competitivos según lo que pensaría una persona, sino según dónde está un hotel y qué ofrece.
+		\item No encuentra \glspl{setcompe}\footnote{Ver glosario.} según lo que pensaría una persona, sino según dónde está un hotel y qué ofrece.
 		\item No es un sistema de promociones. La versión con precios dinámicos permite que aparezcan hoteles que bajan sus precios en las recomendaciones de hoteles similares más baratos, pero no les da un precio ni un lugar especial.
 		\item No toma en cuenta el historial de búsqueda ni es personalizado de ninguna manera.
 	\end{enumerate}
@@ -906,19 +964,23 @@ Un último tema para esta discusión es que hay que entender los resultados y el
 
 \section{Trabajo futuro}
 
-En la sección anterior discutimos varios temas interesantes que surgieron en el diseño del modelo. En particular, incluimos una lista de qué hace y qué no hace el sistema que construimos. Nos gustaría concluir este capítulo y el presente trabajo con una lista de las cosas que \emph{podría} hacer el sistema.
+En la sección anterior discutimos varios temas interesantes que surgieron en el diseño del modelo. En particular, incluimos una lista de qué hace y qué no hace el sistema que construimos. Nos gustaría concluir este capítulo y el presente trabajo con una lista de las cosas que \emph{podría} hacer el sistema y varias mejoras tecnológicas y visuales que se podría implementar.
 
-Independientemente de si se mejora el modelo, su desempeño probablemente mejoraría si se mejorara la calidad de la información que se le administra. Encontramos que muchos hoteles tienen información incompleta, lo que hace que el algoritmo sea menos preciso.
+Antes que nada, es muy importante notar que encontramos muchos hoteles con información incompleta o sucia, lo que ocasiona que el algoritmo sea menos preciso y no se desempeñe tan bien como podría. Si mejora la calidad y la cantidad de los datos disponibles, el modelo podrá capturar mejor las similitudes entre los hoteles sin hacerle ningún cambio. Sin embargo, hay al menos tres temas que creemos que podría valer la pena investigar. El primero de ellos se refiere a las medidas de similitud. Sería interesante investigarlas ampliamente para ver si tienen algún impacto en la calidad del sistema. Otra idea que se podría explorar es la posibilidad de no tener un porcentaje de precio fijo para el filtro. Pensamos que por ejemplo podría permitirse valores grandes de $\gamma$ para hoteles baratos\footnote{Si un hotel cuesta \$200, uno de \$400 sigue siendo más o menos barato.} y hoteles caros\footnote{Podríamos pensar que el dinero no es problema para ciertos clientes, en cuyo caso habría que recomendar indiscriminadamente la mejor opción.}, pero más pequeños para hoteles de gama media\footnote{En este caso queremos ser más precisos con el precio}. Esto sugeriría que $\gamma$ sea una función del precio del hotel buscado con forma de ``U'' o alguna otra que se encuentre que sea apropiada. Un último cambio que se le podría hacer al modelo es, por ejemplo, tomar en cuenta los hoteles recientemente vistos para recomendar nuevos, aunque esto tendría el riesgo de volver muy rígido al modelo.
 
-En cuanto al modelo, hay al menos tres temas que creemos que podría valer la pena investigar. El primero de ellos se refiere a las medidas de similitud. Sería interesante investigarlas ampliamente para ver si tienen algún impacto en la calidad del sistema. Otro a idea que se podría explorar es la posibilidad de no tener un porcentaje de precio fijo para el filtro. Pensamos que por ejemplo podría permitirse valores grandes de $\gamma$ para hoteles baratos\footnote{Si un hotel cuesta \$200, uno de \$400 sigue siendo más o menos barato.} y hoteles caros\footnote{Podríamos pensar que el dinero no es problema para ciertos clientes, en cuyo caso habría que recomendar indiscriminadamente la mejor opción.}, pero más pequeños para hoteles de gama media\footnote{En este caso queremos ser más precisos con el precio}. Esto sugeriría que $\gamma$ sea una función del precio del hotel buscado con forma de ``U'' o alguna otra que se encuentre que sea apropiada. Un último cambio que se le podría hacer al modelo es, por ejemplo, tomar en cuenta los hoteles recientemente vistos para recomendar nuevos, aunque esto tendría el riesgo de volver muy rígido al modelo.
+Sobre las mejoras tecnológicas, sería útil automatizar la actualización de las recomendaciones, como mencionamos en la sección \ref{sec:arqui}. De este modo, ya no se necesitaría supervisión humana directa para que el sistema corriera, aunque probablemente sería prudente que alguien revisara periódicamente que todo estuviera en orden.
 
-Finalmente, las conclusiones del análisis cuantitativo de la página nos llevaron a pensar en la importancia de los factores externos al modelo. No podemos enfatizar suficiente que (1) si las recomendaciones se ven mal, nadie les dará \emph{click} incluso si son excelentes y (2) que, por bien que se recomiende, la conversión no aumentará significativamente si el producto es el mismo.
-
-
+Hablando del desempeño real de la página, el análisis cuantitativo nos llevó a pensar en la enorme magnitud de la influencia que los factores externos tienen sobre el modelo. No podemos enfatizar suficiente que (1) si las recomendaciones son poco atractivas a la vista (en el sentido del diseño de la página), nadie les dará \emph{click} incluso si son excelentes y (2) que, por bien que se recomiende, la conversión no aumentará significativamente si el producto no es suficientemente bueno. Con base en lo anterior y en nuestro criterio, pensamos en varias formas de mejorar el desempeño del sistema como conjunto, más allá del modelo en sí. Una evidente es eliminar al propio hotel de la lista de recomendaciones, con el fin de aprovechar mejor el espacio y así efectivamente lograr que la red de hoteles esté mejor conectada. Otra es que probablemente sería una buena idea poner las recomendaciones en una sección más relevante de la página (por ejemplo arriba a la derecha en lugar de abajor a la derecha) y ponerles un diseño más novedoso. Una última mejora de este tipo podría ser que cuando no haya disponibilidad del hotel buscado, la página muestre las recomendaciones en un lugar prominente, con el fin de presentar hoteles sustitutos de manera conveniente en lugar de obligar al usuario a regresar y buscar de nuevo.
 
 
 
 
+
+
+
+%\glsaddall
+%\glossarystyle{altlistgroup}
+\printnoidxglossaries
 
 
 \bibliography{bibliografia}
