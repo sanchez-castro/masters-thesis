@@ -1,0 +1,74 @@
+---
+title: "Recomendaciones + EAN"
+author: "Felipe Gerard"
+date: "12 de noviembre de 2015"
+output: pdf_document
+---
+```{r,echo=FALSE, results='hide', message=FALSE}
+library(ggplot2)
+library(dplyr)
+library(knitr)
+
+dat <- read.csv('/Users/felipe/data-science/masters-thesis/datos/PrioridadesModificadas.csv') %>%
+  arrange(Hotel, Prioridad)
+```
+
+### Análisis de cambios
+
+* Verificamos que se lee correctamente la información. Son únicamente los casos para los cuales la recomendación cambió de posición. Hubo `r length(unique(dat$Hotel))` hoteles en los que hubo algún cambio.
+
+```{r, echo=FALSE}
+head(dat) %>%
+  kable
+```
+
+* Veamos la distribución de los cambios de posición, junto con intervalos de 95% y de 80%:
+
+```{r, echo=FALSE}
+qplot(Posicion, data=dat, binwidth=1) +
+  geom_vline(xintercept=1+quantile(dat$Posicion, c(0.025,0.1,0.9,0.975)),
+             color='red')
+```
+
+* Numéricamente tenemos los siguientes cuantiles:
+
+```{r, echo=FALSE}
+quantile(dat$Posicion, seq(0,1,0.1)) %>%
+  as.matrix %>%
+  t %>%
+  kable
+```
+
+* Ahora veamos los casos del 20% con cambios más drásticos (ie. su cambio de posición fue de más de 3 lugares):
+
+```{r, echo=FALSE}
+ex <- dat %>%
+  filter(abs(Posicion) > 3)
+
+ex %>%
+  head(100) %>%
+  kable
+```
+
+* Finalmente, el promedio de cambios de más de 3 posiciones por hotel es de `r ex %>%
+  group_by(Hotel) %>%
+  summarise(count=n()) %>%
+  .$count %>%
+  mean`
+
+### Conclusiones
+
+* Los cambios no son demasiado grandes y además muchos son por cascada (si se agrega uno al principio de la lista entonces cambian todas las demás).
+* Recomendaría que un experto la checara, al menos para una zona reducida, para verificar que los cambios son razonables.
+* De ahí en fuera creo que se pueden subir los cambios sin problemas.
+
+
+
+
+
+
+
+
+
+
+
