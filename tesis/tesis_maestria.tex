@@ -860,9 +860,7 @@ Hay algunas otros detalles técnicos que no entran naturalmente en ningún otro 
 
 \section{Arquitectura final del sistema} \label{sec:arqui}
 
-En la figura (\ref{fig:flujo}) mostramos la arquitectura que el sistema debería tener idealmente. Por un lado, la base de datos analítica alimenta los \glspl{sp} y el aglomerado jerárquico en \gls{r} de los servicios en categorías. Estos procesos se encargan de generar la matriz $C$ y la tabla $H$ con la información de los hoteles, completa con coordenadas y precios. El algoritmo de recomendación corre completamente en \gls{r} y genera una tabla con las recomendaciones. Esta tabla se debe cargar a la base de datos operativa para entrar a producción. Idealmente, la carga se debería realizar automáticamente, pero dada la baja frecuencia de las actualizaciones, si por alguna razón no es viable hacerlo así, basta con que se pueda hacer manualmente. Una vez que la tabla $R$ está en la base de datos operativa, la página (i.e. nuestro ``vendedor'' electrónico) puede aprovecharla para recomendar de manera más inteligente.
-
-En términos concretos, las entradas y salidas de cada componente son:
+En la figura (\ref{fig:flujo}) mostramos la arquitectura que el sistema debería tener idealmente. Por un lado, la base de datos analítica alimenta los \glspl{sp} y el aglomerado jerárquico en \gls{r} de los servicios en categorías. Estos procesos se encargan de generar la matriz $C$ y la tabla $H$ con la información de los hoteles, completa con coordenadas y precios. El algoritmo de recomendación corre completamente en \gls{r} y genera una tabla con las recomendaciones. En términos concretos, las entradas y salidas de cada componente son:
 \begin{itemize}
 	\item \textbf{\texttt{R}: Aglomerado de servicios}
 	\begin{itemize}
@@ -885,6 +883,10 @@ En términos concretos, las entradas y salidas de cada componente son:
 		\item Salida: Tabla (convertida a formato CSV) que tiene la relación hotel - hotel recomendado - prioridad (rango) del hotel recomendado.
 	\end{itemize}
 \end{itemize}
+
+Ahora bien, la última tabla de salida se debe cargar a la base de datos operativa para entrar a producción. Idealmente, la carga se debería realizar automáticamente, pero dada la baja frecuencia de las actualizaciones, si por alguna razón no es viable hacerlo así, basta con que se pueda hacer manualmente. Una vez que la tabla $R$ está en la base de datos operativa, la página (i.e. nuestro ``vendedor'' electrónico) puede aprovecharla para recomendar de manera más inteligente.
+
+
 
 \begin{figure}[ht]
 	\centering
