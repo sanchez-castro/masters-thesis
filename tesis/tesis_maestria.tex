@@ -862,6 +862,30 @@ Hay algunas otros detalles técnicos que no entran naturalmente en ningún otro 
 
 En la figura (\ref{fig:flujo}) mostramos la arquitectura que el sistema debería tener idealmente. Por un lado, la base de datos analítica alimenta los \glspl{sp} y el aglomerado jerárquico en \gls{r} de los servicios en categorías. Estos procesos se encargan de generar la matriz $C$ y la tabla $H$ con la información de los hoteles, completa con coordenadas y precios. El algoritmo de recomendación corre completamente en \gls{r} y genera una tabla con las recomendaciones. Esta tabla se debe cargar a la base de datos operativa para entrar a producción. Idealmente, la carga se debería realizar automáticamente, pero dada la baja frecuencia de las actualizaciones, si por alguna razón no es viable hacerlo así, basta con que se pueda hacer manualmente. Una vez que la tabla $R$ está en la base de datos operativa, la página (i.e. nuestro ``vendedor'' electrónico) puede aprovecharla para recomendar de manera más inteligente.
 
+En términos concretos, las entradas y salidas de cada componente son:
+\begin{itemize}
+	\item \textbf{\texttt{R}: Aglomerado de servicios}
+	\begin{itemize}
+		\item Entrada: Matriz rala binaria de servicios - hoteles.
+		\item Salida: Dendrograma de apoyo para agrupar los servicios manualmente.
+	\end{itemize}
+	\item \textbf{SP Categorías (\texttt{ObtenerHotelesCategoriasServicios})}
+	\begin{itemize}
+		\item Entrada: Clave del país (el proceso se efectúa por país), tipo caracter de 2 posiciones.
+		\item Salida: Relación de hoteles con sus categorías y número de servicios en cada categoría.
+	\end{itemize}
+	\item \textbf{SP Hoteles (\texttt{ObtenerDatosHoteles})}
+	\begin{itemize}
+		\item Entrada: Fecha inicial para el periodo $D$ (la fecha final es el el día actual). Clave del país (el proceso se efectúa por país), tipo caracter de 2 posiciones.
+		\item Salida: Tabla de hoteles con coordenadas, precio (USD), utilidades (USD) y número de noches vendidas.
+	\end{itemize}
+	\item \textbf{\texttt{R}: Algoritmo de recomendación}
+	\begin{itemize}
+		\item Entrada: Vector de claves de los países para los que se quiere calcular las recomendaciones. Fecha inicial del periodo $D$ (para usar en el SP). Parámetros de control elegidos ($\alpha, r_{outer}, \dots$).
+		\item Salida: Tabla (convertida a formato CSV) que tiene la relación hotel - hotel recomendado - prioridad (rango) del hotel recomendado.
+	\end{itemize}
+\end{itemize}
+
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/flowchart.pdf}
