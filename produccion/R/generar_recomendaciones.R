@@ -17,6 +17,7 @@ outer_fence <- 30
 recommend <- 'all'
 verbose <- 100
 tempdir <- 'temp'
+fecha_ini <- '20130724'
 paises <- c('MX','AR','US','BR')
 archivo_salida <- 'datos/Hoteles_HotelesRecomendaciones_20151109.csv'
 
@@ -35,7 +36,7 @@ for(pais in paises){
   
   # Obtener información de la base de datos
   print(system.time({
-    dat <- obtener_informacion(pais)
+    dat <- obtener_informacion(pais, fecha_ini)
   }))
   
   # Generar recomendaciones
@@ -62,7 +63,7 @@ for(pais in paises){
   cat(paste0('Preparando la salida de ', pais, '...\n'))
   print(system.time({
     salida[[pais]] <- recomendados %>%
-      mutate(within_price = (p2 < p1 * (1 + 0.3))) %>%
+      mutate(within_price = (p2 < p1 * (1 + price_range))) %>%
       group_by(cl1) %>%
       mutate(nrec = sum(within_price)) %>%
       filter(((nrec >= max_num_recom) & within_price) | (nrec < max_num_recom)) %>%

@@ -341,9 +341,10 @@ getdata <- function(start.date, end.date, daywise=FALSE){
 }
 
 ## OBTENER INFO
-dat1 <- getdata('2015-08-01', '2015-09-28', daywise = T)
-dat2 <- getdata('2014-08-01', '2014-09-28', daywise = T)
-dat <- rbind(dat1, dat2)
+dat1 <- getdata('2015-08-01', '2015-11-22', daywise = T)
+dat2 <- getdata('2014-08-01', '2014-10-22', daywise = T) # Truena el 2014-10-23...
+dat3 <- getdata('2014-10-24', '2014-11-22', daywise = T)
+dat <- rbind(dat1, dat2, dat3)
 
 # OJO: Hay un dato mega extremo. Así lo hago menos feo
 y <- dat$avgRevenue[dat$viewed_recom == 'yes']
@@ -366,13 +367,15 @@ levels(aux$var) <- c('Usuarios','Tasa de rebote (%)','Duración promedio de la s
 p <- ggplot(aux, aes(datediff, val, color=year)) +
   geom_line() +
   geom_vline(aes(xintercept=as.numeric(datediff[date=='2015-09-10'])), linetype=4) +
+  geom_vline(aes(xintercept=as.numeric(datediff[date=='2015-10-10'])), linetype=4) +
+  geom_vline(aes(xintercept=as.numeric(datediff[date=='2015-11-10'])), linetype=4) +
   geom_smooth() +
   facet_wrap(~ var, scales = 'free_y', ncol = 2) +
   #theme(axis.text.x = element_text(angle=90)) +
-  scale_x_continuous(breaks=c(0,20,40), labels=format.Date(as.Date('2015-08-01') + c(0,20,40), '%d/%b')) +
+  scale_x_continuous(breaks=c(0,20,40,70,101), labels=format.Date(as.Date('2015-08-01') + c(0,20,40,70,101), '%d/%b')) +
   scale_color_discrete(name='Año') +
   #scale_x_date() +
-  labs(x='Fecha', y='Fecha relativa', title='Indicadores para usuarios que utilizaron el sistema')
+  labs(x='', y='', title='Indicadores para usuarios que utilizaron el sistema')
 p
 
 # ggsave('tesis/imagenes/analytics_anios_x.pdf', p, scale = 1, width = 8, height = 8, units = 'in')
@@ -403,9 +406,11 @@ levels(aux$var) <- c('Usuarios','Tasa de rebote (%)','Duración promedio de la s
 p <- ggplot(aux, aes(datediff, value, color=year)) +
   geom_line() +
   geom_vline(aes(xintercept=as.numeric(datediff[date=='2015-09-10'])), linetype=4) +
+  geom_vline(aes(xintercept=as.numeric(datediff[date=='2015-10-10'])), linetype=4) +
+  geom_vline(aes(xintercept=as.numeric(datediff[date=='2015-11-10'])), linetype=4) +
   geom_smooth() +
   theme(axis.text.x = element_text(angle=90)) +
-  scale_x_continuous(breaks=c(0,20,40), labels=format.Date(as.Date('2015-08-01') + c(0,20,40), '%d/%b')) +
+  scale_x_continuous(breaks=c(0,20,40,70,101), labels=format.Date(as.Date('2015-08-01') + c(0,20,40,70,101), '%d/%b')) +
   scale_color_discrete(name='Año') +
   #scale_x_date() +
   facet_wrap(~var, scales = 'free_y', ncol=2) +
@@ -414,5 +419,39 @@ p
 # ggsave('tesis/imagenes/analytics_anios_y.pdf', p, scale = 1, width = 8, height = 8, units = 'in')
 
 
+
+
+### Pruebas y presentación
+
+
+aa <- aux %>% filter(((aux$var=='Precio promedio por compra') & (aux$val < 3000)) | (aux$var !='Precio promedio por compra'))
+
+ggplot(aux, aes(datediff, val, color=year)) +
+  geom_line() +
+  geom_vline(aes(xintercept=as.numeric(datediff[date=='2015-09-10'])), linetype=4) +
+  geom_vline(aes(xintercept=as.numeric(datediff[date=='2015-10-10'])), linetype=4) +
+  geom_vline(aes(xintercept=as.numeric(datediff[date=='2015-11-10'])), linetype=4) +
+  geom_smooth() +
+  facet_wrap(~ var, scales = 'free_y', ncol = 2) +
+  #theme(axis.text.x = element_text(angle=90)) +
+  scale_x_continuous(breaks=c(0,20,40,70,101), labels=format.Date(as.Date('2015-08-01') + c(0,20,40,70,101), '%d/%b')) +
+  scale_color_discrete(name='Año') +
+  #scale_x_date() +
+  labs(x='', y='', title='Indicadores para usuarios que utilizaron el sistema')
+
+
+ggplot(aux %>% filter(var == 'Precio promedio por compra'), aes(datediff, value, color=year)) +
+  geom_line() +
+  geom_vline(aes(xintercept=as.numeric(datediff[date=='2015-09-10'])), linetype=4) +
+  geom_vline(aes(xintercept=as.numeric(datediff[date=='2015-10-10'])), linetype=4) +
+  geom_vline(aes(xintercept=as.numeric(datediff[date=='2015-11-10'])), linetype=4) +
+  geom_smooth() +
+  theme(axis.text.x = element_text(angle=90)) +
+  scale_x_continuous(breaks=c(0,20,40), labels=format.Date(as.Date('2015-08-01') + c(0,20,40), '%d/%b')) +
+  scale_color_discrete(name='Año') +
+  #scale_x_date() +
+  facet_wrap(~var, scales = 'free_y', ncol=2) +
+  ylim(0,2) +
+  labs(x='Fecha',y='',title='Indicadores cociente: con vs. sin sistema')
 
 

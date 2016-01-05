@@ -295,10 +295,10 @@ recomendar <- function(
 ##### Utiliza los SPs para obtener la información de un país
 ## In.
 # country: abreviatura de dos caracteres del nombre de un país (ej: 'MX', 'US', etc)
-obtener_informacion <- function(country='MX'){
+obtener_informacion <- function(country='MX', fecha_ini='20130724'){
   # Hoteles
   cat(paste0('Obteniendo datos de hoteles de ', pais, '...\n'))
-  sp.call.getdata <- paste0("EXEC spRM_ObtenerDatosHoteles @fecha_ini = '20130724', @country = '", country, "'")
+  sp.call.getdata <- paste0("EXEC spRM_ObtenerDatosHoteles @fecha_ini = '",fecha_ini,"', @country = '", country, "'")
   h1 <- sqlQuery(con, sp.call.getdata)
   h2 <- h1 %>%
     mutate(ID_Hotel = row_number())
