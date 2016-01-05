@@ -2,28 +2,28 @@
 \contentsline {chapter}{Pr\'ologo}{V}{chapter*.3}
 \contentsline {chapter}{\numberline {1}An\IeC {\'a}lisis previo}{5}{chapter.1}
 \contentsline {section}{\numberline {1.1}Sistemas actuales}{5}{section.1.1}
-\contentsline {section}{\numberline {1.2}Diagn\IeC {\'o}stico}{12}{section.1.2}
-\contentsline {chapter}{\numberline {2}Sistema de recomendaci\IeC {\'o}n de hoteles}{15}{chapter.2}
-\contentsline {section}{\numberline {2.1}Modelo propuesto}{15}{section.2.1}
-\contentsline {section}{\numberline {2.2}Precio}{17}{section.2.2}
-\contentsline {section}{\numberline {2.3}Distancia: filtro est\IeC {\'a}tico}{18}{section.2.3}
-\contentsline {section}{\numberline {2.4}Similitud de hoteles}{19}{section.2.4}
-\contentsline {section}{\numberline {2.5}Distancia: filtro din\IeC {\'a}mico}{32}{section.2.5}
-\contentsline {section}{\numberline {2.6}Precios din\IeC {\'a}micos}{34}{section.2.6}
-\contentsline {section}{\numberline {2.7}Consideraciones pr\IeC {\'a}cticas}{35}{section.2.7}
-\contentsline {section}{\numberline {2.8}Resumen del proceso}{36}{section.2.8}
-\contentsline {section}{\numberline {2.9}Comentarios}{37}{section.2.9}
-\contentsline {chapter}{\numberline {3}Implementaci\IeC {\'o}n}{38}{chapter.3}
-\contentsline {section}{\numberline {3.1}Informaci\IeC {\'o}n}{38}{section.3.1}
-\contentsline {section}{\numberline {3.2}Sistema de respaldo}{40}{section.3.2}
-\contentsline {section}{\numberline {3.3}Otras consideraciones}{42}{section.3.3}
-\contentsline {section}{\numberline {3.4}Arquitectura final del sistema}{43}{section.3.4}
-\contentsline {chapter}{\numberline {4}Propiedades te\IeC {\'o}ricas del modelo}{45}{chapter.4}
-\contentsline {section}{\numberline {4.1}Teor\IeC {\'\i }a b\IeC {\'a}sica de redes}{45}{section.4.1}
-\contentsline {section}{\numberline {4.2}Modelado del sistema con una red}{47}{section.4.2}
-\contentsline {section}{\numberline {4.3}An\IeC {\'a}lisis de la red}{49}{section.4.3}
-\contentsline {section}{\numberline {4.4}Conclusiones del an\IeC {\'a}lisis de redes}{53}{section.4.4}
-\contentsline {chapter}{\numberline {5}Resultados pr\IeC {\'a}cticos y conclusiones}{54}{chapter.5}
-\contentsline {section}{\numberline {5.1}Desempe\IeC {\~n}o de la p\IeC {\'a}gina web}{54}{section.5.1}
-\contentsline {section}{\numberline {5.2}Discusi\IeC {\'o}n}{61}{section.5.2}
-\contentsline {section}{\numberline {5.3}Trabajo futuro}{63}{section.5.3}
+\contentsline {section}{\numberline {1.2}Diagn\IeC {\'o}stico}{15}{section.1.2}
+\contentsline {chapter}{\numberline {2}Sistema de recomendaci\IeC {\'o}n de hoteles}{18}{chapter.2}
+\contentsline {section}{\numberline {2.1}Modelo propuesto}{18}{section.2.1}
+\contentsline {section}{\numberline {2.2}Precio}{20}{section.2.2}
+\contentsline {section}{\numberline {2.3}Distancia: filtro est\IeC {\'a}tico}{21}{section.2.3}
+\contentsline {section}{\numberline {2.4}Similitud de hoteles}{22}{section.2.4}
+\contentsline {section}{\numberline {2.5}Distancia: filtro din\IeC {\'a}mico}{35}{section.2.5}
+\contentsline {section}{\numberline {2.6}Precios din\IeC {\'a}micos}{37}{section.2.6}
+\contentsline {section}{\numberline {2.7}Consideraciones pr\IeC {\'a}cticas}{38}{section.2.7}
+\contentsline {section}{\numberline {2.8}Resumen del proceso}{39}{section.2.8}
+\contentsline {section}{\numberline {2.9}Comentarios}{39}{section.2.9}
+\contentsline {chapter}{\numberline {3}Implementaci\IeC {\'o}n}{41}{chapter.3}
+\contentsline {section}{\numberline {3.1}Informaci\IeC {\'o}n}{41}{section.3.1}
+\contentsline {section}{\numberline {3.2}Sistema de respaldo}{43}{section.3.2}
+\contentsline {section}{\numberline {3.3}Otras consideraciones}{45}{section.3.3}
+\contentsline {section}{\numberline {3.4}Arquitectura final del sistema}{46}{section.3.4}
+\contentsline {chapter}{\numberline {4}Propiedades te\IeC {\'o}ricas del modelo}{48}{chapter.4}
+\contentsline {section}{\numberline {4.1}Teor\IeC {\'\i }a b\IeC {\'a}sica de redes}{48}{section.4.1}
+\contentsline {section}{\numberline {4.2}Modelado del sistema con una red}{50}{section.4.2}
+\contentsline {section}{\numberline {4.3}An\IeC {\'a}lisis de la red}{52}{section.4.3}
+\contentsline {section}{\numberline {4.4}Conclusiones del an\IeC {\'a}lisis de redes}{56}{section.4.4}
+\contentsline {chapter}{\numberline {5}Resultados pr\IeC {\'a}cticos y conclusiones}{57}{chapter.5}
+\contentsline {section}{\numberline {5.1}Desempe\IeC {\~n}o de la p\IeC {\'a}gina web}{57}{section.5.1}
+\contentsline {section}{\numberline {5.2}Discusi\IeC {\'o}n}{64}{section.5.2}
+\contentsline {section}{\numberline {5.3}Trabajo futuro}{66}{section.5.3}

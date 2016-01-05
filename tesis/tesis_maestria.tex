@@ -2,7 +2,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[spanish]{babel}
-\usepackage{amsmath, amsthm, amssymb, graphicx, subcaption, enumerate, hyperref, tikz, pgfplots, verbatim, pdfpages}
+\usepackage{amsmath, amsthm, amssymb, graphicx, subcaption, enumerate, hyperref, tikz, pgfplots, verbatim, pdfpages, chngcntr}
 \usepackage[xindy]{glossaries}
 \usepackage[algochapter]{algorithm2e}
 \usetikzlibrary{matrix}
@@ -16,6 +16,8 @@
 %\addtolength{\topmargin}{-.875in}
 %\addtolength{\textheight}{1.75in}
 \addtolength{\footskip}{5pt} % Para que los numeros no esten tan pegados al texto
+
+\counterwithout{footnote}{chapter} % Footnotes con un solo conteo
 
 %\renewcommand\figurename{Figura}
 \renewcommand\spanishtablename{Tabla}
@@ -88,7 +90,7 @@
 	name={Stored Procedure (SP)},
 	text={procedimiento almacenado},
 	plural={procedimientos almacenados},
-	description={Procedimiento almacenado físicamente en una base de datos que se ejecuta directamente en el motor de bases de datos facilitando la integración de sistemas}
+	description={Procedimiento almacenado físicamente en una base de datos que se ejecuta directamente en el motor de bases de datos facilitando la integración de sistemas. Para fines prácticos es una abstracción de una consulta, que puede tener argumentos de entrada, de manera similar a una función.}
 }
 \newglossaryentry{sql}{
 	name={Structured Query Language (SQL)},
@@ -198,15 +200,22 @@ Finalmente, en la primera parte del quinto capítulo (\ref{cap:5}) examinaremos 
 % ----------------------------------------------------------------------------------------------------
 \chapter{Análisis previo} \label{cap:1}
 
-Antes de desarrollar el modelo de recomendación de hoteles similares, es conveniente analizar el \emph{status quo}. Comenzaremos con un análisis de la competencia, con el que extraeremos información valiosa de lo que hay actualmente en el mercado, y posteriormente haremos un análisis del sistema de Best Day. El objetivo del primero es aprender de las fortalezas y debilidades de otros para enfocar nuestro trabajo de la manera más eficiente posible, mientras que el del segundo es poner a prueba a nuestro ``vendedor'' electrónico actual y así ver qué le podemos enseñar.
+Antes de desarrollar el modelo de recomendación de hoteles similares, es conveniente analizar el \emph{status quo}\footnote{Cabe mencionar que, dado que las páginas web cambian constantemente, es muy posible que ya no sean iguales a las de la fecha en la que se realizó el análisis.}. Comenzaremos con un análisis de la competencia, con el que extraeremos información valiosa de lo que hay actualmente en el mercado, y posteriormente haremos un análisis del sistema de Best Day. El objetivo del primero es aprender de las fortalezas y debilidades de otros para enfocar nuestro trabajo de la manera más eficiente posible, mientras que el del segundo es poner a prueba a nuestro ``vendedor'' electrónico actual y así ver qué le podemos enseñar.
 
 \section{Sistemas actuales}
 
 Para llevar a cabo tanto los análisis de la competencia como el propio es necesario establecer qué ámbitos de los sistemas de recomendación nos interesan. Dado que el presente trabajo está enfocado en la inteligencia detrás de las elecciones y no en un aspecto estético, nos enfocaremos en los siguientes dos campos:
 \begin{enumerate}
-	\item La posición dentro de la página de las recomendaciones.
-	\item La forma en la que se eligen las recomendaciones.
+	\item La \textbf{posición dentro de la página} de las recomendaciones, con el siguiente código de relevancia:
+		\begin{itemize}
+			\item \textbf{Alta:} Se ve sin bajar la página y es fácil de ver.
+			\item \textbf{Media:} Se tiene que bajar la página para verlo, pero hay más información relevante para la que se tenía que bajar de todos modos.
+			\item \textbf{Baja:} No se ve y se puede consultar la información relevante sin llegar a las recomendaciones.
+			\item \textbf{Muy baja:} Igual que la baja, pero además está hasta el final de la página.
+		\end{itemize}
+	\item La \textbf{forma en la que se eligen} las recomendaciones.
 \end{enumerate}
+
 Enfatizaremos en los principales competidores de Best Day, es decir: Booking, Price Travel, Expedia y Despegar. También veremos si podemos aprender algo de TripAdvisor, que aunque no es un competidor directo, vive de recomendar hoteles y de su comunidad de comentarios. Las empresas competidoras están ordenadas según nuestra evaluación de la calidad de sus sistemas de recomendación. Las ordenamos de menos a más relevantes.
 
 \subsection*{Price Travel (pricetravel.com)}
@@ -219,7 +228,7 @@ Booking es un competidor muy importante de Best Day, aunque también tiene un me
 \begin{itemize}
 	\item \textbf{Hoteles populares por destino}
 	\begin{enumerate}
-		\item Se encuentran del lado izquierdo, abajo de la barra de búsqueda y fechas. Es una posición de prominencia media-baja, puesto que no es visible inmediatamente sin bajar en la página.
+		\item Se encuentran del lado izquierdo, abajo de la barra de búsqueda y fechas, como se puede ver en la figura (\ref{fig:booking:website}). Es una posición de prominencia media-baja, puesto que no es visible inmediatamente sin bajar en la página.
 		\item Cuando se entra a la página (no al hotel en particular) por primera vez y se selecciona un hotel, aparece una sección de hoteles populares en el mismo destino del hotel buscado. El tema es que siempre aparece la misma selección para cada destino, independientemente del hotel que se haya elegido, pues la popularidad de los otros hoteles no tiene relación con el hotel elegido.
 	\end{enumerate}
 	\item \textbf{Búsquedas recientes}
@@ -228,11 +237,26 @@ Booking es un competidor muy importante de Best Day, aunque también tiene un me
 		\item La información de los hoteles visitados se va almacenando en una \emph{cookie}, de modo que para los hoteles subsecuentes, en lugar de los hoteles populares por destino, aparece un listado de unos pocos hoteles recientemente buscados por el usuario.
 	\end{enumerate}
 \end{itemize}
+
+%%%%%%%%%%%%%%% BOOKING
+\shorthandoff{<>}
+\begin{figure}[ht]
+	\centering
+	\begin{tikzpicture}[xscale=3.5, yscale = 3.5]
+		\fill [blue, opacity=0.2] (0,0) rectangle (2.6,2.2);
+		\fill [blue, opacity=0.2] (0.2,1) rectangle (0.8,2);
+		\fill [blue, opacity=0.2] (1,0.2) rectangle (2.4,2);
+		\fill [red, opacity=0.5] (0.2,0.2) rectangle (0.8,0.8);
+	\end{tikzpicture}
+	\caption{Posición de las recomendaciones de \texttt{booking.com} (rojo) \label{fig:booking:website}}
+\end{figure}
+\shorthandon{<>}
+
 Al parecer en Booking sólo están interesados en lo que el cliente ha buscado y utilizan los hoteles populares por destino para no dejar vacía la sección para los clientes nuevos. El problema con los hoteles populares por destino es que no varían según el hotel buscado (siempre y cuando estén en el mismo destino), mientras que el de las búsquedas recientes es que no promueven que el cliente explore la página y encuentre la mejor opción para sus necesidades. Podríamos comparar este sistema con un vendedor que propone una lista de hoteles primero y luego únicamente dice ``a usted le habían gustado los hoteles $x$, $y$ y $z$''. Sin duda esto es mejor que nada, pero veremos más adelante que se puede hacer bastante más.
 
 \subsection*{Despegar (despegar.com)}
 
-Despegar es un competidor más directo y con un mercado más parecido al de Best Day que Booking debido a que está dirigida al mercado latinoamericano (sus oficinas centrales están en Argentina). En en su página utilizan varias estrategias distintas para recomendar, por lo que las describiremos por separado. Cabe mencionar que no usan todas las estrategias para todos los hoteles, ni siempre, por lo que sospechamos que tienen información incompleta y sólo muestran lo que tienen disponible.
+Despegar es un competidor más directo y con un mercado más parecido al de Best Day que Booking debido a que está dirigida al mercado latinoamericano (sus oficinas centrales están en Argentina). En en su página utilizan varias estrategias distintas para recomendar, por lo que las describiremos por separado. La distribución de la página está ilustrada en la figura (\ref{fig:despegar:website}). Cabe mencionar que no usan todas las estrategias para todos los hoteles, ni siempre, por lo que sospechamos que tienen información incompleta y sólo muestran lo que tienen disponible.
 \begin{itemize}
 	\item \textbf{Búsquedas recientes}
 	\begin{enumerate}
@@ -255,13 +279,30 @@ Despegar es un competidor más directo y con un mercado más parecido al de Best
 		\item En la parte inferior de la página también aparece una sección de hoteles que fueron visitados por los demás usuarios que han visto el hotel en cuestión. Este análisis no es complejo, pero puede ser pesado computacionalmente si no se utiliza un  método apropiado.
 	\end{enumerate}
 \end{itemize}
+
+%%%%%%%%%%%%%%% DESPEGAR
+\shorthandoff{<>}
+\begin{figure}[ht]
+	\centering
+	\begin{tikzpicture}[xscale=3.5, yscale = 3.5]
+		\fill [blue, opacity=0.2] (0,-0.6) rectangle (2.6,2.2);
+		\fill [blue, opacity=0.2] (0.2,1.4) rectangle (0.8,2);
+		\fill [blue, opacity=0.2] (1,0.2) rectangle (2.4,2);
+		\fill [green, opacity=0.5] (0.2,0.8) rectangle (0.8,1.2);
+		\fill [red, opacity=0.5] (0.2,0.2) rectangle (0.8,0.6);
+		\fill [white, opacity=0.5] (1,-0.4) rectangle (2.4,0);
+	\end{tikzpicture}
+	\caption{Distribución de \texttt{despegar.com}. Se muestran los hoteles cercanos (verde), los populares por destino (rojo) y los elegidos por otros usuarios (blanco) \label{fig:despegar:website}}
+\end{figure}
+\shorthandon{<>}
+
 En Despegar tuvieron muchas ideas para recomendar, pero todos los criterios están separados y no colaboran entre sí. Es como tener una tabla ordenada por varios campos distintos. Los hoteles recomendados con base en lo que han visto otros clientes creemos que están desperdiciados en donde están, puesto que sólo los clientes que vayan hasta abajo de la página los verán. El sistema funciona razonablemente bien y permite movilidad hacia arriba en la categoría del hotel. El problema es que es claramente sesgado a recomendar hoteles populares, de modo que tiende a atorarse en aglomerados de hoteles populares y también a subir de categoría. El resultado es que después de algunos pocos \emph{clicks}, casi invariablemente se llega a los hoteles más caros de la zona, sin posibilidad de explorar otros.
 
 La ventaja de Despegar es que al menos toman en cuenta que hay diversos criterios de interés. El problema es que su ``vendedor'', o es incapaz de integrar varios criterios, o bien insistente, poco creativo y además nos quiere vender lo más caro que se pueda. Sin duda es mejor que el de Booking, pero aún podría mejorar bastante.
 
 \subsection*{Expedia (expedia.com)}
 
-Expedia es otra agencia de viajes que está invirtiendo mucho en entrar al mercado mexicano con sus marcas \url{expedia.com} y \url{hoteles.com}. Además, es una de las agencias que más énfasis está poniendo en los sistemas inteligentes. De hecho, tienen un sistema diferente a los demás y por eso lo pusimos en esta posición en la lista de sistemas competidores, aunque por alguna razón, en su página las recomendaciones están posicionadas en un lugar casi imposible de ver. 
+Expedia es otra agencia de viajes que está invirtiendo mucho en entrar al mercado mexicano con sus marcas \url{expedia.com} y \url{hoteles.com}. Además, es una de las agencias que más énfasis está poniendo en los sistemas inteligentes. De hecho, tienen un sistema diferente a los demás y por eso lo pusimos en esta posición en la lista de sistemas competidores, aunque por alguna razón, en su página las recomendaciones están posicionadas en un lugar casi imposible de ver, como se puede ver en la figura (\ref{fig:expedia:website}). 
 \begin{itemize}
 	\item \textbf{Búsquedas recientes}
 	\begin{enumerate}
@@ -274,6 +315,22 @@ Expedia es otra agencia de viajes que está invirtiendo mucho en entrar al merca
 		\item Utilizan un método desconocido para recomendar hoteles similares que permite movilidad progresiva entre categorías. No estamos seguros si tiene alguna restricción de precios.
 	\end{enumerate}
 \end{itemize}
+
+%%%%%%%%%%%%%%% EXPEDIA
+\shorthandoff{<>}
+\begin{figure}[ht]
+	\centering
+	\begin{tikzpicture}[xscale=3.5, yscale = 3.5]
+		\fill [blue, opacity=0.2] (0,-0.6) rectangle (2.6,2.2);
+		\fill [blue, opacity=0.2] (0.2,0.8) rectangle (0.8,2);
+		\fill [blue, opacity=0.2] (1,0.8) rectangle (2.4,2);
+		\fill [white, opacity=0.5] (1,-0.4) rectangle (2.4,0);
+		\fill [red, opacity=0.5] (1,0.2) rectangle (2.4,0.6);
+	\end{tikzpicture}
+	\caption{Posición de las recomendaciones de \texttt{expedia.com}. Se muestran los hoteles vistos (blanco) y las recomendaciones (rojo)\label{fig:expedia:website}}
+\end{figure}
+\shorthandon{<>}
+
 El sistema de recomendación de Expedia nos gustó bastante y de hecho creemos que está siendo desaprovechado. Permite explorar los hoteles disponibles hacia arriba y hacia abajo en la escala de precio y categoría y llegar a opciones completamente nuevas. Una ventaja sobre el algoritmo de Booking es que no tiene una tendencia tan fuerte hacia los hoteles caros. En cuanto a las desventajas, es probable que esté acotado por destino, aunque eso no es tan grave. Otro detalle que no nos convenció es que le falta algo de flexibilidad: después de seleccionar algunas pocas recomendaciones, es evidente que nunca saldremos de un cierto grupo de hoteles.
 
 En conclusión, creemos que el enfoque que tomó Expedia es el correcto, puesto que emulan un vendedor que, por un lado, propone nuevas alternativas y, por otro, se ``acuerda'' de lo que ya le había gustado al cliente. Lo que le faltaría es ser menos tímido (i.e. poner las recomendaciones en un lugar de mayor impacto) y menos conservador (i.e. proponer opciones que se salgan de un círculo reducido de hoteles).
@@ -284,18 +341,33 @@ Como decíamos arriba, Trip Advisor no es la competencia directa de Best Day, pe
 \begin{itemize}
 	\item \textbf{Hoteles similares}
 	\begin{enumerate}
-		\item Se encuentran en la derecha, abajo de la foto principal, pero al lado de otra información importante, por lo que el impacto es medio.
+		\item Se encuentran en la derecha, abajo de la foto principal, pero al lado de otra información importante, por lo que el impacto es medio (ver figura (\ref{fig:tripadvisor:website})).
 		\item No sabemos cómo hacen las recomendaciones, pero no son por distancia estricta y sí permiten cierta movilidad de la categoría.
 	\end{enumerate}
 \end{itemize}
+
+%%%%%%%%%%%%%%% TRIP ADVISOR
+\shorthandoff{<>}
+\begin{figure}[ht]
+	\centering
+	\begin{tikzpicture}[xscale=3.5, yscale = 3.5]
+		\fill [blue, opacity=0.2] (0,-0.6) rectangle (2.6,2.2);
+		\fill [blue, opacity=0.2] (0.2,0.8) rectangle (2.4,2);
+		\fill [blue, opacity=0.2] (0.2,-0.4) rectangle (1.4,0.6);
+		\fill [red, opacity=0.5] (1.6,-0.4) rectangle (2.4,0.6);
+	\end{tikzpicture}
+	\caption{Posición de las recomendaciones de \texttt{tripadvisor.com} (rojo)\label{fig:tripadvisor:website}}
+\end{figure}
+\shorthandon{<>}
+
 El sistema de TripAdvisor también funciona razonablemente bien, pero parece estar más basado en la calificación de los usuarios que en la categoría del hotel. Nos pareció que podría mejorar si tuviera una mayor flexibilidad, pues comparte el problema de la falta de inventiva del sistema de Expedia. A pesar de las faltas, este enfoque tiene sentido en el contexto de su página y funciona más o menos bien.
 
-Es posible que el sistema de TripAdvisor sea un filtro colaborativo\footnote{Ver \cite{mmds} para mayor información.} desde el punto de vista de los productos (i.e. \emph{item-based}). Un sistema de este estilo podría funcionar bien si se tuviera clientes recurrentes, puesto que está basado en hacer silogismos del tipo ``a los clientes que les gustó A también les gustó B''. Sin embargo, Best Day no tiene una recurrencia tan alta y tampoco tiene información suficientemente detallada de los clientes como para tratar de seguir por este camino. Por lo tanto, sería inviable implementar un sistema de este estilo.
+Es posible que el sistema de TripAdvisor sea un filtro colaborativo, como por ejemplo el de \cite{mmds}, desde el punto de vista de los productos (i.e. \emph{item-based}). Un sistema de este estilo podría funcionar bien si se tuviera clientes recurrentes\footnote{Un cliente recurrente es uno que ha comprado al menos dos veces.}, puesto que está basado en hacer silogismos del tipo ``a los clientes que les gustó A también les gustó B''. Sin embargo, Best Day no tiene una recurrencia tan alta (es decir, tiene muchos clientes que han comprado una sola vez) y tampoco tiene información suficientemente detallada de los clientes como para tratar de seguir por este camino. Por lo tanto, sería inviable implementar un sistema de este estilo.
 
 
 \subsection*{Best Day (bestday.com.mx)}
 
-Finalmente, analizaremos lo que se hace actualmente en Best Day. Del mismo modo que con la competencia, comenzaremos con una breve descripción:
+Finalmente, analizaremos lo que se hace actualmente en Best Day. Del mismo modo que con la competencia, comenzaremos con una breve descripción; la distribución está ilustrada en la figura (\ref{fig:bestday:website}).
 \begin{itemize}
 	\item \textbf{Hoteles similares}
 	\begin{enumerate}
@@ -305,9 +377,24 @@ Finalmente, analizaremos lo que se hace actualmente en Best Day. Del mismo modo 
 	\item \textbf{Búsquedas recientes}
 	\begin{enumerate}
 		\item Se encuentran directamente debajo de los hoteles similares.
-		\item Similarmente a la competencia, aparece una lista de los hoteles que el usuario visitó recientemente. Las búsquedas recientes permanecen entre \glspl{sesion} dentro de una misma computadora.
+		\item Similarmente a la competencia, aparece una lista de los hoteles que el usuario visitó recientemente. Las búsquedas recientes permanecen entre \glspl{sesion} dentro de una misma computadora, utilizando \emph{cookies}.
 	\end{enumerate}
 \end{itemize}
+
+%%%%%%%%%%%%%%% BEST DAY
+\shorthandoff{<>}
+\begin{figure}[ht]
+	\centering
+	\begin{tikzpicture}[xscale=3.5, yscale = 3.5]
+		\fill [blue, opacity=0.2] (0,0) rectangle (2.6,2.2);
+		\fill [blue, opacity=0.2] (0.2,0.2) rectangle (1.6,2);
+		\fill [blue, opacity=0.2] (1.8,1) rectangle (2.4,2);
+		\fill [red, opacity=0.5] (1.8,0.2) rectangle (2.4,0.8);
+	\end{tikzpicture}
+	\caption{Posición de las recomendaciones de \texttt{bestday.com} (rojo)\label{fig:bestday:website}}
+\end{figure}
+\shorthandon{<>}
+
 Sin duda, el hecho de tener una sección de búsquedas recientes es un punto a favor de este sistema de recomendación, aunque no aporta nada que no tengan los competidores. Desafortunadamente, la calidad de sus recomendaciones es muy variable. En zonas homogéneas y con mucha oferta para una categoría dada, las recomendaciones pueden ser aceptables. Sin embargo, en destinos donde hay hoteles muy distintos pero con la misma categoría, como podrían ser un hotel citadino y uno de playa, las recomendaciones dejan mucho que desear. Además, si no hay hoteles bajo este criterio, o si hay muy pocos, no se muestra nada, o una lista muy pequeña. Es decir, el ``asesor'' electrónico de Best Day maneja las recomendaciones en grupos: dada información del cliente (destino y estrellas) es sumamente insistente con las alternativas. En pocas palabras, no tiene ninguna ventaja sobre un catálogo agrupado por destino y estrellas.
 
 \section{Diagnóstico}
@@ -355,7 +442,7 @@ Como último punto, no queremos utilizar estos criterios de forma aislada, pues 
 
 Para facilitar la exposición le daremos nombres a los hoteles que van superando cada etapa, hasta llegar a las recomendaciones para cada hotel.
 \begin{defn}[Conjunto de hoteles]
-Denotamos el conjunto de todos los hoteles por $\HH$ y al número de hoteles por $N$, es decir $N = \HH$.
+Denotamos el conjunto de todos los hoteles por $\HH$ y al número de hoteles por $N$, es decir $N = |\HH|$.
 \end{defn}
 
 \section{Precio}
@@ -461,7 +548,7 @@ A continuación describiremos con más detalle cómo tomamos en cuenta estas obs
 
 Dado que el enfoque servicio a servicio tiene problemas independientemente de la distancia que elijamos, será el primero que abordaremos. La manera en la que decidimos solucionarlo fue agrupar los servicios en distintas categorías. Dentro de cada una de ellas supondremos que los servicios son sustitutos perfectos, esto es, son perfectamente intercambiables. Si bien este supuesto podría parecer algo aventurado, tuvo muy buenos resultados en la práctica y, en la mayoría de los casos, sí representa a los hoteles aproximadamente como lo haría una persona.
 
-Una forma de agrupar los servicios es manualmente con criterio experto. Sin embargo, podría resultar algo arbitrario hacerlo así, por lo que decidimos complementar nuestra intuición con un método estadístico. Para ello, tomamos los renglones de $S$ como individuos y los aglomeramos utilizando un método de aglomerado jerárquico que utiliza el criterio de Ward\footnote{El algoritmo está descrito con detalle en \cite{ward} y en \cite{ward-notes}.}. Tenemos entonces $n_s$ ``observaciones'' cada una con $N$ ``características'' que podemos meter al programa. De este modo, utilizamos el dendrograma de salida del método para apoyarnos en la creación de las categorías, que además buscamos que fueran interpretables. El resultado final de este proceso es un mapeo de cada servicio a una categoría. Formalizamos estos conceptos en la siguiente definición:
+Una forma de agrupar los servicios es manualmente con criterio experto. Sin embargo, podría resultar algo arbitrario hacerlo así, por lo que decidimos complementar nuestra intuición con un método estadístico. Para ello, tomamos los renglones de $S$ como individuos y los aglomeramos utilizando un método de aglomerado jerárquico que utiliza el criterio de Ward, como está descrito en \cite{ward} y en \cite{ward-notes}. Tenemos entonces $n_s$ ``observaciones'' cada una con $N$ ``características'' que podemos meter al programa. De este modo, utilizamos el dendrograma de salida del método para apoyarnos en la creación de las categorías, que además buscamos que fueran interpretables. El resultado final de este proceso es un mapeo de cada servicio a una categoría. Formalizamos estos conceptos en la siguiente definición:
 \begin{defn}[Categorías de servicios]
 Denotamos por $\mathcal{C}$ al conjunto de todas las categorías de servicios, de cardinalidad $n_c$. Definimos la categoría a la que pertenece cada servicio vía la función $\kappa: \mathcal{S} \to \mathcal{C}$, es decir si el servicio $s$ pertenece a la categoría $c$, entonces $\kappa(s) = c$.
 \end{defn}
@@ -573,7 +660,7 @@ Ya habiendo establecido la forma de combinar las dos medidas de similitud, el si
 
 En la figura (\ref{alpha}) ilustramos las direcciones de avance del \emph{score} al variar $\alpha$. Es claro ver que conviene utilizar un valor de $\alpha$ entre 0 y 1, como pedimos en la definición, porque de otro modo alguna de las medidas contribuirá negativamente al \emph{score}, como lo ilustran las flechas rosa y violeta. La turquesa muestra la dirección en la que crecería el \emph{score} si utilizáramos $\alpha = 1/2$. Como en este ejemplo la similitud de servicios tiene una menor variabilidad que la de perfil, si escogiéramos ese valor, le estaríamos dando un mayor peso al perfil. Si quisiéramos darles igual peso a ambas medidas, deberíamos utilizar $\alpha = 1/4$, como ilustra la flecha verde.
 
-Dado que queremos identificar hoteles similares, un buen criterio para decidir el valor de $\alpha$ es de manera que maximice el poder discriminatorio del \emph{score}. Es decir, que capture en un solo número la mayor cantidad posible de la información contenida en las dos medidas de similitud. En términos estadísticos, lo que queremos es obtener $\alpha \in (0,1)$ tal que se maximice la varianza del \emph{score} resultante. El método conocido como Análisis de Componentes Principales (ACP)\footnote{Al lector interesado en entender ACP más a profundidad lo remitimos a \cite{elements}, en donde encontrará además diversas variantes del mismo.} hace algo muy similar a eso, con la pequeña diferencia de que no obtiene $\alpha$ entre 0 y 1. Sin embargo, dado que lo que importa es la dirección de la flecha generada por $\alpha$, podremos solucionar este inconveniente con una simple transformación.
+Dado que queremos identificar hoteles similares, un buen criterio para decidir el valor de $\alpha$ es de manera que maximice el poder discriminatorio del \emph{score}. Es decir, que capture en un solo número la mayor cantidad posible de la información contenida en las dos medidas de similitud. En términos estadísticos, lo que queremos es obtener $\alpha \in (0,1)$ tal que se maximice la varianza del \emph{score} resultante. El método conocido como Análisis de Componentes Principales (ACP), que se puede encontrar en muchos libros de texto, como por ejemplo en \cite{elements}, hace algo muy similar a eso, con la pequeña diferencia de que no obtiene $\alpha$ entre 0 y 1. Sin embargo, dado que lo que importa es la dirección de la flecha generada por $\alpha$, podremos solucionar este inconveniente con una simple transformación.
 
 Como queremos calcular el valor óptimo de $\alpha$ para las recomendaciones que haremos, tenemos que hacer el análisis con todas (o una muestra suficiente de) las recomendaciones de todos los hoteles. La forma de hacerlo es como sigue:
 \begin{enumerate}
@@ -733,7 +820,7 @@ Para acceder fácilmente esta información generamos un \gls{sp}\footnote{Ver \e
 
 Las matrices $S$ y $C$, que contienen la información de los servicios y las categorías respectivamente, son bastante ralas. Por esta razón es conveniente almacenarlas como relaciones con un renglón por cada elemento distinto de cero de la matriz correspondiente. Como $S$ es binaria, la almacenaremos en una tabla con dos columnas, clave del hotel y clave del servicio, mientras que $C$ requiere tres: clave del hotel, clave de la categoría y número de servicios en la categoría.
 
-Dado que en la base de datos de Best Day ya está la tabla con los servicios en el formato deseado, basta filtrar los hoteles con información incompleta o de zonas que no nos interesen y ya tenemos la primera tabla. Para obtener la segunda fue necesario primero correr el aglomerado en R utilizando la primera tabla y crear a mano la relación entre los servicios y las categorías que elegimos. Posteriormente bastó pegarle a cada servicio su categoría correspondiente y sumarizar la tabla de servicios utilizando la clave del hotel y la clave de la categoría como llaves; los conteos dentro de cada grupo corresponden a los valores $c_{ij}$. Nuevamente, generamos un \gls{sp} de \gls{sqlserver} para poder obtener esta información con una simple llamada a una función en lugar de una consulta completa.
+Dado que en la base de datos de Best Day ya está la tabla con los servicios en el formato deseado, basta filtrar los hoteles con información incompleta o de zonas que no nos interesen y ya tenemos la primera tabla. Para obtener la segunda fue necesario primero correr el aglomerado en \texttt{R} utilizando la primera tabla y crear a mano la relación entre los servicios y las categorías que elegimos. Posteriormente bastó pegarle a cada servicio su categoría correspondiente y sumarizar la tabla de servicios utilizando la clave del hotel y la clave de la categoría como llaves; los conteos dentro de cada grupo corresponden a los valores $c_{ij}$. Nuevamente, generamos un \gls{sp} de \gls{sqlserver} para poder obtener esta información con una simple llamada a una función en lugar de una consulta completa.
 
 A continuación describiremos un tema sobre los servicios que es importante en el contexto de la recomendación de hoteles similares.
 
@@ -807,7 +894,7 @@ Antes de describir las características de las redes, debemos definir lo que es 
 		\item \emph{Grado de salida (out-degree):} En redes dirigidas, el número de arcos que salen de un nodo.
 		\item \emph{Grado (degree):} En redes dirigidas, corresponde al grado de salida más el grado de entrada. En redes no dirigidas, es el número total de arcos de un nodo.
 	\end{itemize}
-	\item \emph{PageRank:} Es una medida de importancia que fue diseñada para ver la relevancia de las páginas web. A grandes rasgos, coincide con la probabilidad de que un navegador que da \emph{click} al azar en las ligas (arcos) que ve llegue a una cierta página (nodo). Utilizaremos el PageRank para medir la importancia de los hoteles dentro del sistema, pues representará la probabilidad de que un usuario llegue a un hotel dado si le da \emph{click} a recomendaciones al azar.\footnote{Al lector interesado lo referimos al artículo original, \cite{pagerank}, y a \cite{mmds} para mayor información sobre el PageRank y sobre redes en general.}
+	\item \emph{PageRank:} Es una medida de importancia que fue diseñada para ver la relevancia de las páginas web. A grandes rasgos, coincide con la probabilidad de que un navegador que da \emph{click} al azar en las ligas (arcos) que ve llegue a una cierta página (nodo). Utilizaremos el PageRank para medir la importancia de los hoteles dentro del sistema, pues representará la probabilidad de que un usuario llegue a un hotel dado si le da \emph{click} a recomendaciones al azar. Al lector interesado lo referimos al artículo original, \cite{pagerank}, y a \cite{mmds} para mayor información sobre el PageRank y sobre redes en general.
 \end{itemize}
 
 \section{Modelado del sistema con una red}
@@ -938,7 +1025,7 @@ La conclusión global de este análisis es que, después de aproximadamente un m
 \clearpage
 \section{Discusión}
 
-Concluiremos el presente trabajo discutiendo algunos temas de interés que surgieron a lo largo del trabajo. Un tema relevante que podría surgir incluso al comenzar a leer esta tesis es \emph{¿por qué utilizamos un sistema de recomendación basado en contenido?} La respuesta esto tiene varias partes. En primer lugar, por razones históricas y de negocio, Best Day no tiene información detallada de todos los clientes\footnote{A diferencia por ejemplo de Netflix o Amazon, que guardan todo el historial de compras y comportamiento de sus clientes.} porque permite comprar viajes sin tener una cuenta con ellos. Aparte de ello, esos sistemas pueden ser más complejos de manejar y se necesita planear antes de implementar la página. Tal como está hoy en día, sería complicado hacerlo sin cambiar varios aspectos estructurales importantes. Además, dado que los viajes son productos caros, los clientes tienen una tasa de compra y de repetición muy bajas, por lo que se contaría con muy poca información por cliente para hacer un filtro colaborativo, por ejemplo\footnote{Ver \cite{mmds} para una descripción detallada de lo que es un filtro colaborativo}. Por estas razones, decidimos que tenía más sentido hacer un sistema no personalizado que tuviera mejores propiedades que el que se tenía inicialmente, pero con la misma premisa de recomendar hoteles similares.
+Concluiremos el presente trabajo discutiendo algunos temas de interés que surgieron a lo largo del trabajo. Un tema relevante que podría surgir incluso al comenzar a leer esta tesis es \emph{¿por qué utilizamos un sistema de recomendación basado en contenido?} La respuesta esto tiene varias partes. En primer lugar, por razones históricas y de negocio, Best Day no tiene información detallada de todos los clientes\footnote{A diferencia por ejemplo de Netflix o Amazon, que guardan todo el historial de compras y comportamiento de sus clientes.} porque permite comprar viajes sin tener una cuenta con ellos. Aparte de ello, esos sistemas pueden ser más complejos de manejar y se necesita planear antes de implementar la página. Tal como está hoy en día, sería complicado hacerlo sin cambiar varios aspectos estructurales importantes. Además, dado que los viajes son productos caros, los clientes tienen una tasa de compra y de repetición muy bajas, por lo que se contaría con muy poca información por cliente para hacer un filtro colaborativo, por ejemplo. Por estas razones, decidimos que tenía más sentido hacer un sistema no personalizado que tuviera mejores propiedades que el que se tenía inicialmente, pero con la misma premisa de recomendar hoteles similares.
 
 En la parte de teoría hay muchos temas que no están cerrados de ninguna manera. Por ejemplo, uno se podría preguntar \emph{por qué decidimos usar las medidas de verosimilitud como lo hicimos en lugar de distancia coseno}. La respuesta en este caso es que de este modo tenemos una mayor interpretabilidad de los resultados, que perderíamos utilizando distancia coseno o alguna otra medida. Sin embargo, ésta y muchas otras decisiones que tomamos en la construcción del modelo pueden ser fácilmente desafiadas, puesto que, si bien elegimos las mejores opciones que encontramos, no negamos que se pueda encontrar otras mejores. En la sección de trabajo futuro daremos algunas ideas para sofisticar algunos pasos del proceso.
 

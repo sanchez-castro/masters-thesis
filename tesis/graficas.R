@@ -183,10 +183,15 @@ c2 <- circleFun(center = c(0,0), diameter = 4, npoints = 100)
 c3 <- rbind(cbind(c1, id='Muchos hoteles similares cercanos'),
             cbind(c2, id='Pocos hoteles similares cercanos'))
 
+n <- 3
+hues = seq(15, 375, length=n+1)
+cols <- hcl(h=hues, l=65, c=100)
+
 plot_distdin <- ggplot(x3) +
   geom_point(aes(x,y,size=s,color=col)) +
   geom_point(aes(x,y,size=s,alpha=(s>2)), shape=1, color='black') +
   geom_path(data=c3, aes(x,y), linetype='dashed') +
+  scale_color_manual(values=c(cols[2],cols[1],'blue')) +
   scale_size_continuous(guide=FALSE) +
   scale_alpha_discrete(guide=FALSE) +
   guides(color=guide_legend(title=NULL)) +
