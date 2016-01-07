@@ -12,3 +12,5 @@
 datos
 *.blg
 *.bbl
+*.nav
+*.snm
