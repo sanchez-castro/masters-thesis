@@ -1,6 +1,6 @@
 \beamer@endinputifotherversion {3.36pt}
 \select@language {spanish}
-\beamer@sectionintoc {1}{Planteamiento}{5}{0}{1}
-\beamer@sectionintoc {2}{Soluci\IeC {\'o}n}{9}{0}{2}
-\beamer@sectionintoc {3}{Implementaci\IeC {\'o}n}{19}{0}{3}
-\beamer@sectionintoc {4}{Desempe\IeC {\~n}o}{21}{0}{4}
+\beamer@sectionintoc {1}{Planteamiento}{3}{0}{1}
+\beamer@sectionintoc {2}{Soluci\IeC {\'o}n}{7}{0}{2}
+\beamer@sectionintoc {3}{Implementaci\IeC {\'o}n}{17}{0}{3}
+\beamer@sectionintoc {4}{Desempe\IeC {\~n}o}{19}{0}{4}
