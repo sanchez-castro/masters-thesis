@@ -169,14 +169,16 @@ x1 <- data.frame(x=c(0,rnorm(29),1.5,-1),
                  s=c(5,2*runif(29),4,4),
                  col=c('original', rep('opciones malas',29),
                        'opciones buenas', 'opciones buenas'),
-                 id='Pocos hoteles similares cercanos')
+                 id='Pocos hoteles similares cercanos') %>%
+  mutate(is_near = (sqrt(x^2 + y^2) < 2))
 
 x2 <- data.frame(x=c(0,rnorm(30)),
                  y=c(0,rnorm(30)),
                  s=c(5,2*runif(10), 3 + 2*runif(20)),
                  col=c('original', rep('opciones malas',10),
                        rep('opciones buenas', 20)),
-                 id='Muchos hoteles similares cercanos')
+                 id='Muchos hoteles similares cercanos') %>%
+  mutate(is_near = (sqrt(x^2 + y^2) < 1))
 x3 <- rbind(x1,x2)
 c1 <- circleFun(center = c(0,0), diameter = 2, npoints = 100)
 c2 <- circleFun(center = c(0,0), diameter = 4, npoints = 100)
@@ -189,7 +191,7 @@ cols <- hcl(h=hues, l=65, c=100)
 
 plot_distdin <- ggplot(x3) +
   geom_point(aes(x,y,size=s,color=col)) +
-  geom_point(aes(x,y,size=s,alpha=(s>2)), shape=1, color='black') +
+  geom_point(aes(x,y,size=s,alpha=(s>2 & is_near)), shape=1, color='black') +
   geom_path(data=c3, aes(x,y), linetype='dashed') +
   scale_color_manual(values=c(cols[2],cols[1],'blue')) +
   scale_size_continuous(guide=FALSE) +
@@ -199,7 +201,7 @@ plot_distdin <- ggplot(x3) +
   coord_equal() +
   facet_wrap(~ id)
 
-ggsave(filename = 'tesis/imagenes/distdin.pdf',
+ggsave(filename = 'tesis/presentacion/imagenes/distdin.pdf',
        plot = plot_distdin,
        width = 8, height = 4)
 

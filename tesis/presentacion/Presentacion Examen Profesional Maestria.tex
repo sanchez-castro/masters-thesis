@@ -92,11 +92,20 @@
 		\item Competidores principales: Price Travel, Booking, Despegar, Expedia, Trip Advisor
 		\item Diversas formas de recomendar:
 		\begin{itemize}
-			\item Hoteles recientemente vistos: No son recomendaciones genuinas
-			\item Hoteles cercanos / en el mismo destino: Estilo y precios pueden ser muy distintos
-			\item Recomendaciones con métodos desconocidos (p.ej. ``a otros usuarios les gustó...''): Calidad variable; en general son demasiado rígidos
+			\item Hoteles recientemente vistos
+			\begin{itemize}
+				\item[$\rightarrow$] No son recomendaciones genuinas
+			\end{itemize}
+			\item Hoteles cercanos / en el mismo destino
+			\begin{itemize}
+				\item[$\rightarrow$] Estilo y precios pueden ser muy distintos
+			\end{itemize}
+			\item Recomendaciones con métodos desconocidos (p.ej. ``a otros usuarios les gustó...'')
+			\begin{itemize}
+				\item[$\rightarrow$] Estilo y precios pueden ser muy distintos
+			\end{itemize}
 		\end{itemize}
-	\item \textbf{Conclusión:} La competencia deja mucho que desear, pero hay mucho qué aprender
+	\item \textbf{Conclusión:} La competencia se enfrenta a los mismos retos y no los ha logrado resolver del todo
 	\end{itemize}
 \end{frame}
 
@@ -129,7 +138,7 @@
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Precio}
+\begin{frame}{(1) Precio}
 	\begin{itemize}%[<+->] 
 		\item Poner hoteles demasiado caros no promueve el interés del cliente
 		\item Generalmente más barato es mejor (siempre y cuando tenga la categoría suficiente)
@@ -139,50 +148,51 @@
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Similitud (P1)}
+\begin{frame}{(2) Similitud (P1)}
 	\begin{itemize}%[<+->] 
-		\item \textbf{Caracterización}
+		\item Las estrellas no bastan como medida de similitud entre hoteles porque no toman en cuenta el estilo del hotel
+		\item \textbf{Alternativa:} Usar información de servicios
+		\item Usarla directamente es ruidoso porque no toma en cuenta sustitutos
+		\item \textbf{Solución:} Agrupar los servicios en categorías
+		\item \textbf{Método:} Manual (criterio de negocio) + aglomerado jerárquico
+		\item \textbf{Resultado:} Cada hotel tiene un vector que lo caracteriza con el número de servicios en cada una de las categorías
+	\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{(2) Similitud (P2)}
+	\begin{itemize}%[<+->] 
+		\item El siguiente paso es definir una medida de similitud en el espacio de los vectores de características
+		\item Hay dos aspectos importantes que queremos controlar:
 		\begin{itemize}
-			\item No bastan las estrellas
-			\item Usar información de servicios
-			\item Usarla directamente es ruidoso porque no toma en cuenta sustitutos
-			\item \textbf{Solución:} Agrupar los servicios en categorías
-			\item \textbf{Método:} Manual (criterio de negocio) + aglomerado jerárquico
+			\item \textbf{Servicios:}
+			\begin{itemize}
+				\item Al menos ciertos servicios ($\sim$ estrellas)
+				\item Los servicios faltantes restan similitud
+				\item Los servicios extras no se penalizan
+			\end{itemize}
+			\item \textbf{Perfil:}
+			\begin{itemize}
+				\item Hoteles del mismo estilo
+				\item Misma proporción de cada categoría
+				\item Ignorar la cantidad de servicios
+				\item Podría dar hoteles más sencillos o más lujosos
+			\end{itemize}
 		\end{itemize}
 	\end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Similitud (P2)}
-	\begin{itemize}%[<+->] 
-		\item La similitud se puede dividir en dos aspectos básicos
-		\item \textbf{Servicios:}
-		\begin{itemize}
-			\item Al menos ciertos servicios (~ estrellas)
-			\item Los servicios faltantes restan similitud
-			\item Los servicios extras no se penalizan
-		\end{itemize}
-		\item \textbf{Perfil:}
-		\begin{itemize}
-			\item Hoteles del mismo estilo
-			\item Misma proporción de cada categoría
-			\item Ignorar la cantidad de servicios
-			\item Podría dar hoteles más sencillos o más lujosos
-		\end{itemize}
-	\end{itemize}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Similitud (P2)}
+\begin{frame}{(2) Similitud (P2)}
 	\includegraphics[width=\textwidth]{imagenes/similitud.png}
 \end{frame}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Similitud (P3)}
+\begin{frame}{(2) Similitud (P3)}
 	\begin{itemize}%[<+->] 
-		\item Medida de similitud de servicios: Calidad mínima
-		\item Medida de similitud de perfil: Proporciones de servicios
+		\item Medida de similitud de servicios: Garantiza que las recomendaciones tengan una cantidad razonable de servicios
+		\item Medida de similitud de perfil: Promueve que los hoteles alternativos sean del mismo estilo que el que se está viendo
 		\item Medida de similitud final:
 		\begin{itemize}
 			\item Capturar ambos efectos
@@ -191,24 +201,24 @@
 		\end{itemize}
 		\item ¿Por qué no diferencia absoluta?
 		\begin{itemize}
-			\item Es muy agresiva
-			\item No es ajustable
+			\item Es simétrica $\implies$ Es demasiado agresiva con los hoteles mejores
+			\item No distingue entre perfil y servicios $\implies$ No es ajustable
 		\end{itemize}
 	\end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Distancia}
+\begin{frame}{(3) Distancia}
 	\begin{itemize}%[<+->] 
 		\item Hoteles cercanos (usando coordenadas)
-		\item El significado de ``cerca'' es variable
-		\item Se necesita un criterio dinámico
-		\item Cuidar que los hoteles distintos no afecten
+		\item El significado de ``cerca'' depende de la densidad de hoteles en la zona
+		\item Se necesita un criterio que se adapte a los cambios de escala
+		\item Hay que evitar que los hoteles distintos (pero cercanos) no introduzcan demasiado ruido
 	\end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Distancia}
+\begin{frame}{(3) Distancia}
 	\includegraphics[width=\textwidth]{imagenes/distdin.pdf}
 \end{frame}
 
@@ -288,7 +298,11 @@
 	\end{itemize}
 \end{frame}
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Anexo: Elección de $\alpha$}
+	\centering
+	\includegraphics[width=0.75\textwidth]{imagenes/alpha.pdf}
+\end{frame}
 
 
 \end{document} 
