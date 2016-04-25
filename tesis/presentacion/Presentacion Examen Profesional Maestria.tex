@@ -69,30 +69,27 @@
 \section{Planteamiento}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Antecedentes}
+\begin{frame}{Resumen}
 	\begin{itemize}%[<+->]
-		\item Las ventas de viajes por Internet no tienen asistencia humana
-		\item Muchos clientes no conocen los destinos que planean visitar
-		\item No basta con permitir que el cliente explore una lista de hoteles
-		\item \textbf{Objetivo:} Facilitar la búsqueda del hotel correcto para incrementar las ventas
-		\item[$\mathbf{\rightarrow}$] \textbf{Idea:} Para cada hotel, recomendar una lista de hoteles ``similares''
-		\item Situación actual:
+		\item Modelo implementado en \textbf{Best Day} (agencia de viajes online)
+		\item \textbf{Situación inicial:}
 		\begin{itemize}
-			\item Recomendaciones estáticas
-			\item Criterio:
+			\item El sistema de recomendación es estático
 			\begin{itemize}
-				\item \textbf{Destino:} Usualmente es una ciudad o zona
-				\item \textbf{Estrellas:} Categoría del hotel
+				\item Criterio: Destino + Estrellas
 			\end{itemize}
+			\item Los clientes potenciales no encuentran el hotel que buscan fácilmente
+			\item Por lo tanto, pueden abandonar la página o no encontrar la mejor opción para ellos
+			\item Esto impacta los KPIs de la empresa
 		\end{itemize}
-		\item No está mal, pero ¿se puede mejorar?
+		\item \textbf{Solución propuesta:} Recomendar con un criterio dinámico que tome en cuenta las principales características del hotel seleccionado
 	\end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Análisis de la competencia}
 	\begin{itemize}%[<+->] 
-		\item Competidores principales: Price Travel, Booking, Despegar, Expedia. Bonus: Trip Advisor
+		\item Competidores principales: Price Travel, Booking, Despegar, Expedia, Trip Advisor
 		\item Diversas formas de recomendar:
 		\begin{itemize}
 			\item Hoteles recientemente vistos: No son recomendaciones genuinas
@@ -104,13 +101,13 @@
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{\textit{¿Qué queremos?}}
+\begin{frame}{Consideraciones}
 	\begin{itemize}%[<+->] 
 		\item Evitar mostrar hoteles demasiado caros
 		\item Tomar en cuenta el perfil del hotel
 		\item Incorporar información geográfica más detallada que el destino
-		\item Que el criterio se adapte a distintos tipos de zonas
-		\item Que no se acaben las recomendaciones nuevas (efecto laberinto)
+		\item Diseñar un criterio que se adapte a zonas con diferentes densidades de hoteles
+		\item Evitar que el sistema se estanque en las mismas recomendaciones (efecto laberinto)
 	\end{itemize}
 \end{frame}
 
