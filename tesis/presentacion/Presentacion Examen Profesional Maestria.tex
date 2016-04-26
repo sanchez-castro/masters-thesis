@@ -39,7 +39,7 @@
 \subtitle{TESIS}
 \institute{\includegraphics[width=0.3\textwidth]{imagenes/logo_ITAM.jpg}\\INSTITUTO TECNOLÓGICO AUTÓNOMO DE MÉXICO}
 \author{Felipe Gerard Valdés}
-\date{Febrero de 2016}
+\date{Abril de 2016}
 
 
 
@@ -126,7 +126,9 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Plan de ataque}
-	\begin{enumerate}%[<+->] 
+	\begin{itemize}
+		\item Dados los objetivos anteriores, proponemos las siguientes medidas:
+		\begin{enumerate}%[<+->] 
 		\item \textbf{Precio:} Filtrar hoteles demasiado caros
 		\item \textbf{Similitud:} Construir un \textit{criterio integral de similitud}
 		\begin{itemize}
@@ -135,6 +137,7 @@
 		\end{itemize}
 		\item \textbf{Distancia:} Recomendar hoteles geográficamente cercanos
 	\end{enumerate}
+	\end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -142,8 +145,8 @@
 	\begin{itemize}%[<+->] 
 		\item Poner hoteles demasiado caros no promueve el interés del cliente
 		\item Generalmente más barato es mejor (siempre y cuando tenga la categoría suficiente)
-		\item[$\mathbf{\rightarrow}$] Porcentaje máximo arriba del hotel original
-		\item Hoteles por encima del precio establecido son invisibles
+		\item[$\mathbf{\rightarrow}$] Porcentaje máximo por encima del hotel original
+		\item Hoteles por encima del precio establecido son \textit{invisibles}
 	\end{itemize}
 \end{frame}
 
@@ -152,7 +155,7 @@
 	\begin{itemize}%[<+->] 
 		\item Las estrellas no bastan como medida de similitud entre hoteles porque no toman en cuenta el estilo del hotel
 		\item \textbf{Alternativa:} Usar información de servicios
-		\item Usarla directamente es ruidoso porque no toma en cuenta sustitutos
+		\item \textbf{Complicación:} Usarla directamente es ruidoso porque no toma en cuenta sustitutos
 		\item \textbf{Solución:} Agrupar los servicios en categorías
 		\item \textbf{Método:} Manual (criterio de negocio) + aglomerado jerárquico
 		\item \textbf{Resultado:} Cada hotel tiene un vector que lo caracteriza con el número de servicios en cada una de las categorías
@@ -211,9 +214,9 @@
 \begin{frame}{(3) Distancia}
 	\begin{itemize}%[<+->] 
 		\item Hoteles cercanos (usando coordenadas)
-		\item El significado de ``cerca'' depende de la densidad de hoteles en la zona
+		\item La definición de ``cercanía'' depende de la densidad de hoteles en la zona
 		\item Se necesita un criterio que se adapte a los cambios de escala
-		\item Hay que evitar que los hoteles distintos (pero cercanos) no introduzcan demasiado ruido
+		\item Hay que evitar que los hoteles distintos (pero cercanos) introduzcan demasiado ruido
 	\end{itemize}
 \end{frame}
 
@@ -227,12 +230,17 @@
 	\begin{enumerate}%[<+->]
 		\item Agrupar los servicios en categorías
 		\item Calcular la ponderación entre servicios y perfil
-		\item Definir una \textbf{geocerca} (radio de cercanía razonable) alrededor de cada hotel
+		\item Definir una \textbf{geocerca exterior} inicial (30 km $\Rightarrow$ máx. 1 hr en coche) alrededor de cada hotel
 		\begin{itemize}
-			\item Ignorar hoteles caros (precio de largo plazo)
-			\item Acumular una cantidad de similitud (mayor peso a hoteles parecidos, menor a los diferentes)
+			\item Esto disminuye el costo computacional, pues ya no se debe evaluar la similitud con todos los hoteles
 		\end{itemize}
-		\item Recomendar dentro de la geocerca de acuerdo a la \textbf{similitud}
+		\item Definir una \textbf{geocerca interior} de manera dinámica:
+		\begin{itemize}
+			\item Ignorar hoteles caros dentro de la geocerca exterior (precio de largo plazo)
+			\item Acumular una cantidad predefinida de similitud (mayor peso a hoteles parecidos, menor a los diferentes)
+			\item Ignorar lo que quede afuera de la geocerca interior
+		\end{itemize}
+		\item Recomendar dentro de la geocerca interior de acuerdo a la \textbf{similitud}, ignorando la distancia
 	\end{enumerate}
 \end{frame}
 
@@ -286,7 +294,7 @@
 		\begin{itemize}
 			\item Impacto importante en los clientes que empezaron a utilizar las recomendaciones
 			\item \textbf{Mayor uso} una vez que se utiliza el sistema
-			\item Con más tiempo la \textbf{conversión} empezó a aumentar
+			\item Después de unos meses la \textbf{conversión} empezó a aumentar
 			\item No hay aumento de entradas (diseño y posición)
 		\end{itemize}
 		\item \textbf{Trabajo futuro:}
@@ -299,7 +307,15 @@
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Anexo: Elección de $\alpha$}
+\begin{frame}{Fin}
+\begin{center}
+\Huge
+¡Muchas gracias!
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Anexo: Elección de ponderación en la similitud ($\alpha$)}
 	\centering
 	\includegraphics[width=0.75\textwidth]{imagenes/alpha.pdf}
 \end{frame}
