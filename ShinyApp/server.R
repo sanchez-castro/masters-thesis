@@ -8,7 +8,7 @@ library(Matrix)
 library(leaflet)
 
 # setwd("C:/Users/bmxddt005062/Documents/recomendacion_de_hoteles/App")
-setwd("/Users/Felipe/data-science/masters-thesis/App")
+# setwd("/Users/Felipe/data-science/masters-thesis/App")
 options(scipen = 10) # Solo los numeros grandes en notacion cientifica
 
 
