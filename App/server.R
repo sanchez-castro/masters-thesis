@@ -7,14 +7,15 @@ library(Matrix)
 #library(ggmap)
 library(leaflet)
 
-setwd("C:/Users/bmxddt005062/Documents/recomendacion_de_hoteles/App")
-#setwd("/Users/Felipe/data-science/masters-thesis/App")
+# setwd("C:/Users/bmxddt005062/Documents/recomendacion_de_hoteles/App")
+setwd("/Users/Felipe/data-science/masters-thesis/App")
 options(scipen = 10) # Solo los numeros grandes en notacion cientifica
 
 
 # Cargar los datos --------------------------------------------------------
 
-load('datos/datos_completos.Rdata')
+# load('datos/datos_completos.Rdata')
+load('datos/datos_completos_mac.Rdata')
 
 # Funciones auxiliares ----------------------------------------------------
 
