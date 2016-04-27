@@ -206,6 +206,42 @@ ggsave(filename = 'tesis/presentacion/imagenes/distdin.pdf',
        width = 8, height = 4)
 
 
+# Sistema completo --------------------------------------------------------
+
+set.seed(1234)
+circ <- circleFun(c(0,0),3,npoints = 100)
+x2 <- data.frame(x=c(0,rnorm(30)),
+                 y=c(0,rnorm(30)),
+                 s=c(5,4*runif(30))) %>%
+  mutate(col=ifelse(s==5, 'Original',
+                    ifelse(sqrt(x^2 + y^2) < 1.5,
+                           ifelse(runif(31) < 0.5, 'Recomendados', 'Caros'),
+                           'Lejanos'))) %>%
+  group_by(col) %>%
+  mutate(r = rank(-s)) %>%
+  arrange(col, r)
+
+plot_todo <- ggplot(x2) +
+  geom_point(aes(x,y,size=s, color=col)) +
+  geom_point(data=filter(x2,col=='Recomendados') %>% head(5),
+             aes(x,y,size=s), color='black', shape=1) +
+  scale_color_manual(values = c('Original'=rgb(0.1,0.3,0.8),
+                                'Recomendados'=rgb(0.1,0.8,0.3),
+                                'Caros'=rgb(0.8,0.8,0.1),
+                                'Lejanos'='black')) +
+  geom_path(data=circ, aes(x,y), linetype='dashed') +
+  geom_text(data=filter(x2, col=='Recomendados') %>% head(5),
+            aes(x,y,label=r), hjust=-1, vjust=-0.5) +
+  guides(color=guide_legend(title=NULL)) +
+  scale_size_continuous(guide=FALSE) +
+  scale_alpha_discrete(guide=FALSE) +
+  coord_equal() +
+  labs(x='Longitud', y='Latitud')
+plot_todo
+ggsave(filename = 'tesis/presentacion/imagenes/similitud-completa.pdf',
+       plot = plot_todo,
+       width = 7, height = 7)
+
 # Preparar información para Gephi -----------------------------------------
 
 library(dplyr)
